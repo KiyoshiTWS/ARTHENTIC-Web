@@ -1,56 +1,695 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-  <!-- 
-      This is an HTML comment
-      You can write text in a comment and the content won't be visible in the page
-    -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="https://glitch.com/favicon.ico" />
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-  <!--
-      This is the page head - it contains info the browser uses
-      Like the title, which appears on the browser tab but not inside the page
-      Further down you'll see the content that displays in the page
-    -->
-  <title>Hello World!</title>
+    <title>pARTsner - Art Protection</title>
 
-  <!-- The website stylesheet -->
-  <link rel="stylesheet" href="/style.css" />
+    <!-- CSS FILES -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-  <!-- The website JavaScript file -->
-  <script src="/script.js" defer></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="css/magnific-popup.css" rel="stylesheet">
+
+    <link href="css/tooplate-tween-agency.css" rel="stylesheet">
+
+
 </head>
 
 <body>
-  <!--
-      The body includes the content you see in the page
-      Each element is defined using tags, like this <div></div>
-      The attributes like class="wrapper" let us style elements in the CSS
-    -->
-  <div class="wrapper">
-    <div class="content" role="main">
-      <h1 class="title">Oh hi website!</h1>
-      <img src="/cool-website.svg" class="illustration" alt="cool website" />
-      <div class="instructions">
-        <p>
-          Fork <a href="https://github.com/glitchdotcom/website-to-compute">this project</a> and open it in a GitHub Codespace.
-        </p>
-        <p> Follow the steps in the README to deploy your new website to Fastly in a few steps!
-        </p>
 
-      </div>
+    <nav class="navbar fixed-top navbar-expand-lg">
+        <div class="container">
 
-      <footer class="footer">
-        <div>
-          <a class="remix" href="https://github.com/glitchdotcom/website-to-compute">🚧 Get your own site</a>
+            <a href="index.html" class="navbar-brand">
+                <img src="images/kislapmtalogo.PNG" alt="pARTsner Logo" style="height: 120px; margin-right: 8px;">
+                pARTsner
+            </a>
+
+
+            <a href="#upload" class="custom-btn btn btn-lg d-lg-none ms-auto me-4">
+                Protect My Art
+                <i class="bi-shield-lock ms-2"></i>
+            </a>
+
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-lg-5">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#section_1">Home</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#section_2">About</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#section_3">Services</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#section_4">Our Work</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#section_5">Pricing</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#section_6">Contact</a>
+                    </li>
+                </ul>
+
+                <div class="ms-auto d-none d-lg-block">
+                    <a href="#" class="custom-btn btn btn-lg">
+                        Download
+                        <i class="bi-download ms-2"></i>
+                    </a>
+                </div>
+            </div>
         </div>
-      </footer>
-    </div>
-  </div>
+    </nav>
+
+    <main>
+
+        <section class="hero d-flex justify-content-center align-items-center" id="section_1">
+            <div class="container">
+                <div class="row">
+
+                    <div class="col-lg-8 col-12">
+                        <div class="heroText">
+                            <h1 class="text-white mb-lg-5 mb-4">Committed to Protecting your Digital Artistic Outputs
+                            </h1>
+
+                            <a href="https://www.youtube.com/watch?v=AYaHuZ4BB6Y"
+                                class="popup-youtube play-icon-wrap d-flex align-items-center">
+                                <i class="bi-play play-icon"></i>
+
+                                <small>1:49 Minutes</small>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="overlay"></div>
+        </section>
+
+        <section class="about section-padding" id="section_2">
+            <div class="container">
+                <div class="row">
+
+                    <div class="col-lg-6 col-12">
+                        <h2 class="mb-5">Digital Protection</h2>
+                    </div>
+
+                    <div class="col-lg-4 col-12 ms-lg-auto mb-5 mb-lg-0">
+                        <nav>
+                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                <button class="nav-link active" id="nav-intro-tab" data-bs-toggle="tab"
+                                    data-bs-target="#nav-intro" type="button" role="tab" aria-controls="nav-intro"
+                                    aria-selected="true">Introduction</button>
+
+                                <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab"
+                                    data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile"
+                                    aria-selected="false">Profile</button>
+
+                                <button class="nav-link" id="nav-faq-tab" data-bs-toggle="tab" data-bs-target="#nav-faq"
+                                    type="button" role="tab" aria-controls="nav-faq" aria-selected="false">FAQs</button>
+                            </div>
+                        </nav>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="nav-intro" role="tabpanel"
+                                aria-labelledby="nav-intro-tab">
+                                <div class="row">
+                                    <div class="col-lg-6 col-12 mb-lg-0 mb-4">
+                                        <img src="images/webpage-browser-digital-icon-symbols-concept.jpg"
+                                            class="img-fluid" alt="">
+                                    </div>
+
+                                    <div class="col-lg-5 col-12 m-auto">
+                                        <h3 class="mb-3">What We Are</h3>
+
+                                        <p>We want digital artists to feel safe and confident sharing their work online.
+                                            Our platform is designed to protect your creations, prove ownership, and
+                                            help you license or sell them securely.</p>
+
+                                        <p>This website provides an all-in-one solution for digital painters,
+                                            illustrators, and creative studios. You can upload your artworks, register
+                                            them with proof of authorship, embed protective markers, and monitor online
+                                            usage to track misuse.</p>
+
+                                        <p>We also support takedown requests for unauthorized uploads and offer
+                                            licensing tools so you can control how your art is shared. Our goal is
+                                            simple — you focus on creating, while we focus on protecting.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="nav-profile" role="tabpanel"
+                                aria-labelledby="nav-profile-tab">
+                                <div class="row">
+                                    <div class="col-lg-5 col-12 m-auto">
+                                        <h3 class="mb-3">About Our Mission</h3>
+
+                                        <p>We are dedicated to protecting digital artists in today’s fast-moving online
+                                            world.
+                                            Our goal is simple: safeguard your creations with proof of authorship, smart
+                                            protection tools, and legal support when needed.
+                                        <p><strong>"We secure your art, so you can unleash your imagination."</strong>
+                                        </p>
+
+                                        <ul class="social-icon mt-lg-5 mt-3">
+                                            <li class="me-3"><strong>Connect with us:</strong></li>
+
+                                            <li><a href="#" class="social-icon-link bi-twitter"></a></li>
+                                            <li><a href="#" class="social-icon-link bi-linkedin"></a></li>
+                                            <li><a href="mailto:support@pARTsnerProtection.com"
+                                                    class="social-icon-link bi-envelope"></a></li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="col-lg-6 col-12 mt-lg-0 mt-4">
+                                        <img src="images/services/art-protection-mission.jpg" class="img-fluid"
+                                            alt="Protecting digital art">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="nav-faq" role="tabpanel" aria-labelledby="nav-faq-tab">
+                                <div class="row">
+                                    <div class="col-lg-6 col-12 mb-lg-0 mb-4">
+                                        <img src="images/services/faq-art-security.jpg" class="img-fluid"
+                                            alt="FAQ about art protection">
+                                    </div>
+
+                                    <div class="col-lg-5 col-12 m-auto">
+                                        <h3 class="mb-3">Frequently Asked Questions</h3>
+
+                                        <div class="accordion" id="accordionGeneral">
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id="headingOne">
+                                                    <button class="accordion-button collapsed" type="button"
+                                                        data-bs-toggle="collapse" data-bs-target="#accordionGeneralOne"
+                                                        aria-expanded="true" aria-controls="accordionGeneralOne">
+                                                        How does this service protect my art?
+                                                    </button>
+                                                </h2>
+
+                                                <div id="accordionGeneralOne" class="accordion-collapse collapse"
+                                                    aria-labelledby="headingOne" data-bs-parent="#accordionGeneral">
+                                                    <div class="accordion-body">
+                                                        <p class="large-paragraph">We secure your artwork with a
+                                                            timestamped record of authorship, embed hidden metadata or
+                                                            watermarks, and even provide blockchain-backed certificates.
+                                                            This ensures you can always prove ownership.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id="headingTwo">
+                                                    <button class="accordion-button collapsed" type="button"
+                                                        data-bs-toggle="collapse" data-bs-target="#accordionGeneralTwo"
+                                                        aria-expanded="false" aria-controls="accordionGeneralTwo">
+                                                        Can you stop people from stealing my art?
+                                                    </button>
+                                                </h2>
+
+                                                <div id="accordionGeneralTwo" class="accordion-collapse collapse"
+                                                    aria-labelledby="headingTwo" data-bs-parent="#accordionGeneral">
+                                                    <div class="accordion-body">
+                                                        <p class="large-paragraph">We actively monitor online platforms
+                                                            for unauthorized use of your art. If we detect misuse, we
+                                                            assist you with takedown requests and provide evidence of
+                                                            ownership to strengthen your case.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id="headingThree">
+                                                    <button class="accordion-button collapsed" type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#accordionGeneralThree" aria-expanded="false"
+                                                        aria-controls="accordionGeneralThree">
+                                                        Who is this service for?
+                                                    </button>
+                                                </h2>
+
+                                                <div id="accordionGeneralThree" class="accordion-collapse collapse"
+                                                    aria-labelledby="headingThree" data-bs-parent="#accordionGeneral">
+                                                    <div class="accordion-body">
+                                                        <p class="large-paragraph">Our platform is designed for
+                                                            freelance artists, illustrators, digital studios, and any
+                                                            creator who shares art online. Whether you’re just starting
+                                                            out or managing a studio, we provide protection at every
+                                                            level.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <section class="services section-padding" id="section_3">
+                                <div class="container">
+                                    <div class="row">
+
+                                        <!-- Section Heading -->
+                                        <h2 class="mb-5 text-center">How We Protect Your Art</h2>
+
+                                        <!-- Service 1 -->
+                                        <div class="col-lg-4 col-12 d-flex p-0 bg-light">
+                                            <img src="images/services/placeholder-artwork.svg"
+                                                class="img-fluid services-image" alt="Artwork Registration">
+                                        </div>
+                                        <div class="col-lg-4 col-12 p-0">
+                                            <div class="services-info custom-icon-left paddingText">
+                                                <h4>Artwork Registration</h4>
+                                                <p class="mb-4">Upload, register, and secure your creations with a
+                                                    verifiable timestamp.</p>
+                                                <a class="custom-btn custom-bg-dark btn" href="#">Learn More</a>
+                                            </div>
+                                        </div>
+
+                                        <!-- Service 2 -->
+                                        <div class="col-lg-4 col-12 d-flex p-0 bg-light">
+                                            <img src="images/services/placeholder-watermark.svg"
+                                                class="img-fluid services-image" alt="Digital Watermarking">
+                                        </div>
+                                        <div class="col-lg-4 col-12 p-0">
+                                            <div class="services-info custom-icon-right paddingText">
+                                                <h4>Digital Watermarking</h4>
+                                                <p class="mb-4">Embed hidden markers or visible watermarks to deter
+                                                    theft and prove authorship.</p>
+                                                <a class="custom-btn custom-bg-dark btn" href="#">Learn More</a>
+                                            </div>
+                                        </div>
+
+                                        <!-- Service 3 -->
+                                        <div class="col-lg-4 col-12 d-flex p-0 bg-light">
+                                            <img src="images/services/placeholder-blockchain.svg"
+                                                class="img-fluid services-image" alt="Blockchain Certificates">
+                                        </div>
+                                        <div class="col-lg-4 col-12 p-0">
+                                            <div class="services-info custom-icon-top paddingText">
+                                                <h4>Blockchain Certificates</h4>
+                                                <p class="mb-4">Immutable proof of authorship, stored securely on the
+                                                    blockchain.</p>
+                                                <a class="custom-btn custom-bg-dark btn" href="#">Learn More</a>
+                                            </div>
+                                        </div>
+
+                                        <!-- Optional Future Service -->
+                                        <div class="col-lg-4 col-12 d-flex p-0 bg-light">
+                                            <img src="images/services/placeholder-monitoring.svg"
+                                                class="img-fluid services-image" alt="Monitoring & Alerts">
+                                        </div>
+                                        <div class="col-lg-4 col-12 p-0">
+                                            <div class="services-info custom-icon-left paddingText">
+                                                <h4>Monitoring & Alerts</h4>
+                                                <p class="mb-4">Track unauthorized use of your work online and get
+                                                    notified instantly.</p>
+                                                <a class="custom-btn custom-bg-dark btn" href="#">Learn More</a>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </section>
+
+
+                            <section class="work section-padding" id="section_4">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h2 class="mb-5 text-center">Digital Media Highlights</h2>
+                                        </div>
+
+                                        <div class="col-lg-4 col-12">
+                                            <div class="work-thumb mb-4">
+                                                <div class="work-image-wrap">
+                                                    <a href="images/work/anthony-espinosa-pYQSM-p_0_c-unsplash.jpg"
+                                                        class="image-popup">
+                                                        <img src="images/work/anthony-espinosa-pYQSM-p_0_c-unsplash.jpg"
+                                                            class="img-fluid work-image" alt="">
+                                                    </a>
+                                                </div>
+
+                                                <div class="work-text-info">
+                                                    <small class="work-tag bg-white shadow-lg">Art Direction</small>
+
+                                                    <h4 class="work-title">Simple Burger</h4>
+                                                </div>
+                                            </div>
+
+                                            <div class="work-thumb mb-4">
+                                                <div class="work-image-wrap">
+                                                    <a href="images/work/samantha-gades-lf2pD--wIUA-unsplash.jpg"
+                                                        class="image-popup">
+                                                        <img src="images/work/samantha-gades-lf2pD--wIUA-unsplash.jpg"
+                                                            class="img-fluid work-image" alt="">
+                                                    </a>
+                                                </div>
+
+                                                <div class="work-text-info">
+                                                    <small class="work-tag bg-white shadow-lg">Design</small>
+
+                                                    <h4 class="work-title">Fitness</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-4 col-12">
+                                            <div class="work-thumb mb-4">
+                                                <div class="work-image-wrap">
+                                                    <a href="images/work/business-chart-visual-graphics-report-concept.jpg"
+                                                        class="image-popup">
+                                                        <img src="images/work/business-chart-visual-graphics-report-concept.jpg"
+                                                            class="img-fluid work-image" alt="">
+                                                    </a>
+                                                </div>
+
+                                                <div class="work-text-info">
+                                                    <small class="work-tag bg-white shadow-lg">Web Development</small>
+
+                                                    <h4 class="work-title">Data Science</h4>
+                                                </div>
+                                            </div>
+
+                                            <div class="work-thumb mb-4">
+                                                <div class="work-image-wrap">
+                                                    <a href="images/work/tyler-nix-HmVQh_EQJhY-unsplash.jpg"
+                                                        class="image-popup">
+                                                        <img src="images/work/tyler-nix-HmVQh_EQJhY-unsplash.jpg"
+                                                            class="img-fluid work-image" alt="">
+                                                    </a>
+                                                </div>
+
+                                                <div class="work-text-info">
+                                                    <small class="work-tag bg-white shadow-lg">Branding</small>
+
+                                                    <small class="work-tag bg-white shadow-lg">Graphic Design</small>
+
+                                                    <h4 class="work-title">Health</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-4 col-12">
+                                            <div class="work-thumb mb-4">
+                                                <div class="work-image-wrap">
+                                                    <a href="images/work/mos-sukjaroenkraisri-jz8AmJDyhig-unsplash.jpg"
+                                                        class="image-popup">
+                                                        <img src="images/work/mos-sukjaroenkraisri-jz8AmJDyhig-unsplash.jpg"
+                                                            class="img-fluid work-image" alt="">
+                                                    </a>
+                                                </div>
+
+                                                <div class="work-text-info">
+                                                    <small class="work-tag bg-white shadow-lg">Photography</small>
+
+                                                    <h4 class="work-title">Portraits</h4>
+                                                </div>
+                                            </div>
+
+                                            <div class="work-thumb work-thumb-text">
+                                                <div class="">
+                                                    <p class="work-title">
+                                                        Contact us at
+                                                        <strong><a
+                                                                href="mailto:hi@company.com">support@pARTsnerProtection.com</a></strong>
+                                                        to get started.
+                                                    </p>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="pricing section-padding" id="section_5">
+                                <div class="container">
+                                    <div class="row">
+
+                                        <div class="col-12">
+                                            <h2 class="text-white mb-5 text-center">Choose the Plan That Fits Your
+                                                Creative Journey</h2>
+                                        </div>
+
+                                        <div class="col-lg-6 col-12">
+                                            <div class="pricing-plan bg-white">
+                                                <div class="d-flex flex-wrap align-items-center pricing-header">
+                                                    <i class="pricing-icon bi-person"></i>
+
+                                                    <div class="pricing-name">
+                                                        <h4>Essentials</h4>
+                                                    </div>
+
+                                                    <div class="pricing-price">
+                                                        <h4>$0</h4>
+                                                    </div>
+
+                                                    <small class="pricing-recommend">For Starters</small>
+                                                </div>
+
+                                                <div class="pricing-body">
+                                                    <h5 class="mb-3">Managed Features</h5>
+
+                                                    <ul class="pricing-list">
+                                                        <li class="pricing-list-item">Upload and register up to 5
+                                                            artworks.</li>
+                                                        <li class="pricing-list-item">Basic time-stamping and proof of
+                                                            authorship.</li>
+                                                        <li class="pricing-list-item">Simple watermarks or metadata
+                                                            embedding.</li>
+                                                        <li class="pricing-list-item">Dashboard showing uploaded
+                                                            artworks.</li>
+                                                    </ul>
+
+                                                    <h5 class="mt-lg-5 mt-4 mb-3">Optional Features</h5>
+                                                    <li class="pricing-list-item">Limited monitoring.</li>
+                                                    <li class="pricing-list-item">Buying additional artwork “slots” for
+                                                        protection.</li>
+                                                    <p><strong>Perfect for solo creators starting out</strong></p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-6 col-12 mt-lg-0 mt-5">
+                                            <div class="pricing-plan border-0 bg-white shadow-lg">
+                                                <div class="d-flex flex-wrap align-items-center pricing-header">
+                                                    <i class="pricing-icon bi-briefcase"></i>
+
+                                                    <div class="pricing-name">
+                                                        <h4>Creator+</h4>
+                                                    </div>
+
+                                                    <div class="pricing-price">
+                                                        <h4>$49.99/Month</h4>
+                                                    </div>
+
+                                                    <small class="pricing-recommend">For Studio/Freelancers</small>
+                                                </div>
+
+                                                <div class="pricing-body">
+                                                    <h5 class="mb-3">All Managing Features</h5>
+
+                                                    <ul class="pricing-list">
+                                                        <li class="pricing-list-item">Unlimited artwork uploads.</li>
+                                                        <li class="pricing-list-item">Full digital protection: invisible
+                                                            watermarks, blockchain proof, fingerprinting.</li>
+                                                        <li class="pricing-list-item">Continuous online monitoring and
+                                                            alerts for potential theft.</li>
+                                                        <li class="pricing-list-item">Takedown assistance and support
+                                                            for copyright enforcement.</li>
+                                                        <li class="pricing-list-item">Licensing tools and secure sharing
+                                                            options.</li>
+                                                        <li class="pricing-list-item">Analytics dashboard for
+                                                            infringement tracking.</li>
+                                                        <li class="pricing-list-item">Priority support.</li>
+                                                    </ul>
+
+                                                    <h5 class="mt-lg-5 mt-4 mb-3">Optional Features</h5>
+                                                    <li class="pricing-list-item">Legal Assistance: Help with copyright
+                                                        disputes or DMCA notices.</li>
+                                                    <li class="pricing-list-item">Marketplace Integration: Sell/licensed
+                                                        protected works via the platform.</li>
+                                                    <p><strong>Built for professional artists and studios</strong></p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="overlay dark-overlay"></div>
+                            </section>
+
+                            <section class="section-padding" id="section_6">
+                                <div class="container">
+                                    <div class="row">
+
+                                        <div class="col-lg-8 col-md-10 col-12 mx-auto">
+                                            <h2 class="mb-4 text-center">Talk to Our Team</h2>
+
+                                            <form class="custom-form" role="form" action="" method="post">
+                                                <div class="row">
+                                                    <!-- Full Name -->
+                                                    <div class="col-lg-4 col-md-6 col-12 my-2">
+                                                        <label class="mb-2" for="name">Full Name</label>
+                                                        <input type="text" name="name" id="name" class="form-control"
+                                                            required="">
+                                                    </div>
+
+                                                    <!-- Email -->
+                                                    <div class="col-lg-4 col-md-6 col-12 my-2">
+                                                        <label class="mb-2" for="email">Email Address</label>
+                                                        <input type="email" name="email" id="email"
+                                                            pattern="[^ @]*@[^ @]*" class="form-control" required="">
+                                                    </div>
+
+                                                    <!-- User Intent -->
+                                                    <div class="col-lg-4 col-md-6 col-12 my-2">
+                                                        <label class="mb-2" for="interest">What are you interested
+                                                            in?</label>
+                                                        <select class="form-select form-control" name="interest"
+                                                            id="interest">
+                                                            <option selected="">Choose one</option>
+                                                            <option value="protect">Protecting my artwork</option>
+                                                            <option value="verify">Verifying ownership</option>
+                                                            <option value="report">Reporting stolen work</option>
+                                                            <option value="collab">Collaboration / Partnership</option>
+                                                            <option value="demo">Requesting a demo</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <!-- Message -->
+                                                    <div class="col-12 my-2">
+                                                        <label class="mb-2" for="message">Tell us about your
+                                                            needs</label>
+                                                        <textarea class="form-control" rows="5" id="message"
+                                                            name="message"
+                                                            placeholder="Share details about your art, protection needs, or project..."></textarea>
+
+                                                        <button type="submit" class="form-control mt-4"
+                                                            id="submit">Submit</button>
+                                                    </div>
+
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+
+                <!-- Newsletter -->
+                <div class="col-lg-5 col-12 me-auto mb-4">
+                    <h5 class="text-white mb-3">Stay Updated</h5>
+                    <p class="text-white">Get protection tips, updates, and insights straight to your inbox.</p>
+
+                    <form class="custom-form subscribe-form mt-4" role="form">
+                        <div class="row">
+                            <div class="col-lg-8 col-md-8 col-7">
+                                <input type="email" name="subscribe-email" id="subscribe-email" pattern="[^ @]*@[^ @]*"
+                                    class="form-control" placeholder="Your email address" required="">
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-5">
+                                <button type="submit" class="form-control" id="subscribe">Subscribe</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Services -->
+                <div class="col-lg-2 col-12 mx-auto my-lg-0 my-4">
+                    <h5 class="text-white mb-3">Our Services</h5>
+
+                    <ul class="footer-menu">
+                        <li class="footer-menu-item"><a href="#" class="footer-menu-link">Artwork Registration</a></li>
+                        <li class="footer-menu-item"><a href="#" class="footer-menu-link">Digital Watermarking</a></li>
+                        <li class="footer-menu-item"><a href="#" class="footer-menu-link">Blockchain Certificates</a>
+                        </li>
+                        <li class="footer-menu-item"><a href="#" class="footer-menu-link">Takedown Assistance</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div class="col-lg-2 col-12">
+                    <h5 class="text-white mb-3">Contact Us</h5>
+                    <p class="text-white mb-1">We’d love to hear from you.</p>
+                    <p><a href="mailto:support@pARTsnerProtection.com"
+                            class="footer-link">support@pARTsnerProtection.com</a></p>
+                </div>
+
+                <!-- Bottom -->
+                <div class="site-footer-bottom mt-5">
+                    <div class="row pt-4">
+                        <div class="col-lg-6 col-12">
+                            <p class="copyright-text">Copyright © 2025 pARTsner
+                        </div>
+
+                        <!-- Socials -->
+                        <div class="col-lg-3 col-12 ms-auto">
+                            <ul class="social-icon">
+                                <li><a href="#" class="social-icon-link bi-facebook"></a></li>
+                                <li><a href="#" class="social-icon-link bi-twitter"></a></li>
+                                <li><a href="#" class="social-icon-link bi-instagram"></a></li>
+                                <li><a href="#" class="social-icon-link bi-linkedin"></a></li>
+                                <li><a href="#" class="social-icon-link bi-youtube"></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- JAVASCRIPT FILES -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.backstretch.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/magnific-popup-options.js"></script>
+    <script src="js/click-scroll.js"></script>
+    <script src="js/custom.js"></script>
 </body>
 
 </html>
