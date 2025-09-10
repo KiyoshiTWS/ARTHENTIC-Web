@@ -1,4 +1,4 @@
-# Welcome to pARTsner 🤩
+# Welcome to pARTsner
 
 Hello and welcome! 🎨  
 
