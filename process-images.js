@@ -4,7 +4,7 @@ const path = require("path");
 
 const inputDir = "./images/work/DigitalMedia";
 const outputDir = "./images/work/Protected";
-const watermarkPath = "./watermark.png";
+const watermarkPath = "./logo.png";
 
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
