@@ -36,9 +36,13 @@
         <div class="container">
 
             <a href="index.html" class="navbar-brand">
-                <img src="logo.png" alt="ARTHENTIC Logo" style="height: 50px; margin-right: 8px;">
-                
+                <img id="siteLogo" src="logo.png" alt="ARTHENTIC Logo" style="height: 50px; margin-right: 1px;">
             </a>
+
+            <!-- Dark Mode Button (visible on all devices) -->
+            <button id="darkModeToggle" class="btn btn-outline-dark ms-2" style="border-radius: 50px;">
+                <i class="bi bi-moon"></i>
+            </button>
 
 
             <a href="#upload" class="custom-btn btn btn-lg d-lg-none ms-auto me-4">
@@ -499,19 +503,19 @@
 
                                             <div class="work-thumb mb-4">
                                                 <div class="work-image-wrap">
-                                                    <a href="images/work/tyler-nix-HmVQh_EQJhY-unsplash.jpg"
+                                                    <a href="images/work/Protected/Tristan.png"
                                                         class="image-popup">
-                                                        <img src="images/work/tyler-nix-HmVQh_EQJhY-unsplash.jpg"
+                                                        <img src="images/work/Protected/Tristan.png"
                                                             class="img-fluid work-image" alt="">
                                                     </a>
                                                 </div>
 
                                                 <div class="work-text-info">
-                                                    <small class="work-tag bg-white shadow-lg">Branding</small>
+                                                    <small class="work-tag bg-white shadow-lg">Portrait - Mond</small>
 
-                                                    <small class="work-tag bg-white shadow-lg">Graphic Design</small>
+                                                    <small class="work-tag bg-white shadow-lg">Photography</small>
 
-                                                    <h4 class="work-title">Health</h4>
+                                                    <h4 class="work-title">" Tristan Beast "</h4>
                                                 </div>
                                             </div>
                                         </div>
@@ -519,17 +523,17 @@
                                         <div class="col-lg-4 col-12">
                                             <div class="work-thumb mb-4">
                                                 <div class="work-image-wrap">
-                                                    <a href="images/work/mos-sukjaroenkraisri-jz8AmJDyhig-unsplash.jpg"
+                                                    <a href="images/work/Protected/Perfectio.JPG"
                                                         class="image-popup">
-                                                        <img src="images/work/mos-sukjaroenkraisri-jz8AmJDyhig-unsplash.jpg"
+                                                        <img src="images/work/Protected/Perfectio.JPG"
                                                             class="img-fluid work-image" alt="">
                                                     </a>
                                                 </div>
 
                                                 <div class="work-text-info">
-                                                    <small class="work-tag bg-white shadow-lg">Photography</small>
+                                                    <small class="work-tag bg-white shadow-lg">Street Photography - Mond </small>
 
-                                                    <h4 class="work-title">Portraits</h4>
+                                                    <h4 class="work-title">" Sa Perfectio "</h4>
                                                 </div>
                                             </div>
 
@@ -608,7 +612,7 @@
                                                     </div>
 
                                                     <div class="pricing-price">
-                                                        <h4>$24.99/Month</h4>
+                                                        <h4>$19.99/Month</h4>
                                                     </div>
 
                                                     <small class="pricing-recommend">For Studio/Freelancers</small>
@@ -806,14 +810,161 @@
             pointer-events: none;
             /* does not block hover effects */
         }
+
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #181a1b !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .navbar,
+        body.dark-mode .pricing-plan,
+        body.dark-mode .site-footer,
+        body.dark-mode .services-info,
+        body.dark-mode .work-thumb,
+        body.dark-mode .custom-form,
+        body.dark-mode .accordion-item,
+        body.dark-mode .tab-content,
+        body.dark-mode .footer-menu-link,
+        body.dark-mode .work-title,
+        body.dark-mode .pricing-header,
+        body.dark-mode .pricing-body {
+            background-color: #23272b !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .custom-btn,
+        body.dark-mode .btn,
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background-color: #23272b !important;
+            color: #e0e0e0 !important;
+            border-color: #444 !important;
+        }
+        body.dark-mode .text-white,
+        body.dark-mode .text-dark,
+        body.dark-mode h1,
+        body.dark-mode h2,
+        body.dark-mode h3,
+        body.dark-mode h4,
+        body.dark-mode h5,
+        body.dark-mode h6,
+        body.dark-mode p,
+        body.dark-mode label,
+        body.dark-mode .nav-link,
+        body.dark-mode .footer-link,
+        body.dark-mode .copyright-text,
+        body.dark-mode .accordion-button,
+        body.dark-mode .accordion-body,
+        body.dark-mode .pricing-list-item,
+        body.dark-mode .work-tag,
+        body.dark-mode .footer-menu-link {
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .bg-white {
+            background-color: #23272b !important;
+        }
+        body.dark-mode .shadow-lg {
+            box-shadow: none !important;
+        }
+        body.dark-mode .overlay,
+        body.dark-mode .dark-overlay {
+            background: rgba(24,26,27,0.7) !important;
+        }
+        body.dark-mode .accordion-button {
+            background-color: #23272b !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .accordion-body {
+            background-color: #23272b !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .nav-tabs .nav-link.active {
+            background-color: #23272b !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .nav-tabs .nav-link {
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .work-tag {
+            background-color: #23272b !important;
+            color: #e0e0e0 !important;
+        }
+
+
+        section#section_3 {
+            background-color: #f8f9fa !important; 
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            padding: 2rem 0;
+        }
+        section#section_3 h2 {
+            color: #181a1b !important;
+            font-weight: 600;
+        }
+        body.dark-mode section#section_3 {
+            background-color: #181a1b !important;
+            box-shadow: none;
+        }
+        body.dark-mode section#section_3 h2 {
+            color: #fff !important;
+        }
+
+        /* Ensure all buttons retain their color in dark mode */
+        body.dark-mode .btn,
+        body.dark-mode .custom-btn,
+        body.dark-mode .btn-lg,
+        body.dark-mode .form-control[type="submit"],
+        body.dark-mode button,
+        body.dark-mode input[type="submit"] {
+            background-color: #0d6efd !important; /* Bootstrap primary blue */
+            color: #fff !important;
+            border-color: #0d6efd !important;
+        }
+
+        /* If you use other button colors, preserve them too */
+        body.dark-mode .btn-outline-dark,
+        body.dark-mode .btn-outline-primary,
+        body.dark-mode .btn-outline-success,
+        body.dark-mode .btn-outline-danger,
+        body.dark-mode .btn-outline-warning,
+        body.dark-mode .btn-outline-info,
+        body.dark-mode .btn-outline-light {
+            background-color: transparent !important;
+            color: inherit !important;
+            border-color: inherit !important;
+        }
     </style>
 
     <script>
         // Disable right-click context menu on all images
         document.querySelectorAll('img').forEach(img => {
-            img.setAttribute('draggable', 'false'); // ensure drag is disabled
+            img.setAttribute('draggable', 'false');
             img.addEventListener('contextmenu', e => e.preventDefault());
-            img.addEventListener('mousedown', e => e.preventDefault()); // optional: prevent drag selection
+            img.addEventListener('mousedown', e => e.preventDefault());
+        });
+
+        // Dark mode toggle
+        document.addEventListener('DOMContentLoaded', function () {
+            const darkModeBtn = document.getElementById('darkModeToggle');
+            const siteLogo = document.getElementById('siteLogo');
+            darkModeBtn.addEventListener('click', function () {
+                document.body.classList.toggle('dark-mode');
+                // Toggle icon
+                const icon = darkModeBtn.querySelector('i');
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.remove('bi-moon');
+                    icon.classList.add('bi-brightness-high');
+                    siteLogo.src = "whitelogo.png"; // Switch to white logo
+                } else {
+                    icon.classList.remove('bi-brightness-high');
+                    icon.classList.add('bi-moon');
+                    siteLogo.src = "logo.png"; // Switch to dark logo
+                }
+            });
+
+            // On page load, set logo based on mode (if you want to persist dark mode)
+            if (document.body.classList.contains('dark-mode')) {
+                siteLogo.src = "whitelogo.png";
+            }
         });
     </script>
 
