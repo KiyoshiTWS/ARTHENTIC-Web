@@ -21,9 +21,9 @@
     // BACKSTRETCH SLIDESHOW
     $('#section_1').backstretch([
       "images/slide/TrainRoss.PNG", 
-      "images/slide/",
-      "images/slide/"
-    ],  {duration: 2000, fade: 750});
+      "images/work/Protected/krp.PNG",
+      "images/work/Protected/Rin1.PNG",
+    ],  {duration: 3000, fade: 750});
     
   })(window.jQuery);
 
