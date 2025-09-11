@@ -8,6 +8,8 @@ const watermarkPath = "./logo.png";
 
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
+console.log("Files found:", fs.readdirSync(inputDir));
+
 fs.readdirSync(inputDir).forEach(async (file) => {
   const ext = path.extname(file).toLowerCase();
   if ([".jpg", ".jpeg", ".png"].includes(ext)) {
@@ -19,9 +21,12 @@ fs.readdirSync(inputDir).forEach(async (file) => {
       const image = sharp(inputPath);
       const metadata = await image.metadata();
 
-      // Resize watermark to 20% of image width
+      // Resize watermark to max 20% of image width, but not larger than image
+      let watermarkWidth = Math.floor(metadata.width * 0.2);
+      if (watermarkWidth > metadata.width) watermarkWidth = metadata.width;
+
       const watermarkResized = await sharp(watermarkPath)
-        .resize({ width: Math.floor(metadata.width * 0.2) })
+        .resize({ width: watermarkWidth, fit: "inside" })
         .png()
         .toBuffer();
 
@@ -31,6 +36,7 @@ fs.readdirSync(inputDir).forEach(async (file) => {
           {
             input: watermarkResized,
             gravity: "southeast",
+            padding: 20,
             blend: "overlay",
             opacity: 0.3,
           },

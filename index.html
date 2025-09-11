@@ -96,36 +96,36 @@
     </nav>
 
     <main>
-        <!-- HERO SECTION: Move video above the faded frame -->
+
         <section class="hero d-flex justify-content-center align-items-center" id="section_1">
             <div class="container">
                 <div class="row align-items-center">
 
-                    <!-- Left: Text -->
+                    <!-- Text on the left -->
                     <div class="col-lg-6 col-12">
-                        <div class="heroText position-relative">
+                        <div class="heroText">
                             <h1 class="text-white mb-4">
                                 Committed to Protecting your Digital Artistic Outputs
                             </h1>
-                            <a href="#upload" class="custom-btn btn btn-lg btn-danger">
+                            <a href="#upload" class="custom-btn btn btn-lg">
                                 Our Mission
                             </a>
                         </div>
                     </div>
 
-                    <!-- Right: Video (original resolution) -->
+                    <!-- Video on the right -->
                     <div class="col-lg-6 col-12">
-                        <div class="video-overlay">
-                            <iframe width="100%" height="315"
-                                src="https://www.youtube.com/embed/AvEPlAI0nRE?autoplay=1&mute=1&rel=0&controls=1"
-                                title="Umapyoi Densetsu - Uma Musume Pretty Derby" frameborder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen>
-                            </iframe>
-                        </div>
+                        <iframe width="100%" height="315"
+                            src="https://www.youtube.com/embed/5sUL4Wao0Q0?autoplay=1&mute=1&rel=0&controls=1"
+                            title="Umapyoi Densetsu - Uma Musume Pretty Derby" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
                     </div>
+
                 </div>
             </div>
+
             <div class="overlay"></div>
         </section>
 
@@ -440,6 +440,7 @@
                                 </div>
                             </section>
 
+
                             <section class="work section-padding" id="section_4">
                                 <div class="container">
                                     <div class="row">
@@ -500,12 +501,13 @@
                                                 </div>
                                             </div>
 
+                                            
                                             <div class="work-thumb mb-4">
                                                 <div class="work-image-wrap">
                                                     <a href="images/work/Protected/Tristan.png"
                                                         class="image-popup">
                                                         <img src="images/work/Protected/Tristan.png"
-                                                            class="img-fluid work-image" alt="">
+                                                            class="img-fluid work-image" alt="Tristan Beast">
                                                     </a>
                                                 </div>
 
@@ -909,80 +911,93 @@
             color: #fff !important;
         }
 
-        /* Ensure all buttons retain their assigned color (e.g. red) in dark mode */
+        /* Ensure all buttons retain their color in dark mode */
         body.dark-mode .btn,
         body.dark-mode .custom-btn,
-        body.dark-mode button,
-        body.dark-mode input[type="submit"],
+        body.dark-mode .btn-lg,
         body.dark-mode .form-control[type="submit"],
-        body.dark-mode #darkModeToggle {
-            background-color: #dc3545 !important;
-            color: #fff !important;
-            border-color: #dc3545 !important;
-        }
-
-        /* Explicitly preserve Bootstrap red for .btn-danger and custom red buttons */
-        .btn-danger,
-        .custom-btn.btn-danger {
-            background-color: #dc3545 !important;
-            color: #fff !important;
-            border-color: #dc3545 !important;
-        }
-        body.dark-mode .btn-danger,
-        body.dark-mode .custom-btn.btn-danger {
-            background-color: #dc3545 !important;
-            color: #fff !important;
-            border-color: #dc3545 !important;
-        }
-
-        /* Make all main action buttons red in all modes */
-        .custom-btn,
-        btn,
-        button,
-        input[type="submit"],
-        .form-control[type="submit"],
-        #darkModeToggle {
-            background-color: #dc3545 !important; /* Bootstrap red */
-            color: #fff !important;
-            border-color: #dc3545 !important;
-        }
-
-        /* Ensure red stays in dark mode */
-        body.dark-mode .custom-btn,
-        body.dark-mode .btn,
         body.dark-mode button,
-        body.dark-mode input[type="submit"],
-        body.dark-mode .form-control[type="submit"],
-        body.dark-mode #darkModeToggle {
-            background-color: #dc3545 !important;
+        body.dark-mode input[type="submit"] {
+            background-color: #0d6efd !important; /* Bootstrap primary blue */
             color: #fff !important;
-            border-color: #dc3545 !important;
+            border-color: #0d6efd !important;
         }
 
-        /* Make dark mode toggle button red */
-        #darkModeToggle {
-            background-color: #dc3545 !important;
-            color: #fff !important;
-            border-color: #dc3545 !important;
-        }
-        body.dark-mode #darkModeToggle {
-            background-color: #dc3545 !important;
-            color: #fff !important;
-            border-color: #dc3545 !important;
-        }
-
-        /* Layer the video above faded frame in hero section */
-        .heroText {
-            position: relative;
-            z-index: 1;
-        }
-        .video-overlay iframe {
-            box-shadow: 0 4px 32px rgba(0,0,0,0.25);
-            border-radius: 12px;
-            width: 100%;
-            height: 315px;
+        /* If you use other button colors, preserve them too */
+        body.dark-mode .btn-outline-dark,
+        body.dark-mode .btn-outline-primary,
+        body.dark-mode .btn-outline-success,
+        body.dark-mode .btn-outline-danger,
+        body.dark-mode .btn-outline-warning,
+        body.dark-mode .btn-outline-info,
+        body.dark-mode .btn-outline-light {
+            background-color: transparent !important;
+            color: inherit !important;
+            border-color: inherit !important;
         }
 
+        /* Restore original .work-thumb frame styles */
+.work-thumb {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 1rem;
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.work-thumb .work-image-wrap {
+    border-radius: 8px;
+    background: transparent;
+    box-shadow: none;
+    display: block;
+    min-height: unset;
+    height: auto;
+    width: 100%;
+    overflow: hidden;
+}
+
+.work-thumb .work-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+    border-radius: 8px;
+    background: transparent;
+}
+
+/* Dark mode frame for .work-thumb */
+body.dark-mode .work-thumb {
+    background: #23272b !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+body.dark-mode .work-thumb .work-image-wrap {
+    background: transparent;
+}
+
+/* Force all main buttons to stay red in both light and dark mode */
+.custom-btn,
+.btn,
+button,
+input[type="submit"],
+.form-control[type="submit"],
+#darkModeToggle {
+    background-color: #dc3545 !important; /* Bootstrap red */
+    color: #fff !important;
+    border-color: #dc3545 !important;
+}
+
+/* Ensure red stays in dark mode */
+body.dark-mode .custom-btn,
+body.dark-mode .btn,
+body.dark-mode button,
+body.dark-mode input[type="submit"],
+body.dark-mode .form-control[type="submit"],
+body.dark-mode #darkModeToggle {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+    border-color: #dc3545 !important;
+}
     </style>
 
     <script>
