@@ -35,14 +35,14 @@
     <nav class="navbar fixed-top navbar-expand-lg">
         <div class="container">
 
-            <a href="index.html" class="navbar-brand">
-                <img id="siteLogo" src="logo.png" alt="ARTHENTIC Logo" style="height: 50px; margin-right: 1px;">
-            </a>
+<a href="index.html" class="navbar-brand">
+    <img id="siteLogo" src="whitelogo.png" alt="ARTHENTIC Logo" style="height: 50px; margin-right: 1px;">
+</a>
 
-            <!-- Dark Mode Button (visible on all devices) -->
-            <button id="darkModeToggle" class="btn btn-outline-dark ms-2" style="border-radius: 50px;">
-                <i class="bi bi-moon"></i>
-            </button>
+<button id="darkModeToggle" class="btn btn-outline-dark ms-2" style="border-radius: 50px;">
+    <i class="bi bi-moon"></i>
+</button>
+
 
 
             <!-- Mobile button -->
@@ -115,17 +115,17 @@
                         </div>
                     </div>
 
-                    <!-- Video on the right -->
-                    <div class="col-lg-6 col-12">
-                        <iframe width="100%" height="315"
-                            src="https://www.youtube.com/embed/5sUL4Wao0Q0?autoplay=1&mute=1&rel=0&controls=1"
-                            title="Umapyoi Densetsu - Uma Musume Pretty Derby" frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen>
-                        </iframe>
-                    </div>
+<!-- Video on the right -->
+<div class="col-lg-6 col-12" style="position: relative; z-index: 2;">
+    <iframe width="100%" height="315"
+        src="https://www.youtube.com/embed/5sUL4Wao0Q0?autoplay=1&mute=1&rel=0&controls=1"
+        title="Umapyoi Densetsu - Uma Musume Pretty Derby" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        style="position: relative; z-index: 2;">
+    </iframe>
+</div>
 
-                </div>
             </div>
 
             <div class="overlay"></div>
@@ -170,18 +170,18 @@
                                     <div class="col-lg-5 col-12 m-auto">
                                         <h3 class="mb-3">What We Are</h3>
 
-                                        <p>We want digital artists to feel safe and confident sharing their work online.
-                                            Our platform is designed to protect your creations, prove ownership, and
-                                            help you license or sell them securely.</p>
+<p style="margin-bottom: 0.75rem; line-height: 1.2;">
+    We want digital artists to feel safe and confident sharing their work online. Our platform is designed to protect your creations, prove ownership, and help you license or sell them securely.
+</p>
 
-                                        <p>This website provides an all-in-one solution for digital painters,
-                                            illustrators, and creative studios. You can upload your artworks, register
-                                            them with proof of authorship, embed protective markers, and monitor online
-                                            usage to track misuse.</p>
+<p style="margin-bottom: 0.75rem; line-height: 1.2;">
+    This website provides an all-in-one solution for digital painters, illustrators, and creative studios. You can upload your artworks, register them with proof of authorship, embed protective markers, and monitor online usage to track misuse.
+</p>
 
-                                        <p>We also support takedown requests for unauthorized uploads and offer
-                                            licensing tools so you can control how your art is shared. Our goal is
-                                            simple — you focus on creating, while we focus on protecting.</p>
+<p style="margin-bottom: 0.75rem; line-height: 1.2;">
+    We also support takedown requests for unauthorized uploads and offer licensing tools so you can control how your art is shared. Our goal is simple — you focus on creating, while we focus on protecting.
+</p>
+
                                     </div>
                                 </div>
                             </div>
@@ -434,7 +434,7 @@
                                                 <h4>Monitoring & Alerts</h4>
                                                 <p class="mb-4">Track unauthorized use of your work online and get
                                                     notified instantly.</p>
-                                                <a class="custom-btn custom-bg-dark btn" href="#">Learn More</a>
+                                                <a class="custom-btn custom-bg-dark btn" href="#">Under Development</a>
                                             </div>
                                         </div>
 
@@ -743,9 +743,9 @@
                     <h5 class="text-white mb-3">Our Services</h5>
 
                     <ul class="footer-menu">
-                        <li class="footer-menu-item"><a href="#" class="footer-menu-link">Artwork Registration</a></li>
-                        <li class="footer-menu-item"><a href="#" class="footer-menu-link">Digital Watermarking</a></li>
-                        <li class="footer-menu-item"><a href="#" class="footer-menu-link">DRM Certificates</a>
+                        <li class="footer-menu-item"><a href="artwork-registration.html" class="footer-menu-link">Artwork Registration</a></li>
+                        <li class="footer-menu-item"><a href="watermarking.html" class="footer-menu-link">Digital Watermarking</a></li>
+                        <li class="footer-menu-item"><a href="https://creativecommons.org/share-your-work/cclicenses/" class="footer-menu-link">CC Licenses</a>
                         </li>
                         <li class="footer-menu-item"><a href="#" class="footer-menu-link">Takedown Assistance</a></li>
                     </ul>
@@ -815,6 +815,43 @@
             pointer-events: none;
             /* does not block hover effects */
         }
+        
+/* Reduce spacing between paragraphs in services-info */
+.services-info p {
+    margin-bottom: 0.5rem; /* reduce from default 1.5rem or mb-4 */
+    line-height: 1.1;      /* optional: tighter line spacing */
+}
+
+.pricing-price h4 {
+    margin: 0.2rem 0; /* reduces top & bottom margin */
+    line-height: 1.1; /* optional: tighter line spacing */
+}
+
+/* Compact pricing section */
+.pricing-list {
+    padding-left: 1rem; /* optional, keeps some indentation */
+    margin-bottom: 0.5rem; /* less space below the list */
+}
+
+.pricing-list-item {
+    margin-bottom: 0.25rem; /* reduce space between items */
+    line-height: 1.3; /* tighter line spacing */
+}
+
+.pricing-price h4 {
+    margin: 0.2rem 0; /* reduce top & bottom margin */
+    line-height: 1.2;
+}
+
+h5 {
+    margin-top: 1rem; /* less top spacing than mt-4 or mt-lg-5 */
+    margin-bottom: 0.5rem;
+}
+
+p {
+    margin-bottom: 0.5rem;
+}
+
 
         /* Dark mode styles */
         body.dark-mode {
@@ -1002,39 +1039,96 @@ body.dark-mode #darkModeToggle {
 }
     </style>
 
-    <script>
-        // Disable right-click context menu on all images
-        document.querySelectorAll('img').forEach(img => {
-            img.setAttribute('draggable', 'false');
-            img.addEventListener('contextmenu', e => e.preventDefault());
-            img.addEventListener('mousedown', e => e.preventDefault());
-        });
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const darkModeBtn = document.getElementById('darkModeToggle');
+    const siteLogo = document.getElementById('siteLogo');
 
-        // Dark mode toggle
-        document.addEventListener('DOMContentLoaded', function () {
-            const darkModeBtn = document.getElementById('darkModeToggle');
-            const siteLogo = document.getElementById('siteLogo');
-            darkModeBtn.addEventListener('click', function () {
-                document.body.classList.toggle('dark-mode');
-                // Toggle icon
-                const icon = darkModeBtn.querySelector('i');
-                if (document.body.classList.contains('dark-mode')) {
-                    icon.classList.remove('bi-moon');
-                    icon.classList.add('bi-brightness-high');
-                    siteLogo.src = "whitelogo.png"; // Switch to white logo
-                } else {
-                    icon.classList.remove('bi-brightness-high');
-                    icon.classList.add('bi-moon');
-                    siteLogo.src = "logo.png"; // Switch to dark logo
-                }
-            });
+    // Placeholder paths for logos
+    const logoLight = "logo.png";        // Dark logo for light mode when scrolled
+    const logoWhite = "whitelogo.png";   // White logo for top of page & dark mode
 
-            // On page load, set logo based on mode (if you want to persist dark mode)
-            if (document.body.classList.contains('dark-mode')) {
-                siteLogo.src = "whitelogo.png";
-            }
-        });
-    </script>
+    // Function to update logo based on scroll and dark mode
+    function updateLogo() {
+        if (document.body.classList.contains('dark-mode')) {
+            siteLogo.src = logoWhite; // Always white in dark mode
+        } else {
+            siteLogo.src = window.scrollY === 0 ? logoWhite : logoLight;
+        }
+    }
+
+    // Run on load and scroll
+    updateLogo();
+    window.addEventListener('scroll', updateLogo);
+
+    // Dark mode toggle
+    darkModeBtn.addEventListener('click', function () {
+        document.body.classList.toggle('dark-mode');
+        const icon = darkModeBtn.querySelector('i');
+
+        if (document.body.classList.contains('dark-mode')) {
+            icon.classList.remove('bi-moon');
+            icon.classList.add('bi-brightness-high');
+        } else {
+            icon.classList.remove('bi-brightness-high');
+            icon.classList.add('bi-moon');
+        }
+
+        updateLogo();
+    });
+
+});
+</script>
+
+<!-- Toast container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="submitToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        Thank you! Your message has been submitted.
+      </div>
+      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector(".custom-form");
+    const toastEl = document.getElementById("submitToast");
+    const toast = new bootstrap.Toast(toastEl); // Bootstrap 5 toast
+    const darkModeBtn = document.getElementById("darkModeToggle");
+
+    function updateToastTheme() {
+        if (document.body.classList.contains("dark-mode")) {
+            toastEl.classList.remove("text-bg-success"); // Remove default green
+            toastEl.classList.add("bg-dark", "text-light"); // Dark mode
+        } else {
+            toastEl.classList.remove("bg-dark", "text-light");
+            toastEl.classList.add("text-bg-success"); // Light mode green
+        }
+    }
+
+    // Initial theme
+    updateToastTheme();
+
+    // Update toast when dark mode toggled
+    darkModeBtn.addEventListener("click", updateToastTheme);
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        // Your email submission logic here (EmailJS or backend)...
+
+        // Show toast
+        toast.show();
+
+        // Optional: reset form
+        form.reset();
+    });
+});
+</script>
+
 
 
     <!-- JAVASCRIPT FILES -->
@@ -1046,6 +1140,45 @@ body.dark-mode #darkModeToggle {
     <script src="js/magnific-popup-options.js"></script>
     <script src="js/click-scroll.js"></script>
     <script src="js/custom.js"></script>
+    <script src="js/darkmode.js"></script>
+
+   <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const darkModeBtn = document.getElementById('darkModeToggle');
+    const siteLogo = document.getElementById('siteLogo');
+    const icon = darkModeBtn.querySelector('i');
+
+    // 🔹 Load saved dark mode
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+        icon.classList.remove('bi-moon');
+        icon.classList.add('bi-brightness-high');
+        siteLogo.src = "whitelogo.png"; // white logo in dark mode
+    } else {
+        siteLogo.src = "whitelogo.png"; // default light mode logo is white
+    }
+
+    // 🔹 Toggle dark mode
+    darkModeBtn.addEventListener('click', function () {
+        document.body.classList.toggle('dark-mode');
+
+        if (document.body.classList.contains('dark-mode')) {
+            icon.classList.remove('bi-moon');
+            icon.classList.add('bi-brightness-high');
+            siteLogo.src = "whitelogo.png"; // white logo
+            localStorage.setItem('darkMode', 'enabled');
+        } else {
+            icon.classList.remove('bi-brightness-high');
+            icon.classList.add('bi-moon');
+            siteLogo.src = "logo.png"; // dark logo in light mode
+            localStorage.setItem('darkMode', 'disabled');
+        }
+    });
+});
+</script>
+
+</body>
+</html>
 
 </body>
 
