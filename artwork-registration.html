@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Artwork Registration - ARTHENTIC</title>
+    <link rel="icon" type="image/png" href="smalllogo.png">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/tooplate-tween-agency.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            color: #23272b;
+        }
+        .main-content {
+            max-width: 700px;
+            margin: 3rem auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+        .btn-danger {
+            background-color: #dc3545 !important;
+            color: #fff !important;
+            border-color: #dc3545 !important;
+        }
+        body.dark-mode .main-content {
+            background: #23272b !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .btn-danger {
+            background-color: #dc3545 !important;
+            color: #fff !important;
+            border-color: #dc3545 !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light px-3">
+        <a class="navbar-brand" href="index.html">
+            <img src="logo.png" alt="ARTHENTIC Logo" style="height: 40px;">
+            ARTHENTIC
+        </a>
+        <button id="darkModeToggle" class="btn btn-danger">
+            <i class="bi bi-moon"></i>
+        </button>
+    </nav>
+    <div class="main-content">
+        <h1 class="mb-4">Artwork Registration</h1>
+        <p>
+            Register your digital artwork to secure authorship and protect your creative rights. Fill out the form below to begin the registration process.
+        </p>
+        <form>
+            <div class="mb-3">
+                <label for="artName" class="form-label">Artwork Name</label>
+                <input type="text" class="form-control" id="artName" placeholder="Enter artwork name" required>
+            </div>
+            <div class="mb-3">
+                <label for="artistName" class="form-label">Your Name</label>
+                <input type="text" class="form-control" id="artistName" placeholder="Enter your name" required>
+            </div>
+            <div class="mb-3">
+                <label for="artistEmail" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="artistEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="mb-3">
+                <label for="artFile" class="form-label">Upload Artwork</label>
+                <input type="file" class="form-control" id="artFile" required>
+            </div>
+            <div class="mb-3">
+                <label for="artDesc" class="form-label">Artwork Description</label>
+                <textarea class="form-control" id="artDesc" rows="3" placeholder="Describe your artwork"></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger">Register Artwork</button>
+        </form>
+        <a href="index.html#section_3" class="btn btn-danger mt-4">Back to Services</a>
+    </div>
+    <script>
+        // Dark mode toggle
+        document.addEventListener('DOMContentLoaded', function () {
+            const darkModeBtn = document.getElementById('darkModeToggle');
+            darkModeBtn.addEventListener('click', function () {
+                document.body.classList.toggle('dark-mode');
+                const icon = darkModeBtn.querySelector('i');
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.remove('bi-moon');
+                    icon.classList.add('bi-brightness-high');
+                } else {
+                    icon.classList.remove('bi-brightness-high');
+                    icon.classList.add('bi-moon');
+                }
+            });
+        });

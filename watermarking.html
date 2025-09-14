@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Digital Watermarking - ARTHENTIC</title>
+    <link rel="icon" type="image/png" href="smalllogo.png">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/tooplate-tween-agency.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            color: #23272b;
+        }
+        .main-content {
+            max-width: 700px;
+            margin: 3rem auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+        .btn-danger {
+            background-color: #dc3545 !important;
+            color: #fff !important;
+            border-color: #dc3545 !important;
+        }
+        body.dark-mode .main-content {
+            background: #23272b !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .btn-danger {
+            background-color: #dc3545 !important;
+            color: #fff !important;
+            border-color: #dc3545 !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light px-3">
+        <a class="navbar-brand" href="index.html">
+            <img src="logo.png" alt="ARTHENTIC Logo" style="height: 40px;">
+            ARTHENTIC
+        </a>
+        <button id="darkModeToggle" class="btn btn-danger">
+            <i class="bi bi-moon"></i>
+        </button>
+    </nav>
+    <div class="main-content">
+        <h1 class="mb-4">Digital Watermarking</h1>
+        <p>
+            Digital watermarking is a technique used to embed hidden or visible markers in your artwork. These markers help deter theft, prove authorship, and track usage across the internet.
+        </p>
+        <h4 class="mt-4">How It Works</h4>
+        <ul>
+            <li>Invisible watermarks are embedded in the image data and are difficult to remove.</li>
+            <li>Visible watermarks (logos, text) can be placed on top of your artwork for clear protection.</li>
+            <li>Watermarks can include copyright information, timestamps, or unique identifiers.</li>
+        </ul>
+        <h4 class="mt-4">Why Use Watermarking?</h4>
+        <ul>
+            <li>Discourage unauthorized use and sharing.</li>
+            <li>Prove ownership in case of disputes.</li>
+            <li>Track your art online and receive alerts for misuse.</li>
+        </ul>
+        <a href="index.html#section_3" class="btn btn-danger mt-4">Back to Services</a>
+    </div>
+    <script>
+        // Dark mode toggle
+        document.addEventListener('DOMContentLoaded', function () {
+            const darkModeBtn = document.getElementById('darkModeToggle');
+            darkModeBtn.addEventListener('click', function () {
+                document.body.classList.toggle('dark-mode');
+                const icon = darkModeBtn.querySelector('i');
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.remove('bi-moon');
+                    icon.classList.add('bi-brightness-high');
+                } else {
+                    icon.classList.remove('bi-brightness-high');
+                    icon.classList.add('bi-moon');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
