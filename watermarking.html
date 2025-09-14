@@ -18,38 +18,161 @@
             max-width: 700px;
             margin: 3rem auto;
             background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+            padding: 2.5rem 2rem;
         }
         .btn-danger {
             background-color: #dc3545 !important;
             color: #fff !important;
             border-color: #dc3545 !important;
+            border-radius: 50px;
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(220,53,69,0.08);
+            transition: background 0.2s;
+        }
+        .btn-danger:hover, .btn-danger:focus {
+            background-color: #b71c2a !important;
+            color: #fff !important;
+        }
+        .navbar {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 0.75rem 2rem;
+        }
+        .navbar-brand img {
+            height: 44px;
+            margin-right: 10px;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #dc3545 !important;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+        .section-title {
+            color: #dc3545;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        body.dark-mode {
+            background: #181a1b !important;
+            color: #e0e0e0 !important;
         }
         body.dark-mode .main-content {
             background: #23272b !important;
             color: #e0e0e0 !important;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+        }
+        body.dark-mode .navbar {
+            background: #23272b !important;
+            color: #fff !important;
+        }
+        body.dark-mode .navbar-brand {
+            color: #fff !important;
         }
         body.dark-mode .btn-danger {
             background-color: #dc3545 !important;
             color: #fff !important;
             border-color: #dc3545 !important;
         }
+        .hero {
+            background: url('images/hero-bg.jpg') no-repeat center center/cover;
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            margin-bottom: 3rem;
+        }
+        .hero .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 24px;
+        }
+        .heroText {
+            position: relative;
+            z-index: 2;
+        }
+        .carousel-inner img {
+            border-radius: 24px;
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-light bg-light px-3">
-        <a class="navbar-brand" href="index.html">
-            <img src="logo.png" alt="ARTHENTIC Logo" style="height: 40px;">
-            ARTHENTIC
-        </a>
-        <button id="darkModeToggle" class="btn btn-danger">
-            <i class="bi bi-moon"></i>
-        </button>
+    <nav class="navbar fixed-top navbar-expand-lg">
+        <div class="container">
+            <a href="index.html" class="navbar-brand">
+                <img id="siteLogo" src="logo.png" alt="ARTHENTIC Logo">
+            </a>
+            <!-- Dark Mode Button (same place as home) -->
+            <button id="darkModeToggle" class="btn btn-danger ms-2" style="border-radius: 50px;">
+                <i class="bi bi-moon"></i>
+            </button>
+        </div>
     </nav>
-    <div class="main-content">
-        <h1 class="mb-4">Digital Watermarking</h1>
+
+    <!-- Hero Section -->
+    <div class="hero d-flex justify-content-center align-items-center" id="section_1" style="min-height: 480px; position: relative;">
+        <div class="container">
+            <div class="row align-items-center">
+                <!-- Text on the left -->
+                <div class="col-lg-6 col-12">
+                    <div class="heroText">
+                        <h1 class="text-white mb-4">
+                            Digital Watermarking
+                        </h1>
+                        <p class="text-white mb-4">
+                            Embed hidden or visible markers in your artwork to deter theft, prove authorship, and track usage.
+                        </p>
+                        <a href="#learnMore" class="custom-btn btn btn-lg">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+                <!-- Slideshow on the right -->
+                <div class="col-lg-6 col-12">
+                    <div id="watermarkHeroCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner rounded-4 shadow-lg">
+                            <div class="carousel-item active">
+                                <img src="images/work/Protected/Rin1.PNG" class="d-block w-100" alt="Kwarto - Rin">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="images/work/Protected/Tristan.png" class="d-block w-100" alt="Tristan Beast">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="images/work/Protected/Perfectio.JPG" class="d-block w-100" alt="Sa Perfectio">
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#watermarkHeroCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#watermarkHeroCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overlay"></div>
+    </div>
+
+    <div class="main-content" style="margin-top: 90px;">
+        <h1 class="section-title" id="learnMore">Digital Watermarking</h1>
         <p>
             Digital watermarking is a technique used to embed hidden or visible markers in your artwork. These markers help deter theft, prove authorship, and track usage across the internet.
         </p>
@@ -65,24 +188,32 @@
             <li>Prove ownership in case of disputes.</li>
             <li>Track your art online and receive alerts for misuse.</li>
         </ul>
-        <a href="index.html#section_3" class="btn btn-danger mt-4">Back to Services</a>
+        <a href="index.html#section_3" class="btn btn-danger back-link">Back to Services</a>
     </div>
     <script>
         // Dark mode toggle
         document.addEventListener('DOMContentLoaded', function () {
             const darkModeBtn = document.getElementById('darkModeToggle');
+            const siteLogo = document.getElementById('siteLogo');
             darkModeBtn.addEventListener('click', function () {
                 document.body.classList.toggle('dark-mode');
                 const icon = darkModeBtn.querySelector('i');
                 if (document.body.classList.contains('dark-mode')) {
                     icon.classList.remove('bi-moon');
                     icon.classList.add('bi-brightness-high');
+                    siteLogo.src = "whitelogo.png";
                 } else {
                     icon.classList.remove('bi-brightness-high');
                     icon.classList.add('bi-moon');
+                    siteLogo.src = "logo.png";
                 }
             });
+            // On page load, set logo based on mode
+            if (document.body.classList.contains('dark-mode')) {
+                siteLogo.src = "whitelogo.png";
+            }
         });
     </script>
+    <script src="js/bootstrap.min.js"></script>
 </body>
 </html>
