@@ -259,6 +259,8 @@ button:focus:not(:focus-visible) {
 .heroText {
   position: relative;
   z-index: 2;
+    margin: 0.2rem 0; /* reduce top & bottom margin */
+    line-height: 1.2;
 }
 
 @media screen and (min-width: 991px) {
