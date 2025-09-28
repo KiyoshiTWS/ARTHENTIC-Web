@@ -4368,25 +4368,46 @@
       const TRENDING_TAGS_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
       
       async function loadTrendingTags(forceRefresh = false) {
+        console.log('🔍 Starting loadTrendingTags...');
         try {
+          const trendingTagsElement = document.getElementById('trendingTags');
+          if (!trendingTagsElement) {
+            console.error('❌ trendingTags element not found');
+            return;
+          }
+
+          console.log('🔍 Checking cache...');
           // Use cache if available and not expired
           const now = Date.now();
           if (!forceRefresh && trendingTagsCache && (now - trendingTagsCacheTime) < TRENDING_TAGS_CACHE_DURATION) {
+            console.log('✅ Using cached trending tags');
             displayTrendingTags(trendingTagsCache);
             return;
           }
 
+          console.log('🔍 Getting trending tags from client...');
+          console.log('🔍 Client available:', !!window.firebaseArtHubClient);
+          console.log('🔍 Client type:', window.firebaseArtHubClient?.constructor?.name);
+          
           // Use the optimized getTrendingTags method from the client
           const trendingTags = await window.firebaseArtHubClient.getTrendingTags(15);
-          const sortedTags = trendingTags.map(tagData => [tagData.tag, tagData.count]);
+          console.log('🔍 Raw trending tags result:', trendingTags);
           
-          // Cache the results
-          trendingTagsCache = sortedTags;
-          trendingTagsCacheTime = now;
-          
-          displayTrendingTags(sortedTags);
+          if (trendingTags && trendingTags.length > 0) {
+            console.log('✅ Found', trendingTags.length, 'trending tags');
+            const sortedTags = trendingTags.map(tagData => [tagData.tag, tagData.count]);
+            
+            // Cache the results
+            trendingTagsCache = sortedTags;
+            trendingTagsCacheTime = now;
+            
+            displayTrendingTags(sortedTags);
+          } else {
+            console.log('⚠️ No trending tags found');
+            trendingTagsElement.innerHTML = '<p class="text-muted small">No trending tags yet. Start using hashtags in your posts!</p>';
+          }
         } catch (error) {
-          console.error('Failed to load trending tags:', error);
+          console.error('❌ Error loading trending tags:', error);
           const trendingTagsContainer = document.getElementById('trendingTags');
           if (trendingTagsContainer) {
             trendingTagsContainer.innerHTML = '<p class="text-muted small">Unable to load trending tags</p>';

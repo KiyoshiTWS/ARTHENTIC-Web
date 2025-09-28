@@ -860,12 +860,16 @@ class DemoArtHubClient {
   }
 
   async getTrendingTags(limit = 15) {
+    console.log('💾 DemoArtHubClient.getTrendingTags() called');
     try {
       const posts = this.getCollection('posts');
+      console.log('💾 Got', posts.length, 'posts from localStorage');
+      
       const tagCounts = {};
       const tagOriginalCase = {}; // Store original case for display
       
-      posts.forEach(post => {
+      posts.forEach((post, index) => {
+        console.log(`💾 Processing post ${index + 1}:`, post.id, 'tags:', post.tags);
         if (post.tags && Array.isArray(post.tags)) {
           post.tags.forEach(tag => {
             if (tag && typeof tag === 'string' && tag.trim()) {
@@ -880,8 +884,10 @@ class DemoArtHubClient {
         }
       });
       
+      console.log('💾 Tag counts:', tagCounts);
+      
       // Sort tags by usage count and return the most popular ones
-      return Object.entries(tagCounts)
+      const result = Object.entries(tagCounts)
         .filter(([tag, count]) => count >= 1) // Show tags used at least once
         .sort(([,a], [,b]) => b - a)
         .slice(0, limit)
@@ -890,8 +896,11 @@ class DemoArtHubClient {
           count: count,
           normalizedTag: tag
         }));
+        
+      console.log('💾 Final trending tags result:', result);
+      return result;
     } catch (error) {
-      console.error('Error getting trending tags:', error);
+      console.error('❌ Error in Demo getTrendingTags:', error);
       throw new Error('Failed to get trending tags: ' + error.message);
     }
   }
@@ -1545,12 +1554,16 @@ class FirebaseArtHubClient {
   }
 
   async getTrendingTags(limit = 15) {
+    console.log('🔥 FirebaseArtHubClient.getTrendingTags() called');
     try {
       const posts = await this.getPosts();
+      console.log('🔥 Got', posts.length, 'posts from database');
+      
       const tagCounts = {};
       const tagOriginalCase = {}; // Store original case for display
       
-      posts.forEach(post => {
+      posts.forEach((post, index) => {
+        console.log(`🔥 Processing post ${index + 1}:`, post.id, 'tags:', post.tags);
         if (post.tags && Array.isArray(post.tags)) {
           post.tags.forEach(tag => {
             if (tag && typeof tag === 'string' && tag.trim()) {
@@ -1565,8 +1578,10 @@ class FirebaseArtHubClient {
         }
       });
       
+      console.log('🔥 Tag counts:', tagCounts);
+      
       // Sort tags by usage count and return the most popular ones
-      return Object.entries(tagCounts)
+      const result = Object.entries(tagCounts)
         .filter(([tag, count]) => count >= 1) // Show tags used at least once
         .sort(([,a], [,b]) => b - a)
         .slice(0, limit)
@@ -1575,8 +1590,11 @@ class FirebaseArtHubClient {
           count: count,
           normalizedTag: tag
         }));
+        
+      console.log('🔥 Final trending tags result:', result);
+      return result;
     } catch (error) {
-      console.error('Error getting trending tags:', error);
+      console.error('❌ Error in Firebase getTrendingTags:', error);
       throw new Error('Failed to get trending tags: ' + error.message);
     }
   }
