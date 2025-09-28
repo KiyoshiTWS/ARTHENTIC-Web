@@ -554,28 +554,54 @@
         box-shadow: 0 3px 8px rgba(40, 167, 69, 0.4);
       }
       
+      /* Enhanced tag visual hierarchy */
+      .tag-chip {
+        transition: all 0.2s ease;
+        position: relative;
+      }
+      
+      .tag-chip.selected {
+        background: linear-gradient(135deg, #007bff, #0056b3) !important;
+        border-color: #007bff !important;
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        font-weight: 600;
+        z-index: 10;
+      }
+      
       .tag-chip:not(.selected) {
-        opacity: 0.65;
-        background: #e9ecef;
-        border-color: rgba(0, 0, 0, 0.1);
+        opacity: 0.75;
+        background: #f8f9fa;
+        border-color: rgba(0, 0, 0, 0.15);
+        color: #495057;
       }
       
       .tag-chip:not(.selected):hover {
         opacity: 1;
-        background: #dee2e6;
-        border-color: rgba(0, 0, 0, 0.2);
+        background: #e9ecef;
+        border-color: rgba(0, 0, 0, 0.25);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       }
       
+      /* Dark mode improvements */
       body.dark-mode .tag-chip:not(.selected) {
         background: #495057;
         color: #adb5bd;
-        border-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
       }
       
       body.dark-mode .tag-chip:not(.selected):hover {
         background: #6c757d;
         color: #e9ecef;
-        border-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      
+      body.dark-mode .tag-chip.selected {
+        background: linear-gradient(135deg, #0d6efd, #0b5ed7) !important;
+        border-color: #0d6efd !important;
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
       }
       
       .comment-preview {
@@ -1973,32 +1999,37 @@
             <div class="small text-muted mb-2">Popular tags:</div>
             <div class="tag-buttons" id="popularTags">
               <button
-                class="btn btn-sm btn-outline-primary me-1 mb-1"
+                class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip"
                 data-tag="art"
+                onclick="toggleSearchTag('art', this)"
               >
                 #art
               </button>
               <button
-                class="btn btn-sm btn-outline-primary me-1 mb-1"
+                class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip"
                 data-tag="digital"
+                onclick="toggleSearchTag('digital', this)"
               >
                 #digital
               </button>
               <button
-                class="btn btn-sm btn-outline-primary me-1 mb-1"
+                class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip"
                 data-tag="painting"
+                onclick="toggleSearchTag('painting', this)"
               >
                 #painting
               </button>
               <button
-                class="btn btn-sm btn-outline-primary me-1 mb-1"
+                class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip"
                 data-tag="sketch"
+                onclick="toggleSearchTag('sketch', this)"
               >
                 #sketch
               </button>
               <button
-                class="btn btn-sm btn-outline-primary me-1 mb-1"
+                class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip"
                 data-tag="photography"
+                onclick="toggleSearchTag('photography', this)"
               >
                 #photography
               </button>
@@ -3969,14 +4000,29 @@
       }
       
       function clearTagFilters() {
+        console.log('🧹 Clearing all tag filters...');
         selectedTags.clear();
         currentTrendingTag = null;
-        updateTagVisualState();
+        
+        // Clear all tag selections across the app
+        document.querySelectorAll('.tag-chip').forEach(btn => {
+          btn.classList.remove('selected');
+        });
+        
         // Clear trending tag selection
         document.querySelectorAll('.trending-tag').forEach(btn => {
           btn.classList.remove('selected');
         });
+        
+        // Clear search input
+        const tagFilterInput = document.getElementById('tagFilterInput');
+        if (tagFilterInput) {
+          tagFilterInput.value = '';
+        }
+        
+        updateTagVisualState();
         filterPostsByTags();
+        console.log('✅ All filters cleared');
       }
       
       // Comment interaction functions
@@ -4435,6 +4481,69 @@
       function refreshTrendingTags() {
         trendingTagsCache = null; // Clear cache
         loadTrendingTags(true); // Force refresh
+      }
+      
+      // Handle search section tag toggle (multi-selection)
+      function toggleSearchTag(tag, element) {
+        console.log('🏷️ Toggling search tag:', tag);
+        
+        // Clear any trending tag selection when using search tags
+        currentTrendingTag = null;
+        document.querySelectorAll('.trending-tag').forEach(btn => {
+          btn.classList.remove('selected');
+        });
+        
+        const tagLower = tag.toLowerCase();
+        
+        if (selectedTags.has(tagLower)) {
+          // Remove tag if already selected
+          selectedTags.delete(tagLower);
+          element.classList.remove('selected');
+          console.log('➖ Removed tag:', tag);
+        } else {
+          // Add tag to selection
+          selectedTags.add(tagLower);
+          element.classList.add('selected');
+          console.log('➕ Added tag:', tag);
+        }
+        
+        console.log('🏷️ Currently selected tags:', Array.from(selectedTags));
+        updateTagVisualState();
+        filterPostsByTags();
+      }
+      
+      // Handle search input tag filtering
+      function initializeSearchInput() {
+        const input = document.getElementById('tagFilterInput');
+        const filterBtn = document.getElementById('filterByTagBtn');
+        
+        if (!input || !filterBtn) return;
+        
+        // Add tag on button click
+        filterBtn.addEventListener('click', () => {
+          const tagValue = input.value.trim().toLowerCase();
+          if (tagValue) {
+            // Remove # if user typed it
+            const cleanTag = tagValue.replace(/^#/, '');
+            
+            if (!selectedTags.has(cleanTag)) {
+              selectedTags.add(cleanTag);
+              updateTagVisualState();
+              filterPostsByTags();
+              console.log('🔍 Added tag from search:', cleanTag);
+            }
+            
+            input.value = ''; // Clear input
+          }
+        });
+        
+        // Add tag on Enter key
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            filterBtn.click();
+          }
+        });
       }
 
       // Handle post tag selection (when clicking on tags in posts)
@@ -8156,6 +8265,7 @@
         loadFeed();
         loadSuggestions();
         loadTrendingTags(); // Load trending tags after client is ready
+        initializeSearchInput(); // Initialize search tag input functionality
         updateNotificationBadge(); // Update notification count on load
 
         // Restore last visited section or default to feed
