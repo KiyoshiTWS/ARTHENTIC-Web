@@ -1246,9 +1246,7 @@ class FirebaseArtHubClient {
       await this.notifyFollowersOfNewPost(docRef.id, this.currentUser.id, text);
 
       return { id: docRef.id, ...post };
-    } catch (error) {
-      throw new Error('Failed to create post: ' + error.message);
-    }
+    });
   }
 
   // Real-time posts listener with connection resilience
@@ -1303,7 +1301,8 @@ class FirebaseArtHubClient {
           recent_comments: recent_comments
         });
       }
-      callback(posts);
+        callback(posts);
+        }
       },
       // Error callback with reconnection logic
       (error) => {
@@ -1362,10 +1361,7 @@ class FirebaseArtHubClient {
       });
       
       return posts;
-    } catch (error) {
-      console.error('Error getting posts:', error);
-      throw new Error('Failed to get posts: ' + error.message);
-    }
+    });
   }
 
   async likePost(postId) {
