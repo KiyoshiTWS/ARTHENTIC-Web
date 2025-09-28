@@ -3171,8 +3171,30 @@
     </div>
 
     <script src="js/bootstrap.min.js"></script>
-    <script src="firebase-config-local.js" onerror="console.warn('⚠️ firebase-config-local.js not found - using demo mode')"></script>
-    <script type="module" src="firebase-config.js"></script>
+    <script>
+      // Try to load firebase-config-local.js dynamically
+      (function() {
+        const script = document.createElement('script');
+        script.src = 'firebase-config-local.js';
+        script.onload = function() {
+          console.log('✅ Firebase config loaded successfully');
+          // Load main firebase config after local config is loaded
+          const mainScript = document.createElement('script');
+          mainScript.type = 'module';
+          mainScript.src = 'firebase-config.js';
+          document.head.appendChild(mainScript);
+        };
+        script.onerror = function() {
+          console.warn('⚠️ firebase-config-local.js not found - using demo mode');
+          // Load main firebase config anyway
+          const mainScript = document.createElement('script');
+          mainScript.type = 'module';
+          mainScript.src = 'firebase-config.js';
+          document.head.appendChild(mainScript);
+        };
+        document.head.appendChild(script);
+      })();
+    </script>
     <script src="js/arthub-client.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
