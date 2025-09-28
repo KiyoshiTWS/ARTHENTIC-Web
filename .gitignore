@@ -18,6 +18,8 @@ config/secrets.js
 
 # API Keys and tokens
 **/firebase-private-key.json
+firebase-config-local.js
+**/config/firebase.js
 **/service-account-key.json
 **/*-key.json
 **/*-private-key.json

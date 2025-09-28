@@ -21,15 +21,15 @@ import {
   writeBatch
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-// Firebase configuration - Real Firebase setup
+// Firebase configuration - Using environment variables for security
 const firebaseConfig = {
-  apiKey: "AIzaSyB78EbKxjIxBPBudIHw6zVvfyVjZjMeDUk",
-  authDomain: "arthub-c46b2.firebaseapp.com",
-  projectId: "arthub-c46b2",
-  storageBucket: "arthub-c46b2.firebasestorage.app",
-  messagingSenderId: "354841988675",
-  appId: "1:354841988675:web:1f64c1bb2e5dbbed3f8ef6",
-  measurementId: "G-Y9YC3QLK0Y"
+  apiKey: window.FIREBASE_API_KEY || "demo-api-key",
+  authDomain: window.FIREBASE_AUTH_DOMAIN || "arthub-demo.firebaseapp.com",
+  projectId: window.FIREBASE_PROJECT_ID || "arthub-demo",
+  storageBucket: window.FIREBASE_STORAGE_BUCKET || "arthub-demo.appspot.com",
+  messagingSenderId: window.FIREBASE_MESSAGING_SENDER_ID || "000000000000",
+  appId: window.FIREBASE_APP_ID || "demo-app-id",
+  measurementId: window.FIREBASE_MEASUREMENT_ID || "G-DEMO"
 };
 
 // Initialize Firebase
