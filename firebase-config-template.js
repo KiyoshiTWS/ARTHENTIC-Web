@@ -3,13 +3,13 @@
 // DO NOT COMMIT firebase-config-local.js to version control
 
 // Set up your Firebase configuration
-window.FIREBASE_API_KEY = "YOUR_FIREBASE_API_KEY_HERE";
-window.FIREBASE_AUTH_DOMAIN = "your-project.firebaseapp.com";
-window.FIREBASE_PROJECT_ID = "your-project-id";
-window.FIREBASE_STORAGE_BUCKET = "your-project.appspot.com";
-window.FIREBASE_MESSAGING_SENDER_ID = "your-messaging-sender-id";
-window.FIREBASE_APP_ID = "your-app-id";
-window.FIREBASE_MEASUREMENT_ID = "G-YOUR-MEASUREMENT-ID";
+window.FIREBASE_API_KEY = "AIzaSyB78EbKxjIxBPBudIHw6zVvfyVjZjMeDUk";
+window.FIREBASE_AUTH_DOMAIN = "arthub-c46b2.firebaseapp.com";
+window.FIREBASE_PROJECT_ID = "arthub-c46b2";
+window.FIREBASE_STORAGE_BUCKET = "arthub-c46b2.firebasestorage.app";
+window.FIREBASE_MESSAGING_SENDER_ID = "354841988675";
+window.FIREBASE_APP_ID = "1:354841988675:web:1f64c1bb2e5dbbed3f8ef6";
+window.FIREBASE_MEASUREMENT_ID = "G-Y9YC3QLK0Y";
 
 // Instructions:
 // 1. Get your Firebase config from Firebase Console > Project Settings > General > Your apps
