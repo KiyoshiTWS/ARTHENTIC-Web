@@ -22,6 +22,17 @@ import {
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 // Firebase configuration - Using environment variables for security
+console.log('🔧 Firebase config loading...');
+console.log('🔧 Available Firebase variables:', {
+  API_KEY: window.FIREBASE_API_KEY ? '✅ Set' : '❌ Missing',
+  AUTH_DOMAIN: window.FIREBASE_AUTH_DOMAIN ? '✅ Set' : '❌ Missing',
+  PROJECT_ID: window.FIREBASE_PROJECT_ID ? '✅ Set' : '❌ Missing',
+  STORAGE_BUCKET: window.FIREBASE_STORAGE_BUCKET ? '✅ Set' : '❌ Missing',
+  MESSAGING_SENDER_ID: window.FIREBASE_MESSAGING_SENDER_ID ? '✅ Set' : '❌ Missing',
+  APP_ID: window.FIREBASE_APP_ID ? '✅ Set' : '❌ Missing',
+  MEASUREMENT_ID: window.FIREBASE_MEASUREMENT_ID ? '✅ Set' : '❌ Missing'
+});
+
 const firebaseConfig = {
   apiKey: window.FIREBASE_API_KEY || "demo-api-key",
   authDomain: window.FIREBASE_AUTH_DOMAIN || "arthub-demo.firebaseapp.com",
@@ -31,6 +42,11 @@ const firebaseConfig = {
   appId: window.FIREBASE_APP_ID || "demo-app-id",
   measurementId: window.FIREBASE_MEASUREMENT_ID || "G-DEMO"
 };
+
+console.log('🔧 Final Firebase config:', {
+  ...firebaseConfig,
+  apiKey: firebaseConfig.apiKey.substring(0, 10) + '...' // Don't log full API key
+});
 
 // Initialize Firebase
 let app, db;

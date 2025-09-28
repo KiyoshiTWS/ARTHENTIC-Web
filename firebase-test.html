@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Config Test</title>
+</head>
+<body>
+    <h1>Firebase Configuration Test</h1>
+    <div id="results"></div>
+    
+    <script src="firebase-config-local.js" onerror="console.warn('⚠️ firebase-config-local.js not found')"></script>
+    <script>
+        console.log('=== FIREBASE CONFIG TEST ===');
+        
+        const results = document.getElementById('results');
+        let html = '<h2>Firebase Configuration Status:</h2><ul>';
+        
+        const configs = [
+            ['API_KEY', window.FIREBASE_API_KEY],
+            ['AUTH_DOMAIN', window.FIREBASE_AUTH_DOMAIN],
+            ['PROJECT_ID', window.FIREBASE_PROJECT_ID],
+            ['STORAGE_BUCKET', window.FIREBASE_STORAGE_BUCKET],
+            ['MESSAGING_SENDER_ID', window.FIREBASE_MESSAGING_SENDER_ID],
+            ['APP_ID', window.FIREBASE_APP_ID],
+            ['MEASUREMENT_ID', window.FIREBASE_MEASUREMENT_ID]
+        ];
+        
+        configs.forEach(([key, value]) => {
+            const status = value ? '✅ Set' : '❌ Missing';
+            const displayValue = value ? (key === 'API_KEY' ? value.substring(0, 10) + '...' : value) : 'undefined';
+            html += `<li><strong>${key}:</strong> ${status} (${displayValue})</li>`;
+            console.log(`${key}: ${status} - ${displayValue}`);
+        });
+        
+        html += '</ul>';
+        
+        if (window.FIREBASE_PROJECT_ID && window.FIREBASE_PROJECT_ID !== 'arthub-demo') {
+            html += '<p style="color: green;"><strong>✅ Firebase configuration loaded successfully!</strong></p>';
+            html += `<p>Project ID: ${window.FIREBASE_PROJECT_ID}</p>`;
+        } else {
+            html += '<p style="color: red;"><strong>❌ Firebase configuration not loaded - will use demo mode</strong></p>';
+        }
+        
+        results.innerHTML = html;
+        console.log('=== END TEST ===');
+    </script>
+</body>
+</html>
