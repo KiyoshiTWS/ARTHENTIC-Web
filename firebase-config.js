@@ -2494,7 +2494,14 @@ try {
   const demoClient = new DemoArtHubClient();
   window.firebaseArtHubClient = demoClient;
   window.artHubClient = demoClient;
-  console.log('⚠️ Using demo client as fallback');
+  
+  if (window.FIREBASE_PROJECT_ID === 'arthub-demo' || !window.FIREBASE_PROJECT_ID) {
+    console.log('ℹ️ Using demo mode with sample posts (Firebase config not loaded)');
+    console.log('ℹ️ To use real Firebase: ensure firebase-config-local.js is loaded or GitHub Secrets are set');
+  } else {
+    console.log('⚠️ Using demo client as fallback due to Firebase connection error');
+  }
+  
   defaultClient = demoClient;
 }
 
