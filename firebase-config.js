@@ -23,6 +23,20 @@ import {
 
 // Firebase configuration - Using environment variables for security
 console.log('🔧 Firebase config loading...');
+
+// Fallback: If window variables aren't set, try to load them directly
+if (!window.FIREBASE_PROJECT_ID) {
+  console.log('⚠️ Window variables not found, trying direct configuration...');
+  // Direct configuration as fallback (for local development)
+  window.FIREBASE_API_KEY = window.FIREBASE_API_KEY || "AIzaSyB78EbKxjIxBPBudIHw6zVvfyVjZjMeDUk";
+  window.FIREBASE_AUTH_DOMAIN = window.FIREBASE_AUTH_DOMAIN || "arthub-c46b2.firebaseapp.com";
+  window.FIREBASE_PROJECT_ID = window.FIREBASE_PROJECT_ID || "arthub-c46b2";
+  window.FIREBASE_STORAGE_BUCKET = window.FIREBASE_STORAGE_BUCKET || "arthub-c46b2.firebasestorage.app";
+  window.FIREBASE_MESSAGING_SENDER_ID = window.FIREBASE_MESSAGING_SENDER_ID || "354841988675";
+  window.FIREBASE_APP_ID = window.FIREBASE_APP_ID || "1:354841988675:web:9e62897abf73d69d3f8ef6";
+  window.FIREBASE_MEASUREMENT_ID = window.FIREBASE_MEASUREMENT_ID || "G-QKFQXVBHFH";
+}
+
 console.log('🔧 Available Firebase variables:', {
   API_KEY: window.FIREBASE_API_KEY ? '✅ Set' : '❌ Missing',
   AUTH_DOMAIN: window.FIREBASE_AUTH_DOMAIN ? '✅ Set' : '❌ Missing',
@@ -34,18 +48,18 @@ console.log('🔧 Available Firebase variables:', {
 });
 
 const firebaseConfig = {
-  apiKey: window.FIREBASE_API_KEY || "demo-api-key",
-  authDomain: window.FIREBASE_AUTH_DOMAIN || "arthub-demo.firebaseapp.com",
-  projectId: window.FIREBASE_PROJECT_ID || "arthub-demo",
-  storageBucket: window.FIREBASE_STORAGE_BUCKET || "arthub-demo.appspot.com",
-  messagingSenderId: window.FIREBASE_MESSAGING_SENDER_ID || "000000000000",
-  appId: window.FIREBASE_APP_ID || "demo-app-id",
-  measurementId: window.FIREBASE_MEASUREMENT_ID || "G-DEMO"
+  apiKey: window.FIREBASE_API_KEY,
+  authDomain: window.FIREBASE_AUTH_DOMAIN,
+  projectId: window.FIREBASE_PROJECT_ID,
+  storageBucket: window.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: window.FIREBASE_MESSAGING_SENDER_ID,
+  appId: window.FIREBASE_APP_ID,
+  measurementId: window.FIREBASE_MEASUREMENT_ID
 };
 
 console.log('🔧 Final Firebase config:', {
   ...firebaseConfig,
-  apiKey: firebaseConfig.apiKey.substring(0, 10) + '...' // Don't log full API key
+  apiKey: firebaseConfig.apiKey ? firebaseConfig.apiKey.substring(0, 10) + '...' : 'undefined'
 });
 
 // Initialize Firebase
