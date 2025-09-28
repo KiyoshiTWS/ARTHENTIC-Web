@@ -1,1 +1,59 @@
-node_modules
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Database files (not needed for static version)
+*.db
+*.sqlite
+*.sqlite3
+
+# Sensitive files and directories - IMPORTANT FOR SECURITY
+images/work/DigitalMedia/
+images/work/Protected/
+*.env
+.env*
+config/keys.js
+config/secrets.js
+
+# API Keys and tokens
+**/firebase-private-key.json
+**/service-account-key.json
+**/*-key.json
+**/*-private-key.json
+
+# Personal artwork and sensitive media
+images/work/Personal/
+images/work/Private/
+images/work/Commissions/
+
+# User data and uploads that may contain sensitive content
+uploads/sensitive/
+uploads/private/
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build output (if any)
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.temp

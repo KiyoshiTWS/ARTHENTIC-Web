@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Setup - ArtHub</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f5f6f8; }
+        .setup-container { max-width: 800px; margin: 3rem auto; padding: 2rem; }
+        .setup-card { background: white; border-radius: 18px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+        .step-number { background: #dc3545; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .code-block { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 1rem; font-family: 'Courier New', monospace; font-size: 0.9rem; }
+        .alert-firebase { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div class="container setup-container">
+        <div class="setup-card">
+            <h1 class="text-center mb-4">🔥 Firebase Setup Guide</h1>
+            
+            <div class="alert-firebase">
+                <strong>⚠️ Important:</strong> To make ArtHub fully functional with real-time features, you need to set up Firebase. This enables cross-user posts, comments, and likes.
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="step-number me-3">1</div>
+                        <h5 class="mb-0">Create Firebase Project</h5>
+                    </div>
+                    <p>Go to <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a> and create a new project.</p>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="step-number me-3">2</div>
+                        <h5 class="mb-0">Enable Firestore</h5>
+                    </div>
+                    <p>In your Firebase project, enable Firestore Database in "test mode" for development.</p>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="step-number me-3">3</div>
+                        <h5 class="mb-0">Get Config</h5>
+                    </div>
+                    <p>Go to Project Settings → General → Your apps → Web app and copy the Firebase config.</p>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="step-number me-3">4</div>
+                        <h5 class="mb-0">Update Configuration</h5>
+                    </div>
+                    <p>Replace the config in <code>firebase-config.js</code>:</p>
+                    
+                    <div class="code-block">
+const firebaseConfig = {
+  apiKey: "your-api-key",
+  authDomain: "your-app.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-app.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "your-app-id"
+};
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            
+            <h5 class="mb-3">✅ Firebase Active</h5>
+            <p>Firebase is now configured and active! Your ArtHub is using real-time cloud database.</p>
+            
+            <div class="text-center">
+                <a href="arthub.html" class="btn btn-success btn-lg">Go to ArtHub</a>
+            </div>
+            
+            <div id="demoStatus" class="mt-3"></div>
+        </div>
+    </div>
+
+    <script>
+        function enableDemoMode() {
+            // Create a simple localStorage-based Firebase simulator
+            const demoConfig = {
+                apiKey: "demo-key",
+                authDomain: "arthub-demo.firebaseapp.com",
+                projectId: "arthub-demo",
+                storageBucket: "arthub-demo.appspot.com",
+                messagingSenderId: "123456789",
+                appId: "demo-app-id"
+            };
+            
+            localStorage.setItem('firebase_demo_mode', 'enabled');
+            localStorage.setItem('firebase_demo_config', JSON.stringify(demoConfig));
+            
+            // Create demo users and posts
+            const demoUsers = [
+                {
+                    id: "demo_user_1",
+                    username: "artist_maya",
+                    email: "maya@example.com",
+                    password: "demo123",
+                    profile_picture: "https://placehold.co/100x100/ff6b6b/fff?text=M",
+                    followers: [],
+                    following: [],
+                    posts_count: 2,
+                    created_at: new Date(Date.now() - 86400000) // 1 day ago
+                },
+                {
+                    id: "demo_user_2", 
+                    username: "creative_alex",
+                    email: "alex@example.com",
+                    password: "demo123",
+                    profile_picture: "https://placehold.co/100x100/4ecdc4/fff?text=A",
+                    followers: [],
+                    following: [],
+                    posts_count: 1,
+                    created_at: new Date(Date.now() - 172800000) // 2 days ago
+                }
+            ];
+            
+            const demoPosts = [
+                {
+                    id: "demo_post_1",
+                    user_id: "demo_user_1",
+                    username: "artist_maya",
+                    profile_picture: "https://placehold.co/100x100/ff6b6b/fff?text=M",
+                    body: "Just finished this digital painting! 🎨 What do you think?",
+                    image_url: "https://placehold.co/600x400/ff6b6b/fff?text=Digital+Art",
+                    context: null,
+                    likes: [],
+                    like_count: 0,
+                    comment_count: 0,
+                    saves: [],
+                    created_at: new Date(Date.now() - 3600000) // 1 hour ago
+                },
+                {
+                    id: "demo_post_2",
+                    user_id: "demo_user_2", 
+                    username: "creative_alex",
+                    profile_picture: "https://placehold.co/100x100/4ecdc4/fff?text=A",
+                    body: "Working on character designs for my upcoming project. Love experimenting with different styles!",
+                    image_url: "https://placehold.co/600x400/4ecdc4/fff?text=Character+Design",
+                    context: "This artwork was created using Procreate on iPad with some AI assistance for background elements.",
+                    likes: [],
+                    like_count: 0,
+                    comment_count: 0,
+                    saves: [],
+                    created_at: new Date(Date.now() - 7200000) // 2 hours ago
+                },
+                {
+                    id: "demo_post_3",
+                    user_id: "demo_user_1",
+                    username: "artist_maya", 
+                    profile_picture: "https://placehold.co/100x100/ff6b6b/fff?text=M",
+                    body: "Quick sketch from today's drawing session. Sometimes the simple ones are the most satisfying! ✏️",
+                    image_url: null,
+                    context: null,
+                    likes: [],
+                    like_count: 0,
+                    comment_count: 0,
+                    saves: [],
+                    created_at: new Date(Date.now() - 10800000) // 3 hours ago
+                }
+            ];
+            
+            localStorage.setItem('demo_users', JSON.stringify(demoUsers));
+            localStorage.setItem('demo_posts', JSON.stringify(demoPosts));
+            localStorage.setItem('demo_comments', JSON.stringify([]));
+            localStorage.setItem('demo_notifications', JSON.stringify([]));
+            
+            const status = document.getElementById('demoStatus');
+            status.innerHTML = '<div class="alert alert-success">✅ Demo mode enabled with sample data! You can now use ArtHub with simulated Firebase features. <a href="arthub.html" class="btn btn-sm btn-success ms-2">Go to ArtHub</a></div>';
+        }
+        
+        // Check if demo mode is already enabled
+        if (localStorage.getItem('firebase_demo_mode') === 'enabled') {
+            document.getElementById('demoStatus').innerHTML = '<div class="alert alert-info">ℹ️ Demo mode is currently active. <a href="arthub.html" class="btn btn-sm btn-primary ms-2">Go to ArtHub</a></div>';
+        }
+    </script>
+</body>
+</html>

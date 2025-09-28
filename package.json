@@ -1,15 +1,23 @@
 {
   "name": "website-to-compute",
   "version": "0.0.1",
+  "type": "module",
   "scripts": {
-    "start": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "start": "python -m http.server 8000",
+    "serve": "python -m http.server 8000",
+    "build": "echo 'Static site - no build needed'",
+    "dev": "python -m http.server 8000"
   },
   "devDependencies": {
     "vite": "^6.2.2"
   },
   "dependencies": {
-    "sharp": "^0.34.3"
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "firebase": "^12.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
+    "sqlite3": "^5.1.7"
   }
 }
