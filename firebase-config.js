@@ -18,7 +18,9 @@ import {
   getDoc,
   arrayUnion,
   arrayRemove,
-  writeBatch
+  writeBatch,
+  enableNetwork,
+  disableNetwork
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 // Firebase configuration - Using environment variables for security
@@ -27,6 +29,12 @@ import {
 if (!window.FIREBASE_PROJECT_ID) {
   console.warn('⚠️ Firebase configuration not loaded. Falling back to demo mode.');
 }
+
+// Connection resilience variables
+let connectionRetryCount = 0;
+const MAX_CONNECTION_RETRIES = 3;
+let isReconnecting = false;
+let connectionHealthTimer = null;
 
 const firebaseConfig = {
   apiKey: window.FIREBASE_API_KEY || "demo-api-key",
@@ -43,12 +51,65 @@ let app, db;
 try {
   app = initializeApp(firebaseConfig);
   db = getFirestore(app);
-  console.log('🔥 Firebase initialized successfully');
+  console.log('🔥 Firebase initialized successfully with connection resilience');
   console.log('🔥 Firebase app:', app);
   console.log('🔥 Firestore db:', db);
+  
+  // Start connection health monitoring after successful initialization
+  startConnectionHealthMonitoring();
 } catch (error) {
   console.error('❌ Firebase initialization failed:', error);
   throw error;
+}
+
+// Connection health monitoring functions
+function startConnectionHealthMonitoring() {
+  if (connectionHealthTimer) clearInterval(connectionHealthTimer);
+  
+  connectionHealthTimer = setInterval(async () => {
+    try {
+      if (db && !isReconnecting) {
+        // Lightweight connection check
+        await enableNetwork(db);
+      }
+    } catch (error) {
+      console.warn('🔄 Connection health check failed, attempting reconnection:', error);
+      handleConnectionFailure();
+    }
+  }, 30000); // Check every 30 seconds
+}
+
+// Handle connection failures with exponential backoff
+function handleConnectionFailure() {
+  if (isReconnecting || connectionRetryCount >= MAX_CONNECTION_RETRIES) return;
+  
+  isReconnecting = true;
+  connectionRetryCount++;
+  
+  const backoffDelay = Math.min(1000 * Math.pow(2, connectionRetryCount), 10000);
+  
+  console.log(`🔄 Attempting reconnection ${connectionRetryCount}/${MAX_CONNECTION_RETRIES} in ${backoffDelay}ms...`);
+  
+  setTimeout(async () => {
+    try {
+      if (db) {
+        await disableNetwork(db);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await enableNetwork(db);
+        
+        console.log('✅ Firebase connection restored');
+        connectionRetryCount = 0;
+        isReconnecting = false;
+      }
+    } catch (error) {
+      console.error('❌ Reconnection failed:', error);
+      isReconnecting = false;
+      
+      if (connectionRetryCount >= MAX_CONNECTION_RETRIES) {
+        console.warn('⚠️ Max reconnection attempts reached');
+      }
+    }
+  }, backoffDelay);
 }
 
 // Demo Mode localStorage Database Manager
@@ -1153,11 +1214,11 @@ class FirebaseArtHubClient {
     }
   }
 
-  // Posts Management
+  // Posts Management with connection resilience
   async createPost(text, imageData = null, context = null, tags = [], isNSFW = false) {
     if (!this.currentUser) throw new Error('User not authenticated');
     
-    try {
+    return await this.executeWithRetry(async () => {
       const post = {
         user_id: this.currentUser.id,
         username: this.currentUser.username,
@@ -1190,12 +1251,16 @@ class FirebaseArtHubClient {
     }
   }
 
-  // Real-time posts listener
+  // Real-time posts listener with connection resilience
   subscribeToFeed(callback) {
     const postsRef = collection(this.db, 'posts');
     const q = query(postsRef, orderBy('created_at', 'desc'), limit(50));
     
-    const unsubscriber = onSnapshot(q, async (snapshot) => {
+    const unsubscriber = onSnapshot(q, 
+      // Success callback
+      async (snapshot) => {
+        // Only process server data to avoid duplicates during reconnection
+        if (!snapshot.metadata.hasPendingWrites) {
       const posts = [];
       
       // Get all saved post IDs for current user
@@ -1239,7 +1304,24 @@ class FirebaseArtHubClient {
         });
       }
       callback(posts);
-    });
+      },
+      // Error callback with reconnection logic
+      (error) => {
+        console.error('📡 Feed subscription error:', error);
+        
+        if (this.isConnectionError(error)) {
+          console.log('🔄 Attempting to reconnect feed subscription...');
+          handleConnectionFailure();
+          
+          // Retry subscription after a delay
+          setTimeout(() => {
+            if (!isReconnecting) {
+              this.subscribeToFeed(callback);
+            }
+          }, 5000);
+        }
+      }
+    );
 
     this.unsubscribers.push(unsubscriber);
     return unsubscriber;
@@ -1247,9 +1329,11 @@ class FirebaseArtHubClient {
 
   // Get posts (non-realtime)
   async getPosts() {
-    try {
+    return await this.executeWithRetry(async () => {
       const postsRef = collection(this.db, 'posts');
       const q = query(postsRef, orderBy('created_at', 'desc'), limit(50));
+      
+      // Use cache first, then network
       const snapshot = await getDocs(q);
       const posts = [];
       
@@ -2546,6 +2630,71 @@ class FirebaseArtHubClient {
       console.error('Error reporting comment:', error);
       throw error;
     }
+  }
+  
+  // Connection resilience methods
+  async executeWithRetry(operation, maxRetries = 3) {
+    let lastError;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        lastError = error;
+        
+        // Check if it's a connection-related error
+        if (this.isConnectionError(error) && attempt < maxRetries) {
+          const delay = Math.min(1000 * Math.pow(2, attempt), 5000);
+          console.warn(`🔄 Operation failed (attempt ${attempt}/${maxRetries}), retrying in ${delay}ms:`, error.message);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        }
+        
+        throw error;
+      }
+    }
+    
+    throw lastError;
+  }
+  
+  // Check if error is connection-related
+  isConnectionError(error) {
+    const connectionErrorCodes = [
+      'unavailable',
+      'deadline-exceeded', 
+      'resource-exhausted',
+      'aborted',
+      'internal',
+      'unknown'
+    ];
+    
+    return connectionErrorCodes.includes(error.code) || 
+           error.message?.includes('network') ||
+           error.message?.includes('connection') ||
+           error.message?.includes('transport') ||
+           error.message?.includes('RPC') ||
+           error.message?.includes('WebChannel');
+  }
+  
+  // Cleanup connections
+  cleanup() {
+    // Clear connection health monitoring
+    if (connectionHealthTimer) {
+      clearInterval(connectionHealthTimer);
+      connectionHealthTimer = null;
+    }
+    
+    // Unsubscribe from all listeners
+    this.unsubscribers.forEach(unsubscribe => {
+      if (typeof unsubscribe === 'function') {
+        try {
+          unsubscribe();
+        } catch (error) {
+          console.warn('Error during unsubscribe:', error);
+        }
+      }
+    });
+    this.unsubscribers = [];
   }
 }
 
