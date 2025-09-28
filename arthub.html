@@ -4000,7 +4000,7 @@
       }
       
       function clearTagFilters() {
-        console.log('🧹 Clearing all tag filters...');
+        console.log('🧹 Clearing all tag filters and reverting to home page...');
         selectedTags.clear();
         currentTrendingTag = null;
         
@@ -4020,9 +4020,9 @@
           tagFilterInput.value = '';
         }
         
-        updateTagVisualState();
-        filterPostsByTags();
-        console.log('✅ All filters cleared');
+        // Revert to default home page by refreshing the feed
+        loadFeed(true); // Fresh load to show all posts from database
+        console.log('✅ All filters cleared - showing default home page');
       }
       
       // Comment interaction functions
@@ -4508,8 +4508,15 @@
         }
         
         console.log('🏷️ Currently selected tags:', Array.from(selectedTags));
-        updateTagVisualState();
-        filterPostsByTags();
+        
+        // Check if all tags are now deselected
+        if (selectedTags.size === 0) {
+          console.log('🏠 No tags selected - reverting to default home page');
+          loadFeed(true); // Fresh load to show all posts from database
+        } else {
+          updateTagVisualState();
+          filterPostsByTags();
+        }
       }
       
       // Handle search input tag filtering
@@ -4562,8 +4569,14 @@
           selectedTags.add(tagLower);
         }
         
-        filterPostsByTags();
-        updateTagVisualState();
+        // Check if all tags are now deselected
+        if (selectedTags.size === 0) {
+          console.log('🏠 No tags selected - reverting to default home page');
+          loadFeed(true); // Fresh load to show all posts from database
+        } else {
+          filterPostsByTags();
+          updateTagVisualState();
+        }
       }
       
       // Handle trending tag selection (single selection only)
