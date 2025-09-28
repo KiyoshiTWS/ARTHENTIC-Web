@@ -78,6 +78,33 @@ class DemoArtHubClient {
     });
   }
 
+  // Debug methods
+  clearAllDemoData() {
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (key.startsWith('demo_')) {
+        localStorage.removeItem(key);
+      }
+    });
+    localStorage.removeItem('arthub_user');
+    localStorage.removeItem('arthub_token');
+    console.log('✅ All demo data cleared');
+  }
+
+  checkUsernameExists(username) {
+    const users = this.getCollection('users');
+    const exists = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+    console.log(`Username "${username}" exists:`, !!exists);
+    if (exists) console.log('User data:', exists);
+    return !!exists;
+  }
+
+  listAllUsers() {
+    const users = this.getCollection('users');
+    console.log('All registered users:', users.map(u => ({ username: u.username, email: u.email, id: u.id })));
+    return users;
+  }
+
   // User Management
   async loginUser(username, password) {
     const users = this.getCollection('users');
