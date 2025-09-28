@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ArtHub - Community Feed</title>
+  <link rel="icon" type="image/png" href="smalllogo.png">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/tooplate-tween-agency.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Poppins', sans-serif; background:#f5f6f8; }
+    body.dark-mode { background:#181a1b!important; color:#e0e0e0!important; }
+    .navbar { box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    body.dark-mode .navbar { background:#23272b!important; }
+    /* Base cards */
+    .create-card, .post-card { background:#fff; border-radius:18px; box-shadow:0 4px 24px rgba(0,0,0,0.06); padding:1.25rem 1.5rem; margin-bottom:1.5rem; position:relative; }
+    body.dark-mode .create-card, body.dark-mode .post-card { background:#23272b; box-shadow:0 4px 28px rgba(0,0,0,0.4); }
+    .create-card textarea { border-radius:14px; resize:vertical; }
+    .create-actions { display:flex; justify-content:space-between; align-items:center; margin-top:.75rem; }
+    .btn-brand { background:#dc3545!important; color:#fff!important; border:none; border-radius:30px; font-weight:600; padding:.55rem 1.35rem; }
+    .btn-brand-outline { background:transparent; border:2px solid #dc3545; color:#dc3545; border-radius:30px; font-weight:600; padding:.45rem 1.15rem; }
+    body.dark-mode .btn-brand-outline { color:#fff; border-color:#dc3545; }
+    .post-header { display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem; }
+    .avatar { width:48px; height:48px; border-radius:50%; object-fit:cover; background:#ddd; }
+    .post-meta small { display:block; line-height:1.1; }
+    .post-image-wrapper { position:relative; border-radius:16px; overflow:hidden; background:#000; cursor:pointer; }
+    .post-image { width:100%; display:block; object-fit:cover; transition:transform .5s; }
+    .post-image-wrapper:hover .post-image { transform:scale(1.04); }
+    .context-panel { background:#f1f3f5; border-radius:14px; padding:.75rem 1rem; font-size:.85rem; margin-top:.85rem; display:none; position:relative; }
+    body.dark-mode .context-panel { background:#2e3338; }
+    .context-panel h6 { font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin:0 0 .4rem; color:#dc3545; }
+    .toggle-context { font-size:.75rem; font-weight:600; cursor:pointer; color:#dc3545; user-select:none; }
+    body.dark-mode .toggle-context { color:#ff6b81; }
+    .post-footer { display:flex; gap:1rem; margin-top:.65rem; }
+    .icon-btn { background:transparent; border:none; color:#666; display:flex; align-items:center; gap:.35rem; font-size:.9rem; font-weight:500; }
+    .icon-btn i { font-size:1.05rem; }
+    .icon-btn:hover { color:#dc3545; }
+    body.dark-mode .icon-btn { color:#aaa; }
+    body.dark-mode .icon-btn:hover { color:#ff6b81; }
+    /* Modal (lightbox) */
+    .lightbox-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:1050; }
+    .lightbox-backdrop.active { display:flex; }
+    .lightbox-content { max-width:90vw; max-height:85vh; position:relative; animation:fadeIn .3s ease; }
+    .lightbox-content img { max-width:100%; max-height:85vh; object-fit:contain; display:block; border-radius:12px; }
+    .lightbox-close { position:absolute; top:-40px; right:0; background:#dc3545; color:#fff; border:none; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; cursor:pointer; }
+    .lightbox-caption { color:#fff; font-size:.9rem; margin-top:.5rem; text-align:center; }
+    @keyframes fadeIn { from { opacity:0; transform:scale(.96);} to {opacity:1; transform:scale(1);} }
+    /* Reader context indicator */
+    .context-indicator { color:#dc3545; font-size:.65rem; font-weight:700; letter-spacing:.5px; padding:.25rem .5rem; background:#ffe5e9; border-radius:20px; }
+    body.dark-mode .context-indicator { background:#402127; color:#ffb3bd; }
+    /* Floating new post button (mobile) */
+    .fab-new { position:fixed; bottom:80px; right:20px; background:#dc3545; color:#fff; width:54px; height:54px; border:none; box-shadow:0 6px 18px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center; font-size:1.6rem; z-index:1040; }
+    @media (min-width: 992px){ .fab-new { display:none; } }
+    body.dark-mode .create-card textarea, body.dark-mode .form-control { background:#2e3338; color:#e0e0e0; border-color:#444; }
+
+    /* HUB LAYOUT */
+    .hub-layout { max-width:1500px; margin:7rem auto 3rem; padding:0 1.5rem; display:flex; gap:2rem; }
+    .sidebar-left, .sidebar-right { width:250px; flex-shrink:0; position:sticky; top:90px; align-self:flex-start; }
+    .sidebar-right { width:270px; }
+    .feed-column { flex:1; max-width:780px; }
+    @media (max-width:1199.98px){ .sidebar-right { display:none !important; } }
+    @media (max-width:991.98px){ .sidebar-left { display:none !important; } .hub-layout { display:block; } .feed-column { max-width:100%; } }
+
+    .sidebar-card { background:#fff; border-radius:18px; box-shadow:0 4px 20px rgba(0,0,0,0.05); padding:1rem 1.1rem 1.05rem; margin-bottom:1.4rem; }
+    body.dark-mode .sidebar-card { background:#23272b; box-shadow:0 4px 24px rgba(0,0,0,0.4); }
+    .sidebar-title { font-size:.7rem; font-weight:700; letter-spacing:.8px; text-transform:uppercase; margin-bottom:.75rem; opacity:.8; }
+    .hub-nav .nav-link { font-size:.85rem; font-weight:500; padding:.45rem .25rem; border-radius:10px; color:#444; }
+    .hub-nav .nav-link i { font-size:1rem; }
+    .hub-nav .nav-link.active, .hub-nav .nav-link:hover { background:#ffe5e9; color:#dc3545; }
+    body.dark-mode .hub-nav .nav-link { color:#ccc; }
+    body.dark-mode .hub-nav .nav-link.active, body.dark-mode .hub-nav .nav-link:hover { background:#402127; color:#ffb3bd; }
+    .stats span { font-size:.6rem; }
+    .tag-chip { background:#f1f3f5; border:none; padding:.35rem .75rem; border-radius:30px; font-size:.65rem; font-weight:600; margin:0 .35rem .45rem 0; cursor:pointer; transition:.25s; }
+    .tag-chip:hover { background:#dc3545; color:#fff; }
+    body.dark-mode .tag-chip { background:#2e3338; color:#bbb; }
+    body.dark-mode .tag-chip:hover { background:#dc3545; color:#fff; }
+    .follow-btn { padding:.25rem .65rem !important; font-size:.6rem !important; border-radius:30px; }
+    .suggestion-item:last-child { margin-bottom:0 !important; }
+    .info-card.small { font-size:.65rem; }
+    body.dark-mode .sidebar-title { color:#ffb3bd; }
+
+    /* Brand button consistency */
+    .hub-layout .btn, .hub-layout .btn-brand { background:#dc3545 !important; border-color:#dc3545 !important; }
+    body.dark-mode .hub-layout .btn, body.dark-mode .hub-layout .btn-brand { background:#dc3545 !important; border-color:#dc3545 !important; }
+  </style>
+</head>
+<body>
+  <nav class="navbar fixed-top navbar-expand-lg">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <img id="siteLogo" src="whitelogo.png" alt="ARTHENTIC Logo" style="height:50px;">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-lg-5">
+          <li class="nav-item"><a class="nav-link" href="index.html#section_1">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#section_2">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html#section_3">Services</a></li>
+          <li class="nav-item"><a class="nav-link active" href="arthub.html">ArtHub</a></li>
+        </ul>
+        <div class="ms-auto d-none d-lg-block">
+          <a href="artwork-registration.html" class="custom-btn btn btn-lg">
+            Protect my Art <i class="bi-shield-lock ms-2"></i>
+          </a>
+        </div>
+        <button id="darkModeToggle" class="btn btn-outline-dark ms-3" style="border-radius:50px;">
+          <i class="bi bi-moon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="hub-layout">
+    <!-- Left Sidebar -->
+    <aside class="sidebar-left d-none d-lg-flex flex-column">
+      <div class="sidebar-card profile-card">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <img src="https://placehold.co/80x80" class="avatar flex-shrink-0" alt="Your profile">
+          <div>
+            <strong class="d-block">You</strong>
+            <small class="text-muted d-block" style="font-size:.7rem; letter-spacing:.5px;">ARTIST PROFILE</small>
+          </div>
+        </div>
+        <button class="btn-brand w-100 mb-2" id="quickCreateBtn" type="button"><i class="bi bi-pencil-square me-1"></i> Create</button>
+        <div class="d-flex justify-content-between mt-2 small stats">
+          <span><strong id="statPosts">0</strong> Posts</span>
+            <span><strong id="statFollowing">12</strong> Following</span>
+            <span><strong id="statFollowers">89</strong> Followers</span>
+        </div>
+      </div>
+      <div class="sidebar-card nav-card">
+        <ul class="nav flex-column hub-nav">
+          <li class="nav-item"><a class="nav-link active" href="#" data-hub-nav="feed"><i class="bi bi-house-door me-2"></i> Feed</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-hub-nav="explore"><i class="bi bi-compass me-2"></i> Explore</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-hub-nav="notifications"><i class="bi bi-bell me-2"></i> Notifications <span class="badge bg-danger ms-1" style="font-size:.55rem;">3</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-hub-nav="messages"><i class="bi bi-envelope me-2"></i> Messages</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-hub-nav="saved"><i class="bi bi-bookmark me-2"></i> Saved</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-hub-nav="settings"><i class="bi bi-gear me-2"></i> Settings</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Feed Column -->
+    <div class="feed-column">
+      <div class="create-card">
+        <div class="d-flex align-items-start gap-3">
+          <img src="https://placehold.co/80x80" class="avatar" alt="You">
+          <div class="flex-grow-1">
+            <textarea id="postText" rows="3" class="form-control" placeholder="Share your latest piece, inspiration, or progress..."></textarea>
+            <div class="create-actions">
+              <div class="d-flex gap-2">
+                <label class="btn-brand-outline mb-0" style="cursor:pointer;">
+                  <i class="bi bi-image"></i> Add Image
+                  <input type="file" id="imageInput" accept="image/*" hidden>
+                </label>
+                <button id="addContextBtn" type="button" class="btn-brand-outline">
+                  <i class="bi bi-eye"></i> Add Readers Context
+                </button>
+              </div>
+              <button id="publishBtn" class="btn-brand" type="button"><i class="bi bi-send me-1"></i> Publish</button>
+            </div>
+            <div id="contextEditor" class="mt-3" style="display:none;">
+              <textarea id="contextText" rows="2" class="form-control" placeholder="Add context to help viewers understand this post (e.g. source, technique, AI usage disclosure)"></textarea>
+              <div class="text-end mt-2">
+                <button id="saveContextBtn" type="button" class="btn-brand-outline me-2">Save Context</button>
+                <button id="cancelContextBtn" type="button" class="btn-brand-outline">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="feed"></div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <aside class="sidebar-right d-none d-xl-flex flex-column">
+      <div class="sidebar-card suggestions-card">
+        <h6 class="sidebar-title">Suggested Artists</h6>
+        <ul class="list-unstyled mb-0" id="suggestedList">
+          <li class="d-flex align-items-center justify-content-between mb-3 suggestion-item">
+            <div class="d-flex align-items-center gap-2">
+              <img src="https://placehold.co/56x56" class="avatar" style="width:40px;height:40px;" alt="Artist A">
+              <div>
+                <strong style="font-size:.85rem;">ArtistA</strong>
+                <small class="d-block text-muted" style="font-size:.65rem;">Concept Art</small>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-brand follow-btn" type="button">Follow</button>
+          </li>
+          <li class="d-flex align-items-center justify-content-between mb-3 suggestion-item">
+            <div class="d-flex align-items-center gap-2">
+              <img src="https://placehold.co/56x56" class="avatar" style="width:40px;height:40px;" alt="Artist B">
+              <div>
+                <strong style="font-size:.85rem;">MayaDraws</strong>
+                <small class="d-block text-muted" style="font-size:.65rem;">Illustration</small>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-brand follow-btn" type="button">Follow</button>
+          </li>
+          <li class="d-flex align-items-center justify-content-between mb-2 suggestion-item">
+            <div class="d-flex align-items-center gap-2">
+              <img src="https://placehold.co/56x56" class="avatar" style="width:40px;height:40px;" alt="Artist C">
+              <div>
+                <strong style="font-size:.85rem;">PixelForge</strong>
+                <small class="d-block text-muted" style="font-size:.65rem;">Game Assets</small>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-brand follow-btn" type="button">Follow</button>
+          </li>
+        </ul>
+      </div>
+      <div class="sidebar-card trends-card">
+        <h6 class="sidebar-title">Trending Tags</h6>
+        <div class="trending-tags" id="trendingTags">
+          <button class="tag-chip" type="button" data-tag="#digitalart">#digitalart</button>
+          <button class="tag-chip" type="button" data-tag="#conceptdesign">#conceptdesign</button>
+          <button class="tag-chip" type="button" data-tag="#illustration">#illustration</button>
+          <button class="tag-chip" type="button" data-tag="#wip">#wip</button>
+          <button class="tag-chip" type="button" data-tag="#watercolor">#watercolor</button>
+          <button class="tag-chip" type="button" data-tag="#krita">#krita</button>
+        </div>
+      </div>
+      <div class="sidebar-card info-card small">
+        <h6 class="sidebar-title">Community Tips</h6>
+        <p class="mb-2 small" style="font-size:.7rem;">Add readers context to disclose tools or AI usage for better trust.</p>
+        <p class="mb-0 small" style="font-size:.7rem;">Respect others' rights. Report misuse responsibly.</p>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Floating new post button (mobile) -->
+  <button class="fab-new" id="fabNew" title="New Post"><i class="bi bi-plus"></i></button>
+
+  <!-- Lightbox Modal -->
+  <div class="lightbox-backdrop" id="lightbox">
+    <div class="lightbox-content">
+      <button class="lightbox-close" id="lightboxClose" aria-label="Close"><i class="bi bi-x"></i></button>
+      <img src="" alt="Artwork" id="lightboxImg">
+      <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+  </div>
+
+  <script src="js/bootstrap.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      const darkModeBtn = document.getElementById('darkModeToggle');
+      const siteLogo = document.getElementById('siteLogo');
+      const icon = darkModeBtn.querySelector('i');
+      if(localStorage.getItem('darkMode')==='enabled') { document.body.classList.add('dark-mode'); icon.classList.remove('bi-moon'); icon.classList.add('bi-brightness-high'); siteLogo.src='whitelogo.png'; }
+      darkModeBtn.addEventListener('click', ()=>{ document.body.classList.toggle('dark-mode'); const enabled=document.body.classList.contains('dark-mode'); icon.classList.toggle('bi-moon', !enabled); icon.classList.toggle('bi-brightness-high', enabled); siteLogo.src = enabled ? 'whitelogo.png' : 'logo.png'; localStorage.setItem('darkMode', enabled?'enabled':'disabled'); });
+
+      const feedEl = document.getElementById('feed');
+      const publishBtn = document.getElementById('publishBtn');
+      const postText = document.getElementById('postText');
+      const imageInput = document.getElementById('imageInput');
+      const addContextBtn = document.getElementById('addContextBtn');
+      const contextEditor = document.getElementById('contextEditor');
+      const saveContextBtn = document.getElementById('saveContextBtn');
+      const cancelContextBtn = document.getElementById('cancelContextBtn');
+      const contextText = document.getElementById('contextText');
+      const fabNew = document.getElementById('fabNew');
+      const quickCreateBtn = document.getElementById('quickCreateBtn');
+      const trendingTags = document.getElementById('trendingTags');
+      const statPosts = document.getElementById('statPosts');
+
+      let tempImageData = null;
+      let tempContext = '';
+      let postCount = 0;
+
+      addContextBtn.addEventListener('click', ()=>{ contextEditor.style.display='block'; });
+      cancelContextBtn.addEventListener('click', ()=>{ contextEditor.style.display='none'; contextText.value=''; tempContext=''; });
+      saveContextBtn.addEventListener('click', ()=>{ tempContext = contextText.value.trim(); contextEditor.style.display='none'; });
+      imageInput.addEventListener('change', (e)=>{
+        const file = e.target.files[0];
+        if(!file) return; const reader=new FileReader(); reader.onload = ev => { tempImageData = ev.target.result; }; reader.readAsDataURL(file);
+      });
+
+      function createPostElement({text, image, context, date}) {
+        const card = document.createElement('div');
+        card.className='post-card';
+        card.innerHTML = `
+          <div class="post-header">
+            <img src="https://placehold.co/100x100" class="avatar" alt="User Avatar">
+            <div class="post-meta">
+              <strong>ArtistName</strong>
+              <small>${date.toLocaleString()}</small>
+            </div>
+            ${context?'<span class="context-indicator ms-auto">Context</span>':''}
+          </div>
+          <div class="post-body">
+            <p style="white-space:pre-wrap;">${text? escapeHtml(text):''}</p>
+            ${image?`<div class="post-image-wrapper" data-caption="${encodeURIComponent(text||'')}"><img src="${image}" class="post-image" alt="Artwork"></div>`:''}
+            <div class="context-panel">${context?`<h6>Readers Context</h6><p class="mb-0">${escapeHtml(context)}</p>`:''}</div>
+            ${context?'<div class="toggle-context mt-2">Show context</div>':''}
+          </div>
+          <div class="post-footer">
+            <button class="icon-btn" type="button"><i class="bi bi-hand-thumbs-up"></i> Like</button>
+            <button class="icon-btn" type="button"><i class="bi bi-chat"></i> Comment</button>
+            <button class="icon-btn" type="button"><i class="bi bi-share"></i> Share</button>
+          </div>`;
+        const imgWrap = card.querySelector('.post-image-wrapper');
+        if(imgWrap){ imgWrap.addEventListener('click', ()=>openLightbox(image, decodeURIComponent(imgWrap.dataset.caption))); }
+        const toggle = card.querySelector('.toggle-context');
+        if(toggle){
+          const panel = card.querySelector('.context-panel');
+          toggle.addEventListener('click', ()=>{
+            const showing = panel.style.display==='block';
+            panel.style.display = showing? 'none':'block';
+            toggle.textContent = showing? 'Show context':'Hide context';
+          });
+        }
+        return card;
+      }
+
+      function escapeHtml(str){ return str.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
+      function incrementPostStats(){ postCount++; statPosts.textContent = postCount; }
+
+      publishBtn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        if(!postText.value.trim() && !tempImageData) return;
+        const post = createPostElement({ text: postText.value.trim(), image: tempImageData, context: tempContext, date: new Date() });
+        feedEl.prepend(post);
+        postText.value=''; tempImageData=null; imageInput.value=''; tempContext=''; contextText.value='';
+        incrementPostStats();
+      });
+
+      quickCreateBtn?.addEventListener('click', ()=>{ window.scrollTo({top:0, behavior:'smooth'}); postText.focus(); });
+      fabNew.addEventListener('click', ()=>{ window.scrollTo({top:0, behavior:'smooth'}); postText.focus(); });
+
+      if(trendingTags){
+        trendingTags.addEventListener('click', (e)=>{
+          if(e.target.classList.contains('tag-chip')){
+            const tag=e.target.getAttribute('data-tag');
+            if(!postText.value.includes(tag)){
+              postText.value = (postText.value + ' ' + tag).trim() + ' ';
+              postText.focus();
+            }
+          }
+        });
+      }
+
+      // Placeholder posts
+      const samplePosts = [
+        { text:'First concept study for a sci-fi environment.', image:'https://placehold.co/800x600', context:'This piece uses a kit-bash base. Final detailing is original.', date:new Date(Date.now()-3600*1000) },
+        { text:'Color experiment on character lighting.', image:'https://placehold.co/600x800', context:'Not AI generated. Painted in Krita + tablet.', date:new Date(Date.now()-7200*1000) },
+        { text:'Thumbnail explorations for upcoming illustration.', image:'https://placehold.co/900x500', context:'Early ideation, not final composition.', date:new Date(Date.now()-10800*1000) }
+      ];
+      samplePosts.forEach(p=> { feedEl.appendChild(createPostElement(p)); postCount++; });
+      statPosts.textContent = postCount;
+
+      // Lightbox
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightboxImg');
+      const lightboxCaption = document.getElementById('lightboxCaption');
+      const lightboxClose = document.getElementById('lightboxClose');
+      function openLightbox(src, caption){ lightboxImg.src=src; lightboxCaption.textContent=caption||''; lightbox.classList.add('active'); }
+      function closeLightbox(){ lightbox.classList.remove('active'); }
+      lightboxClose.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', e=>{ if(e.target===lightbox) closeLightbox(); });
+      document.addEventListener('keyup', e=>{ if(e.key==='Escape') closeLightbox(); });
+
+      // Follow button toggle (event delegation)
+      document.addEventListener('click', (e)=>{
+        if(e.target.classList.contains('follow-btn')){
+          const btn = e.target;
+          const following = btn.classList.toggle('following');
+          if(following){ btn.textContent='Following'; btn.classList.add('opacity-75'); }
+          else { btn.textContent='Follow'; btn.classList.remove('opacity-75'); }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
