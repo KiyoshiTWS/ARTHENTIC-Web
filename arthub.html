@@ -3948,10 +3948,14 @@
           const postTags = post.querySelectorAll('.tag-chip');
           const postTagNames = Array.from(postTags).map(tag => {
             const tagAttr = tag.getAttribute('data-tag');
-            return tagAttr?.startsWith('#') ? tagAttr.substring(1) : tagAttr;
+            const cleanTag = tagAttr?.startsWith('#') ? tagAttr.substring(1) : tagAttr;
+            return cleanTag?.toLowerCase(); // Normalize to lowercase for comparison
           }).filter(Boolean);
           
-          const hasSelectedTag = [...selectedTags].some(selectedTag => 
+          // Convert selected tags to lowercase for case-insensitive matching
+          const selectedTagsLower = [...selectedTags].map(tag => tag.toLowerCase());
+          
+          const hasSelectedTag = selectedTagsLower.some(selectedTag => 
             postTagNames.includes(selectedTag)
           );
           
@@ -3964,8 +3968,14 @@
         allTagChips.forEach(chip => {
           const tag = chip.getAttribute('data-tag');
           const tagName = tag?.startsWith('#') ? tag.substring(1) : tag;
+          const tagNameLower = tagName?.toLowerCase();
           
-          if (selectedTags.has(tagName)) {
+          // Check if any selected tag matches (case-insensitive)
+          const isSelected = [...selectedTags].some(selectedTag => 
+            selectedTag.toLowerCase() === tagNameLower
+          );
+          
+          if (isSelected) {
             chip.classList.add('selected');
           } else {
             chip.classList.remove('selected');
@@ -4368,40 +4378,28 @@
       
       // Load trending tags dynamically
       let currentTrendingTag = null;
+      let trendingTagsCache = null;
+      let trendingTagsCacheTime = 0;
+      const TRENDING_TAGS_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
       
-      async function loadTrendingTags() {
+      async function loadTrendingTags(forceRefresh = false) {
         try {
-          const posts = await window.firebaseArtHubClient.getPosts();
-          const tagCounts = {};
-          
-          posts.forEach(post => {
-            if (post.tags && Array.isArray(post.tags)) {
-              post.tags.forEach(tag => {
-                if (tag && tag.trim()) {
-                  tagCounts[tag.toLowerCase()] = (tagCounts[tag.toLowerCase()] || 0) + 1;
-                }
-              });
-            }
-          });
-          
-          // Sort tags by usage count and filter out unused tags
-          const sortedTags = Object.entries(tagCounts)
-            .filter(([tag, count]) => count > 0)
-            .sort(([,a], [,b]) => b - a)
-            .slice(0, 10); // Top 10 tags
-          
-          const trendingTagsContainer = document.getElementById('trendingTags');
-          if (trendingTagsContainer) {
-            if (sortedTags.length > 0) {
-              trendingTagsContainer.innerHTML = sortedTags.map(([tag, count]) => 
-                `<button class="tag-chip trending-tag" type="button" data-tag="${tag}" title="Used ${count} time${count > 1 ? 's' : ''}" onclick="selectTrendingTag('${tag}', this)">
-                  #${tag} <span class="tag-count">(${count})</span>
-                </button>`
-              ).join('');
-            } else {
-              trendingTagsContainer.innerHTML = '<p class="text-muted small">No trending tags yet. Be the first to use tags!</p>';
-            }
+          // Use cache if available and not expired
+          const now = Date.now();
+          if (!forceRefresh && trendingTagsCache && (now - trendingTagsCacheTime) < TRENDING_TAGS_CACHE_DURATION) {
+            displayTrendingTags(trendingTagsCache);
+            return;
           }
+
+          // Use the optimized getTrendingTags method from the client
+          const trendingTags = await window.firebaseArtHubClient.getTrendingTags(15);
+          const sortedTags = trendingTags.map(tagData => [tagData.tag, tagData.count]);
+          
+          // Cache the results
+          trendingTagsCache = sortedTags;
+          trendingTagsCacheTime = now;
+          
+          displayTrendingTags(sortedTags);
         } catch (error) {
           console.error('Failed to load trending tags:', error);
           const trendingTagsContainer = document.getElementById('trendingTags');
@@ -4409,6 +4407,48 @@
             trendingTagsContainer.innerHTML = '<p class="text-muted small">Unable to load trending tags</p>';
           }
         }
+      }
+      
+      function displayTrendingTags(sortedTags) {
+        const trendingTagsContainer = document.getElementById('trendingTags');
+        if (trendingTagsContainer) {
+          if (sortedTags.length > 0) {
+            trendingTagsContainer.innerHTML = sortedTags.map(([tag, count]) => {
+              const safeTag = tag.replace(/'/g, "\\'"); // Escape quotes for onclick
+              return `<button class="tag-chip trending-tag" type="button" data-tag="${tag.toLowerCase()}" title="Used ${count} time${count > 1 ? 's' : ''}" onclick="selectTrendingTag('${safeTag.toLowerCase()}', this)">
+                #${tag} <span class="tag-count">(${count})</span>
+              </button>`;
+            }).join('');
+          } else {
+            trendingTagsContainer.innerHTML = '<p class="text-muted small">No trending tags yet. Be the first to use tags!</p>';
+          }
+        }
+      }
+      
+      // Refresh trending tags when new posts are created
+      function refreshTrendingTags() {
+        trendingTagsCache = null; // Clear cache
+        loadTrendingTags(true); // Force refresh
+      }
+
+      // Handle post tag selection (when clicking on tags in posts)
+      function selectPostTag(tag, element) {
+        // Clear any existing trending tag selection
+        document.querySelectorAll('.trending-tag').forEach(btn => {
+          btn.classList.remove('selected');
+        });
+        currentTrendingTag = null;
+        
+        // Add this tag to selected tags for multiple tag filtering
+        const tagLower = tag.toLowerCase();
+        if (selectedTags.has(tagLower)) {
+          selectedTags.delete(tagLower);
+        } else {
+          selectedTags.add(tagLower);
+        }
+        
+        filterPostsByTags();
+        updateTagVisualState();
       }
       
       // Handle trending tag selection (single selection only)
@@ -6403,10 +6443,11 @@
             ${p.tags
               .map(
                 (tag) => {
+                  const safeTag = tag.replace(/'/g, "\\'"); // Escape quotes for onclick
                   if (tag.toLowerCase() === 'nsfw') {
-                    return `<button class="tag-chip me-1 mb-1" type="button" data-tag="${tag}" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; background: #dc3545; border: 1px solid #dc3545; border-radius: 1rem; color: white; cursor: pointer;">#${tag}</button>`;
+                    return `<button class="tag-chip me-1 mb-1" type="button" data-tag="${tag}" onclick="selectPostTag('${safeTag}', this)" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; background: #dc3545; border: 1px solid #dc3545; border-radius: 1rem; color: white; cursor: pointer;">#${tag}</button>`;
                   }
-                  return `<button class="tag-chip me-1 mb-1" type="button" data-tag="${tag}" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; background: #e9ecef; border: 1px solid #dee2e6; border-radius: 1rem; color: #495057; cursor: pointer;">#${tag}</button>`;
+                  return `<button class="tag-chip me-1 mb-1" type="button" data-tag="${tag}" onclick="selectPostTag('${safeTag}', this)" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; background: #e9ecef; border: 1px solid #dee2e6; border-radius: 1rem; color: #495057; cursor: pointer;">#${tag}</button>`;
                 }
               )
               .join("")}
@@ -6902,6 +6943,11 @@
           toast("Post published successfully!");
           updateStats();
           loadFeed(); // Refresh feed to show new post
+          
+          // Refresh trending tags if the post had tags
+          if (tags && tags.length > 0) {
+            refreshTrendingTags();
+          }
         } catch (err) {
           toast("Failed to publish: " + err.message);
         } finally {

@@ -858,6 +858,43 @@ class DemoArtHubClient {
     
     return { success: true };
   }
+
+  async getTrendingTags(limit = 15) {
+    try {
+      const posts = this.getCollection('posts');
+      const tagCounts = {};
+      const tagOriginalCase = {}; // Store original case for display
+      
+      posts.forEach(post => {
+        if (post.tags && Array.isArray(post.tags)) {
+          post.tags.forEach(tag => {
+            if (tag && typeof tag === 'string' && tag.trim()) {
+              const normalizedTag = tag.trim().toLowerCase();
+              // Keep the original case of the first occurrence for display
+              if (!tagOriginalCase[normalizedTag]) {
+                tagOriginalCase[normalizedTag] = tag.trim();
+              }
+              tagCounts[normalizedTag] = (tagCounts[normalizedTag] || 0) + 1;
+            }
+          });
+        }
+      });
+      
+      // Sort tags by usage count and return the most popular ones
+      return Object.entries(tagCounts)
+        .filter(([tag, count]) => count >= 1) // Show tags used at least once
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, limit)
+        .map(([tag, count]) => ({
+          tag: tagOriginalCase[tag],
+          count: count,
+          normalizedTag: tag
+        }));
+    } catch (error) {
+      console.error('Error getting trending tags:', error);
+      throw new Error('Failed to get trending tags: ' + error.message);
+    }
+  }
 }
 
 // Firebase Database Manager
@@ -1504,6 +1541,43 @@ class FirebaseArtHubClient {
     } catch (error) {
       console.error('Error getting posts by tag:', error);
       throw new Error('Failed to get posts by tag: ' + error.message);
+    }
+  }
+
+  async getTrendingTags(limit = 15) {
+    try {
+      const posts = await this.getPosts();
+      const tagCounts = {};
+      const tagOriginalCase = {}; // Store original case for display
+      
+      posts.forEach(post => {
+        if (post.tags && Array.isArray(post.tags)) {
+          post.tags.forEach(tag => {
+            if (tag && typeof tag === 'string' && tag.trim()) {
+              const normalizedTag = tag.trim().toLowerCase();
+              // Keep the original case of the first occurrence for display
+              if (!tagOriginalCase[normalizedTag]) {
+                tagOriginalCase[normalizedTag] = tag.trim();
+              }
+              tagCounts[normalizedTag] = (tagCounts[normalizedTag] || 0) + 1;
+            }
+          });
+        }
+      });
+      
+      // Sort tags by usage count and return the most popular ones
+      return Object.entries(tagCounts)
+        .filter(([tag, count]) => count >= 1) // Show tags used at least once
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, limit)
+        .map(([tag, count]) => ({
+          tag: tagOriginalCase[tag],
+          count: count,
+          normalizedTag: tag
+        }));
+    } catch (error) {
+      console.error('Error getting trending tags:', error);
+      throw new Error('Failed to get trending tags: ' + error.message);
     }
   }
 
