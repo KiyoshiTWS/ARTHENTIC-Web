@@ -3288,6 +3288,7 @@
         ) {
           artHubClient = window.firebaseArtHubClient;
           console.log("✅ Firebase client initialized successfully");
+          console.log("✅ Client has getTrendingTags method:", typeof window.firebaseArtHubClient.getTrendingTags === "function");
           return true;
         }
         console.log("⏳ Firebase client not ready yet...");
@@ -7291,7 +7292,7 @@
         }
       });
 
-      // Initialize trending tags on load\n      loadTrendingTags();
+
 
       // Alias dropdown functionality
       const aliasDropdownBtn = document.getElementById("aliasDropdownBtn");
@@ -8154,6 +8155,7 @@
         updateStats();
         loadFeed();
         loadSuggestions();
+        loadTrendingTags(); // Load trending tags after client is ready
         updateNotificationBadge(); // Update notification count on load
 
         // Restore last visited section or default to feed
