@@ -3173,16 +3173,6 @@
     <script src="js/bootstrap.min.js"></script>
     <!-- Load Firebase configuration first -->
     <script src="firebase-config-local.js"></script>
-    <script>
-      // Verify config is loaded
-      console.log('🔧 Checking Firebase config after loading firebase-config-local.js');
-      console.log('🔧 PROJECT_ID:', window.FIREBASE_PROJECT_ID || 'Not set');
-      if (window.FIREBASE_PROJECT_ID === 'arthub-c46b2') {
-        console.log('✅ Real Firebase config loaded successfully!');
-      } else {
-        console.warn('⚠️ Firebase config not loaded properly, will use demo mode');
-      }
-    </script>
     <script type="module" src="firebase-config.js"></script>
     <script src="js/arthub-client.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
