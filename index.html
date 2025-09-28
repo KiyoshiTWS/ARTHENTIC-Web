@@ -33,79 +33,41 @@
 <body>
 
     <nav class="navbar fixed-top navbar-expand-lg">
-        <div class="container">
-
-<a href="index.html" class="navbar-brand">
-    <img id="siteLogo" src="whitelogo.png" alt="ARTHENTIC Logo" style="height: 50px; margin-right: 1px;">
-</a>
-
-<button id="darkModeToggle" class="btn btn-outline-dark ms-2" style="border-radius: 50px;">
-    <i class="bi bi-moon"></i>
-</button>
-
-
-
-            <!-- Mobile buttons -->
-            <div class="d-lg-none ms-auto d-flex align-items-center">
-                <a href="arthub.html" class="custom-btn btn btn-lg me-3">
-                    ArtHub
-                    <i class="bi-people ms-2"></i>
-                </a>
-                <a href="artwork-registration.html" class="custom-btn btn btn-lg me-2">
-                    Protect My Art
-                    <i class="bi-shield-lock ms-2"></i>
-                </a>
-            </div>
-
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-lg-5">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#section_1">Home</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#section_2">About</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#section_3">Services</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#section_4">Our Work</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#section_5">Pricing</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#section_6">Contact</a>
-                    </li>
-                </ul>
-
-                <!-- Desktop buttons -->
-                <div class="ms-auto d-none d-lg-flex gap-2">
-                    <a href="arthub.html" class="custom-btn btn btn-lg">
-                        ArtHub
-                        <i class="bi-people ms-2"></i>
-                    </a>
-                    <a href="artwork-registration.html" class="custom-btn btn btn-lg">
-                        Protect my Art
-                        <i class="bi-shield-lock ms-2"></i>
-                    </a>
-                </div>
-                </a>
-            </div>
+      <div class="container">
+        <a href="index.html" class="navbar-brand d-flex align-items-center">
+          <img id="siteLogo" src="whitelogo.png" alt="ARTHENTIC Logo" style="height:44px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto ms-lg-3 align-items-lg-center">
+            <li class="nav-item"><a class="nav-link" href="#section_1">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="#section_2">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="#section_3">Services</a></li>
+            <li class="nav-item"><a class="nav-link" href="#section_4">Our Work</a></li>
+            <li class="nav-item"><a class="nav-link" href="#section_5">Pricing</a></li>
+            <li class="nav-item"><a class="nav-link" href="#section_6">Contact</a></li>
+          </ul>
+          <div class="d-flex align-items-center gap-2 navbar-cta-wrapper">
+            <a href="arthub.html" class="custom-btn btn btn-sm btn-arthub">ArtHub <i class="bi bi-people ms-1"></i></a>
+            <a href="artwork-registration.html" class="custom-btn btn btn-sm btn-protect">Protect <span class="d-none d-xl-inline">my Art</span> <i class="bi bi-shield-lock ms-1"></i></a>
+            <button id="darkModeToggle" class="btn btn-sm btn-outline-dark dark-toggle" type="button" aria-label="Toggle dark mode"><i class="bi bi-moon"></i></button>
+          </div>
         </div>
-        </div>
+      </div>
     </nav>
+
+    <!-- Compact navbar styling to keep one-line layout -->
+    <style>
+      .navbar { padding-top:.4rem; padding-bottom:.4rem; }
+      .navbar .nav-link { padding:.45rem .65rem; font-size:.9rem; }
+      .navbar-cta-wrapper .btn { padding:.45rem .85rem; font-size:.8rem; line-height:1.1; white-space:nowrap; }
+      @media (min-width:992px){ .navbar .nav-link { font-size:.85rem; } }
+      .btn-arthub, .btn-protect { font-weight:600; }
+      .dark-toggle { border-radius:50px; display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; }
+      @media (max-width:991.98px){ .navbar-cta-wrapper { margin-top:1rem; } .navbar-cta-wrapper .btn { width:100%; } }
+    </style>
 
     <main>
 
