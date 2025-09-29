@@ -3289,8 +3289,8 @@
     </div>
 
     <script src="js/bootstrap.min.js"></script>
-    <!-- Load Firebase configuration first -->
-    <script src="firebase-config-local.js"></script>
+    <!-- Load Firebase configuration -->
+    <script type="text/javascript" src="firebase-config-local.js"></script>
     <script type="module" src="firebase-config.js"></script>
     <script src="js/arthub-client.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -10275,7 +10275,7 @@
               return;
             }
 
-            if (!/\\d/.test(newPassword)) {
+            if (!/\d/.test(newPassword)) {
               toast("Password must contain at least one number", "error");
               return;
             }
