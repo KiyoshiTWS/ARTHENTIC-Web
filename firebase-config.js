@@ -2,6 +2,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { 
   getFirestore, 
+  initializeFirestore,
   collection, 
   addDoc, 
   getDocs, 
@@ -50,7 +51,19 @@ const firebaseConfig = {
 let app, db;
 try {
   app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
+  
+  // Force long polling to avoid WebChannel 400 errors and internal assertion failures
+  try {
+    db = initializeFirestore(app, {
+      experimentalForceLongPolling: true,
+      experimentalAutoDetectLongPolling: false
+    });
+    console.log('✅ Firestore initialized with forced long polling');
+  } catch (error) {
+    console.log('⚠️ Fallback to standard Firestore:', error);
+    db = getFirestore(app);
+  }
+  
   console.log('🔥 Firebase initialized successfully with connection resilience');
   console.log('🔥 Firebase app:', app);
   console.log('🔥 Firestore db:', db);
