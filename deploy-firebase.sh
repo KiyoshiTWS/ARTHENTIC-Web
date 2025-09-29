@@ -55,6 +55,27 @@ fi
 
 echo "🔥 Firebase CLI version: $(firebase --version)"
 
+# Verify firebase-config-local.js exists and has correct content
+if [ ! -f "firebase-config-local.js" ]; then
+    echo "❌ firebase-config-local.js missing! Creating it..."
+    cat > firebase-config-local.js << EOF
+// Firebase Configuration - Generated for deployment
+window.FIREBASE_API_KEY = "AIzaSyB78EbKxjIxBPBudIHw6zVvfyVjZjMeDUk";
+window.FIREBASE_AUTH_DOMAIN = "arthub-c46b2.firebaseapp.com";
+window.FIREBASE_PROJECT_ID = "arthub-c46b2";
+window.FIREBASE_STORAGE_BUCKET = "arthub-c46b2.firebasestorage.app";
+window.FIREBASE_MESSAGING_SENDER_ID = "354841988675";
+window.FIREBASE_APP_ID = "1:354841988675:web:9e62897abf73d69d3f8ef6";
+window.FIREBASE_MEASUREMENT_ID = "G-QKFQXVBHFH";
+
+console.log('🔥 Firebase config loaded for deployment');
+console.log('Project ID:', window.FIREBASE_PROJECT_ID);
+EOF
+    echo "✅ firebase-config-local.js created"
+else
+    echo "✅ firebase-config-local.js exists"
+fi
+
 # Deploy to Firebase Hosting
 echo "🚀 Deploying to Firebase Hosting..."
 echo "📍 Project: arthub-c46b2"
