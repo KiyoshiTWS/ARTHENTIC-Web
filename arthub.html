@@ -7683,7 +7683,7 @@
           <!-- Enhanced Quick Comment Input - Always visible -->
           <div class="quick-comment-input mt-3 pt-2" style="border-top: 1px solid rgba(0,0,0,0.05);" data-post-id="${p.id}">
             <div class="d-flex align-items-center gap-2">
-              <img src="${getDefaultAvatar()}" class="rounded-circle flex-shrink-0 user-avatar-comment" width="28" height="28" alt="You">
+              <img src="${(auth.user?.profile_picture) || getDefaultAvatar()}" class="rounded-circle flex-shrink-0 user-avatar-comment" width="28" height="28" alt="${escapeHtml(auth.user?.username || 'You')}">
               <div class="flex-grow-1 position-relative">
                 <input type="text" class="form-control form-control-sm comment-input enhanced-comment-input" placeholder="Add a comment..." data-post-id="${p.id}" style="border-radius: 20px; border: 1px solid rgba(0,123,255,0.2); background: rgba(248,249,250,0.9); transition: all 0.3s ease;">
                 <div class="comment-actions d-none position-absolute" style="right: 8px; top: 50%; transform: translateY(-50%);">
