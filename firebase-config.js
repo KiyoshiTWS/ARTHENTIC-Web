@@ -58,22 +58,30 @@ console.log('🔧 Using Firebase configuration:', {
   fromWindow: !!window.FIREBASE_PROJECT_ID
 });
 
-// Initialize Firebase
+// Initialize Firebase with comprehensive error handling
 let app, db;
+let activeListeners = new Map(); // Track active listeners for cleanup
+let isFirestoreHealthy = true;
+
 try {
   app = initializeApp(firebaseConfig);
   
-  // Force long polling to avoid WebChannel 400 errors and internal assertion failures
+  // Force long polling and add additional resilience settings
   try {
     db = initializeFirestore(app, {
       experimentalForceLongPolling: true,
-      experimentalAutoDetectLongPolling: false
+      experimentalAutoDetectLongPolling: false,
+      ignoreUndefinedProperties: true // Prevent undefined field errors
     });
-    console.log('✅ Firestore initialized with forced long polling');
+    console.log('✅ Firestore initialized with forced long polling and error resilience');
   } catch (error) {
     console.log('⚠️ Fallback to standard Firestore:', error);
     db = getFirestore(app);
   }
+  
+  // Add global error handler for unhandled Firestore errors
+  window.addEventListener('unhandledrejection', handleUnhandledFirestoreError);
+  window.addEventListener('error', handleFirestoreError);
   
   console.log('🔥 Firebase initialized successfully with connection resilience');
   console.log('🔥 Firebase app:', app);
@@ -83,7 +91,7 @@ try {
   startConnectionHealthMonitoring();
 } catch (error) {
   console.error('❌ Firebase initialization failed:', error);
-  throw error;
+  handleCriticalFirebaseError(error);
 }
 
 // Connection health monitoring functions
@@ -92,15 +100,35 @@ function startConnectionHealthMonitoring() {
   
   connectionHealthTimer = setInterval(async () => {
     try {
-      if (db && !isReconnecting) {
-        // Lightweight connection check
-        await enableNetwork(db);
+      if (db && !isReconnecting && isFirestoreHealthy) {
+        // Lightweight connection check with timeout
+        const healthCheckPromise = enableNetwork(db);
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Health check timeout')), 5000)
+        );
+        
+        await Promise.race([healthCheckPromise, timeoutPromise]);
+        
+        // If we get here, connection is healthy
+        if (connectionRetryCount > 0) {
+          console.log('✅ Connection fully restored');
+          connectionRetryCount = 0;
+        }
       }
     } catch (error) {
       console.warn('🔄 Connection health check failed, attempting reconnection:', error);
+      
+      // Check for specific Firestore assertion failures
+      if (error.message && error.message.includes('INTERNAL ASSERTION FAILED')) {
+        isFirestoreHealthy = false;
+        console.error('🚨 Firestore assertion failure in health check');
+      }
+      
       handleConnectionFailure();
     }
   }, 30000); // Check every 30 seconds
+  
+  console.log('🔍 Connection health monitoring started');
 }
 
 // Handle connection failures with exponential backoff
@@ -117,13 +145,20 @@ function handleConnectionFailure() {
   setTimeout(async () => {
     try {
       if (db) {
+        // Clean up existing listeners before reconnecting
+        await cleanupActiveListeners();
+        
         await disableNetwork(db);
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Longer wait
         await enableNetwork(db);
         
         console.log('✅ Firebase connection restored');
         connectionRetryCount = 0;
         isReconnecting = false;
+        isFirestoreHealthy = true;
+        
+        // Notify app to refresh data
+        window.dispatchEvent(new CustomEvent('firestore-reconnected'));
       }
     } catch (error) {
       console.error('❌ Reconnection failed:', error);
@@ -131,9 +166,87 @@ function handleConnectionFailure() {
       
       if (connectionRetryCount >= MAX_CONNECTION_RETRIES) {
         console.warn('⚠️ Max reconnection attempts reached');
+        handleCriticalFirebaseError(error);
       }
     }
   }, backoffDelay);
+}
+
+// Handle critical Firebase errors that require page refresh
+function handleCriticalFirebaseError(error) {
+  console.error('🚨 Critical Firebase error detected:', error);
+  isFirestoreHealthy = false;
+  
+  // Show user-friendly error message
+  if (typeof window !== 'undefined' && window.toast) {
+    window.toast('Connection error detected. Please refresh the page if issues persist.', 'warning');
+  }
+  
+  // Auto-refresh after critical errors (with user consent in production)
+  if (connectionRetryCount >= MAX_CONNECTION_RETRIES) {
+    setTimeout(() => {
+      if (confirm('The application encountered a connection error. Would you like to refresh the page to restore functionality?')) {
+        window.location.reload();
+      }
+    }, 5000);
+  }
+}
+
+// Handle unhandled Firestore promise rejections
+function handleUnhandledFirestoreError(event) {
+  const error = event.reason;
+  if (error && error.message && error.message.includes('FIRESTORE') && error.message.includes('INTERNAL ASSERTION FAILED')) {
+    console.error('🚨 Firestore internal assertion failure detected:', error);
+    event.preventDefault(); // Prevent default error logging
+    
+    isFirestoreHealthy = false;
+    handleConnectionFailure();
+    
+    // Provide user feedback
+    if (typeof window !== 'undefined' && window.toast) {
+      window.toast('Temporary connection issue detected. Attempting to reconnect...', 'info');
+    }
+  }
+}
+
+// Handle synchronous Firestore errors
+function handleFirestoreError(event) {
+  const error = event.error;
+  if (error && error.message && error.message.includes('FIRESTORE') && error.message.includes('INTERNAL ASSERTION FAILED')) {
+    console.error('🚨 Firestore synchronous error detected:', error);
+    event.preventDefault();
+    
+    isFirestoreHealthy = false;
+    handleConnectionFailure();
+  }
+}
+
+// Clean up active listeners to prevent memory leaks
+async function cleanupActiveListeners() {
+  console.log('🧹 Cleaning up active Firestore listeners...');
+  
+  for (const [key, unsubscribe] of activeListeners) {
+    try {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    } catch (error) {
+      console.warn(`⚠️ Error cleaning up listener ${key}:`, error);
+    }
+  }
+  
+  activeListeners.clear();
+  console.log('✅ Active listeners cleaned up');
+}
+
+// Register a listener for cleanup
+function registerListener(key, unsubscribe) {
+  activeListeners.set(key, unsubscribe);
+}
+
+// Check if Firestore is healthy
+function getFirestoreHealth() {
+  return isFirestoreHealthy;
 }
 
 // Demo Mode localStorage Database Manager
@@ -1072,8 +1185,26 @@ class FirebaseArtHubClient {
     if (!this.currentUser) throw new Error('User not authenticated');
     
     try {
-      // Update in Firebase
-      await updateDoc(doc(this.db, 'users', this.currentUser.id), updates);
+      // Handle profile picture compression if needed
+      if (updates.profile_picture && typeof updates.profile_picture === 'string') {
+        // Calculate actual data URL size (more accurate than Blob calculation)
+        const sizeInBytes = this.getDataUrlSize(updates.profile_picture);
+        
+        // Firestore has a 1MB limit per field, be very aggressive with compression
+        if (sizeInBytes > 400000) { // 400KB threshold for maximum safety
+          console.log('🗜️ Compressing profile picture from', (sizeInBytes / 1024).toFixed(1), 'KB');
+          updates.profile_picture = await this.smartCompressImage(updates.profile_picture, 350000); // Target 350KB max
+          const newSize = this.getDataUrlSize(updates.profile_picture);
+          console.log('✅ Compressed to', (newSize / 1024).toFixed(1), 'KB');
+        }
+      }
+      
+      // Split large updates into smaller chunks if needed
+      const updateChunks = this.splitLargeUpdate(updates);
+      
+      for (const chunk of updateChunks) {
+        await updateDoc(doc(this.db, 'users', this.currentUser.id), chunk);
+      }
       
       // Update local user object
       this.currentUser = { ...this.currentUser, ...updates };
@@ -1083,8 +1214,153 @@ class FirebaseArtHubClient {
       
       return this.currentUser;
     } catch (error) {
+      if (error.message.includes('INTERNAL ASSERTION FAILED') || error.message.includes('longer than') || error.message.includes('1048487 bytes')) {
+        // Handle Firestore size limit errors
+        console.error('🚨 Firestore size limit error, applying emergency compression...');
+        if (updates.profile_picture) {
+        // Emergency compression - ultra aggressive settings
+        console.log('� Applying ULTRA emergency compression...');
+        updates.profile_picture = await this.smartCompressImage(updates.profile_picture, 200000); // Target 200KB max
+        const finalSize = this.getDataUrlSize(updates.profile_picture);
+        console.log('⚡ Ultra compressed to', (finalSize / 1024).toFixed(1), 'KB');          // Retry the update
+          return this.updateUserProfile(updates);
+        }
+      }
       throw new Error('Failed to update user profile: ' + error.message);
     }
+  }
+  
+  // Helper method to split large updates
+  splitLargeUpdate(updates) {
+    const chunks = [];
+    const maxChunkSize = 500000; // 500KB per chunk
+    
+    for (const [key, value] of Object.entries(updates)) {
+      const valueSize = new Blob([JSON.stringify(value)]).size;
+      
+      if (valueSize > maxChunkSize) {
+        // Handle large fields separately
+        chunks.push({ [key]: value });
+      } else {
+        // Group small fields together
+        if (chunks.length === 0 || Object.keys(chunks[chunks.length - 1]).length > 5) {
+          chunks.push({});
+        }
+        chunks[chunks.length - 1][key] = value;
+      }
+    }
+    
+    return chunks.length > 0 ? chunks : [updates];
+  }
+  
+  // Calculate accurate data URL size
+  getDataUrlSize(dataUrl) {
+    if (!dataUrl || typeof dataUrl !== 'string') return 0;
+    
+    // Remove data URL header to get just the base64 data
+    const base64Data = dataUrl.split(',')[1] || dataUrl;
+    
+    // Calculate size: each base64 character represents 6 bits
+    // 4 base64 characters = 3 bytes, so: length * 3/4
+    const sizeInBytes = Math.ceil((base64Data.length * 3) / 4);
+    
+    return sizeInBytes;
+  }
+
+  // Smart image compression that iteratively reduces size until target is met
+  async smartCompressImage(dataUrl, targetSizeBytes = 400000) {
+    let currentImage = dataUrl;
+    let currentSize = this.getDataUrlSize(currentImage);
+    
+    console.log('🎯 Target size:', (targetSizeBytes / 1024).toFixed(1), 'KB');
+    console.log('📏 Starting size:', (currentSize / 1024).toFixed(1), 'KB');
+    
+    // More aggressive compression parameters
+    const compressionSteps = [
+      { quality: 0.7, maxDimension: 600 },
+      { quality: 0.5, maxDimension: 400 },
+      { quality: 0.3, maxDimension: 300 },
+      { quality: 0.2, maxDimension: 250 },
+      { quality: 0.15, maxDimension: 200 },
+      { quality: 0.1, maxDimension: 150 },
+      { quality: 0.05, maxDimension: 120 }
+    ];
+    
+    for (const step of compressionSteps) {
+      if (currentSize <= targetSizeBytes) {
+        console.log('✅ Target size achieved:', (currentSize / 1024).toFixed(1), 'KB');
+        break;
+      }
+      
+      console.log(`🔄 Trying quality: ${step.quality}, dimension: ${step.maxDimension}px`);
+      currentImage = await this.compressImageData(currentImage, step.quality, step.maxDimension);
+      currentSize = this.getDataUrlSize(currentImage);
+      console.log(`📏 Current size: ${(currentSize / 1024).toFixed(1)}KB`);
+    }
+    
+    // Final check - if still too large, apply ULTRA extreme compression
+    if (currentSize > targetSizeBytes) {
+      console.log('🚨 Applying ULTRA extreme compression...');
+      currentImage = await this.compressImageData(currentImage, 0.02, 100); // 2% quality, 100px max
+      currentSize = this.getDataUrlSize(currentImage);
+      console.log(`⚡ Ultra final size: ${(currentSize / 1024).toFixed(1)}KB`);
+      
+      // If STILL too large, apply nuclear compression
+      if (currentSize > targetSizeBytes) {
+        console.log('☢️ Applying nuclear compression (last resort)...');
+        currentImage = await this.compressImageData(currentImage, 0.01, 80); // 1% quality, 80px max
+        currentSize = this.getDataUrlSize(currentImage);
+        console.log(`☢️ Nuclear size: ${(currentSize / 1024).toFixed(1)}KB`);
+      }
+    }
+    
+    return currentImage;
+  }
+
+  // Enhanced image compression
+  async compressImageData(dataUrl, quality = 0.7, maxDimension = 512) {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        // Calculate new dimensions maintaining aspect ratio
+        let { width, height } = img;
+        const aspectRatio = width / height;
+        
+        // More intelligent resizing based on aspect ratio
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            width = maxDimension;
+            height = Math.round(width / aspectRatio);
+          } else {
+            height = maxDimension;
+            width = Math.round(height * aspectRatio);
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Enable image smoothing for better quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
+        // Draw and compress
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Always use JPEG for profile pictures (smaller file size)
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      
+      img.onerror = () => {
+        console.error('Failed to load image for compression');
+        resolve(dataUrl); // Return original on error
+      };
+      
+      img.src = dataUrl;
+    });
   }
 
   logout() {
@@ -1278,76 +1554,127 @@ class FirebaseArtHubClient {
     const postsRef = collection(this.db, 'posts');
     const q = query(postsRef, orderBy('created_at', 'desc'), limit(50));
     
-    const unsubscriber = onSnapshot(q, 
-      // Success callback
-      async (snapshot) => {
-        // Only process server data to avoid duplicates during reconnection
-        if (!snapshot.metadata.hasPendingWrites) {
-      const posts = [];
-      
-      // Get all saved post IDs for current user
-      let savedPostIds = [];
-      if (this.currentUser) {
-        try {
-          const savedPostsRef = collection(this.db, 'saved_posts');
-          const savedQuery = query(savedPostsRef, where('user_id', '==', this.currentUser.id));
-          const savedSnapshot = await getDocs(savedQuery);
-          savedPostIds = savedSnapshot.docs.map(doc => doc.data().post_id);
-        } catch (error) {
-          console.warn('Failed to load saved posts for feed:', error);
-        }
-      }
-      
-      for (const doc of snapshot.docs) {
-        const data = doc.data();
-        
-        // Calculate counts
-        const likesCount = data.likes?.length || 0;
-        const savesCount = await this.getSavesCount(doc.id);
-        const commentsCount = await this.getCommentsCount(doc.id);
-        
-        // Get approved context
-        const context = await this.getApprovedContext(doc.id);
-        
-        // Get 3 most recent comments for Facebook-style display
-        const recent_comments = await this.getRecentComments(doc.id, 3);
-        
-        posts.push({
-          id: doc.id,
-          ...data,
-          created_at: data.created_at?.toDate?.() || new Date(),
-          user_liked: data.likes?.includes(this.currentUser?.id) || false,
-          user_saved: savedPostIds.includes(doc.id),
-          likes_count: likesCount,
-          saves_count: savesCount,
-          comments_count: commentsCount,
-          context: context,
-          recent_comments: recent_comments
-        });
-      }
-        callback(posts);
-        }
-      },
-      // Error callback with reconnection logic
-      (error) => {
-        console.error('📡 Feed subscription error:', error);
-        
-        if (this.isConnectionError(error)) {
-          console.log('🔄 Attempting to reconnect feed subscription...');
-          handleConnectionFailure();
-          
-          // Retry subscription after a delay
-          setTimeout(() => {
-            if (!isReconnecting) {
-              this.subscribeToFeed(callback);
+    // Create a resilient wrapper with error boundaries
+    const createResilientListener = () => {
+      try {
+        const unsubscriber = onSnapshot(q, 
+          // Success callback with error boundaries
+          async (snapshot) => {
+            try {
+              // Only process server data to avoid duplicates during reconnection
+              if (!snapshot.metadata.hasPendingWrites) {
+                const posts = [];
+                
+                // Get all saved post IDs for current user
+                let savedPostIds = [];
+                if (this.currentUser) {
+                  try {
+                    const savedPostsRef = collection(this.db, 'saved_posts');
+                    const savedQuery = query(savedPostsRef, where('user_id', '==', this.currentUser.id));
+                    const savedSnapshot = await getDocs(savedQuery);
+                    savedPostIds = savedSnapshot.docs.map(doc => doc.data().post_id);
+                  } catch (error) {
+                    console.warn('Failed to load saved posts for feed:', error);
+                  }
+                }
+                
+                for (const doc of snapshot.docs) {
+                  try {
+                    const data = doc.data();
+                    
+                    // Calculate counts with error handling
+                    const likesCount = data.likes?.length || 0;
+                    const savesCount = await this.getSavesCount(doc.id).catch(() => 0);
+                    const commentsCount = await this.getCommentsCount(doc.id).catch(() => 0);
+                    
+                    // Get approved context with error handling
+                    const context = await this.getApprovedContext(doc.id).catch(() => []);
+                    
+                    // Get 3 most recent comments for Facebook-style display
+                    const recent_comments = await this.getRecentComments(doc.id, 3).catch(() => []);
+                    
+                    posts.push({
+                      id: doc.id,
+                      ...data,
+                      created_at: data.created_at?.toDate?.() || new Date(),
+                      user_liked: data.likes?.includes(this.currentUser?.id) || false,
+                      user_saved: savedPostIds.includes(doc.id),
+                      likes_count: likesCount,
+                      saves_count: savesCount,
+                      comments_count: commentsCount,
+                      context: context,
+                      recent_comments: recent_comments
+                    });
+                  } catch (docError) {
+                    console.warn(`Error processing post ${doc.id}:`, docError);
+                    // Continue processing other posts
+                  }
+                }
+                
+                callback(posts);
+              }
+            } catch (snapshotError) {
+              console.error('Error in feed snapshot handler:', snapshotError);
+              
+              // Check for internal assertion failures
+              if (this.isInternalAssertionFailure(snapshotError)) {
+                console.log('🔄 Internal assertion failure detected, attempting recovery...');
+                this.handleInternalAssertionFailure('subscribeToFeed', createResilientListener);
+                return;
+              }
+              
+              // Try to provide empty feed on error rather than crash
+              callback([]);
             }
-          }, 5000);
-        }
-      }
-    );
+          },
+          // Error callback with comprehensive recovery
+          (error) => {
+            console.error('📡 Feed subscription error:', error);
+            
+            // Check for internal assertion failures first
+            if (this.isInternalAssertionFailure(error)) {
+              console.log('🔄 Internal assertion failure in feed subscription, attempting recovery...');
+              this.handleInternalAssertionFailure('subscribeToFeed', createResilientListener);
+              return;
+            }
+            
+            // Handle connection errors
+            if (this.isConnectionError(error)) {
+              console.log('🔄 Connection error in feed subscription, attempting reconnection...');
+              handleConnectionFailure();
+              
+              // Retry subscription after exponential backoff
+              const retryDelay = Math.min(5000 * Math.pow(2, this.retryCount || 0), 30000);
+              setTimeout(() => {
+                if (!isReconnecting && this.getFirestoreHealth()) {
+                  console.log(`🔄 Retrying feed subscription after ${retryDelay}ms...`);
+                  this.subscribeToFeed(callback);
+                }
+              }, retryDelay);
+            } else {
+              // Log unhandled errors but don't crash
+              console.error('Unhandled feed subscription error:', error);
+              this.handleUnhandledFirestoreError(error, 'subscribeToFeed');
+            }
+          }
+        );
 
-    this.unsubscribers.push(unsubscriber);
-    return unsubscriber;
+        this.unsubscribers.push(unsubscriber);
+        registerListener('feedSubscription', unsubscriber);
+        return unsubscriber;
+      } catch (creationError) {
+        console.error('Error creating feed listener:', creationError);
+        
+        if (this.isInternalAssertionFailure(creationError)) {
+          this.handleInternalAssertionFailure('subscribeToFeed', createResilientListener);
+          return null;
+        }
+        
+        throw creationError;
+      }
+    };
+
+    return createResilientListener();
   }
 
   // Get posts (non-realtime)

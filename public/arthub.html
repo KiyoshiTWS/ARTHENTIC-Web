@@ -10,8 +10,8 @@
   <link href="css/tooplate-tween-agency.css" rel="stylesheet">
   <link rel="stylesheet" href="css/arthub-extra.css">
   
-  <!-- ReCAPTCHA -->
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <!-- ReCAPTCHA v3 -->
+  <script src="https://www.google.com/recaptcha/api.js?render=6LdvxdgrAAAAAIcCXPLCipQV819ARwiuwys2fiq2" async defer></script>
   <style>
     body { font-family: 'Poppins', sans-serif; background:#f5f6f8; }
     body.dark-mode { background:#181a1b!important; color:#e0e0e0!important; }
@@ -148,6 +148,14 @@
     /* Base cards */
     .create-card, .post-card { background:#fff; border-radius:18px; box-shadow:0 4px 24px rgba(0,0,0,0.06); padding:1.25rem 1.5rem; margin-bottom:1.5rem; position:relative; }
     body.dark-mode .create-card, body.dark-mode .post-card { background:#23272b; box-shadow:0 4px 28px rgba(0,0,0,0.4); }
+    
+    /* Enhanced Loading Progress Bar */
+    .loading-progress-container { max-width: 300px; margin: 0 auto; }
+    .loading-progress-bar { width: 100%; height: 8px; background: #f0f0f0; border-radius: 4px; overflow: hidden; position: relative; }
+    .loading-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #dc3545 0%, #ffc107 50%, #007bff 100%); border-radius: 4px; transition: width 0.3s ease; position: relative; }
+    .loading-progress-fill::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent); animation: loading-shimmer 2s infinite; }
+    @keyframes loading-shimmer { 0% { left: -100%; } 100% { left: 100%; } }
+    .loading-percentage { font-weight: 500; color: #6c757d; }
     .create-card textarea { border-radius:14px; resize:vertical; }
     .create-actions { display:flex; justify-content:space-between; align-items:center; margin-top:.75rem; }
     .btn-brand { background:#dc3545!important; color:#fff!important; border:none; border-radius:30px; font-weight:600; padding:.55rem 1.35rem; }
@@ -190,8 +198,17 @@
 
     /* HUB LAYOUT */
     .hub-layout { max-width:1500px; margin:7rem auto 3rem; padding:0 1.5rem; display:flex; gap:2rem; }
-    .sidebar-left, .sidebar-right { width:250px; flex-shrink:0; position:sticky; top:90px; align-self:flex-start; }
+    .sidebar-left, .sidebar-right { width:250px; flex-shrink:0; position:sticky; top:90px; align-self:flex-start; max-height:calc(100vh - 120px); overflow-y:auto; overflow-x:hidden; padding-right:5px; }
     .sidebar-right { width:270px; }
+    
+    /* Custom scrollbar styling for sidebar */
+    .sidebar-left::-webkit-scrollbar, .sidebar-right::-webkit-scrollbar { width:6px; }
+    .sidebar-left::-webkit-scrollbar-track, .sidebar-right::-webkit-scrollbar-track { background:rgba(0,0,0,0.05); border-radius:3px; }
+    .sidebar-left::-webkit-scrollbar-thumb, .sidebar-right::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.2); border-radius:3px; }
+    .sidebar-left::-webkit-scrollbar-thumb:hover, .sidebar-right::-webkit-scrollbar-thumb:hover { background:rgba(0,0,0,0.3); }
+    body.dark-mode .sidebar-left::-webkit-scrollbar-track, body.dark-mode .sidebar-right::-webkit-scrollbar-track { background:rgba(255,255,255,0.1); }
+    body.dark-mode .sidebar-left::-webkit-scrollbar-thumb, body.dark-mode .sidebar-right::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.3); }
+    body.dark-mode .sidebar-left::-webkit-scrollbar-thumb:hover, body.dark-mode .sidebar-right::-webkit-scrollbar-thumb:hover { background:rgba(255,255,255,0.4); }
     .feed-column { flex:1; max-width:780px; }
     @media (max-width:1199.98px){ .sidebar-right { display:none !important; } }
     @media (max-width:991.98px){ .sidebar-left { display:none !important; } .hub-layout { display:block; } .feed-column { max-width:100%; } }
@@ -1117,7 +1134,7 @@
                 <div>
                   <input type="file" class="form-control" id="avatarUpload" 
                          accept="image/*" style="display: none;">
-                  <button type="button" class="btn btn-outline-primary btn-sm" 
+                  <button type="button" class="btn btn-primary btn-sm text-white" 
                           onclick="document.getElementById('avatarUpload').click()">
                     Choose Image
                   </button>
@@ -1161,7 +1178,7 @@
               <div class="mb-2">
                 <input type="password" class="form-control" id="confirmNewPassword" placeholder="Confirm new password">
               </div>
-              <button class="btn btn-outline-primary" type="button" id="changePasswordBtn">Change Password</button>
+              <button class="btn btn-primary text-white" type="button" id="changePasswordBtn">Change Password</button>
               <div class="form-text text-muted">Password must be at least 8 characters and contain at least one number</div>
             </div>
             <div class="mb-3">
@@ -1706,8 +1723,8 @@
         // Reset profile avatars to placeholder
         const profileAvatar = document.getElementById('profileAvatar');
         const createPostAvatar = document.getElementById('createPostAvatar');
-        if (profileAvatar) profileAvatar.src = 'https://placehold.co/80x80';
-        if (createPostAvatar) createPostAvatar.src = 'https://placehold.co/80x80';
+        if (profileAvatar) profileAvatar.src = getDefaultAvatar();
+        if (createPostAvatar) createPostAvatar.src = getDefaultAvatar();
       }
     }
 
@@ -1746,7 +1763,11 @@
         // Reset reCAPTCHA if switching to register
         if (typeof grecaptcha !== 'undefined') {
           try {
-            grecaptcha.reset();
+            const hostname = window.location.hostname;
+            // Only reset for v2 (development), v3 doesn't need reset
+            if (hostname !== 'arthub-c46b2.web.app' && hostname !== 'arthub-c46b2.firebaseapp.com') {
+              grecaptcha.reset();
+            }
           } catch (error) {
             console.warn('reCAPTCHA reset failed:', error);
           }
@@ -1851,10 +1872,25 @@
             if(password.length < 8) throw new Error('Password must be at least 8 characters long');
             if(!/\d/.test(password)) throw new Error('Password must contain at least one number');
             
-            // Verify reCAPTCHA
-            const recaptchaResponse = grecaptcha.getResponse();
-            if (!recaptchaResponse) {
-              throw new Error('Please complete the reCAPTCHA verification');
+            // Verify reCAPTCHA (v3 for production, v2 for development)
+            let recaptchaResponse;
+            const hostname = window.location.hostname;
+            
+            if (hostname === 'arthub-c46b2.web.app' || hostname === 'arthub-c46b2.firebaseapp.com') {
+              // reCAPTCHA v3 - execute with action
+              try {
+                recaptchaResponse = await grecaptcha.execute('6LdvxdgrAAAAAIcCXPLCipQV819ARwiuwys2fiq2', {action: 'register'});
+                console.log('✅ reCAPTCHA v3 token obtained:', recaptchaResponse.substring(0, 20) + '...');
+              } catch (error) {
+                console.error('❌ reCAPTCHA v3 execution failed:', error);
+                throw new Error('reCAPTCHA verification failed. Please try again.');
+              }
+            } else {
+              // reCAPTCHA v2 for development
+              recaptchaResponse = grecaptcha.getResponse();
+              if (!recaptchaResponse) {
+                throw new Error('Please complete the reCAPTCHA verification');
+              }
             }
             
             // Store registration data temporarily and send verification code
@@ -3160,7 +3196,7 @@
       const li = document.createElement('div');
       li.className='post-card';
       li.dataset.postId = p.id;
-      const profilePic = p.profile_picture || 'https://placehold.co/100x100';
+      const profilePic = p.profile_picture || getDefaultAvatar();
       const likedClass = p.user_liked ? 'text-danger' : '';
       
       // Check if post is saved from localStorage
@@ -3394,7 +3430,29 @@
       if(fresh) feedEl.innerHTML='';
       
       // Show loading
-      feedEl.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Loading feed...</p></div>';
+      feedEl.innerHTML = '<div class="text-center py-5"><div class="loading-progress-container"><div class="loading-progress-bar"><div class="loading-progress-fill"></div></div><p class="mt-3 mb-1">Loading feed...</p><small class="text-muted loading-percentage">0%</small></div></div>';
+      
+      // Start the loading animation
+      setTimeout(() => {
+        const fillElement = document.querySelector('.loading-progress-fill');
+        const percentageElement = document.querySelector('.loading-percentage');
+        if (fillElement && percentageElement) {
+          let progress = 0;
+          const interval = setInterval(() => {
+            progress += Math.random() * 15 + 5;
+            if (progress > 95) progress = 95;
+            
+            fillElement.style.width = progress + '%';
+            percentageElement.textContent = Math.round(progress) + '%';
+            
+            if (progress >= 95) {
+              clearInterval(interval);
+            }
+          }, 200);
+          
+          window.feedLoadingInterval = interval;
+        }
+      }, 100);
       
       try {
         // Subscribe to real-time feed updates
@@ -4298,13 +4356,30 @@
       const icon = btn.querySelector('i');
       const countEl = btn.querySelector('.like-count');
       const originalClass = icon.className;
+      const originalText = btn.classList.contains('text-danger');
+      
+      // Prevent multiple rapid clicks
+      if (btn.dataset.processing === 'true') return;
+      btn.dataset.processing = 'true';
       
       // Optimistic UI update
-      btn.disabled = true;
+      const wasLiked = btn.classList.contains('text-danger');
+      const currentCount = parseInt(countEl?.textContent || '0');
+      
+      if (wasLiked) {
+        icon.className = 'bi bi-heart';
+        btn.classList.remove('text-danger');
+        if (countEl) countEl.textContent = Math.max(0, currentCount - 1);
+      } else {
+        icon.className = 'bi bi-heart-fill';
+        btn.classList.add('text-danger');
+        if (countEl) countEl.textContent = currentCount + 1;
+      }
       
       try {
         const result = await window.firebaseArtHubClient.likePost(postId);
         
+        // Update UI based on server response
         if (result.liked) {
           icon.className = 'bi bi-heart-fill';
           btn.classList.add('text-danger');
@@ -4313,16 +4388,21 @@
           btn.classList.remove('text-danger');
         }
         
-        if (countEl) countEl.textContent = result.count;
-        
+        if (countEl) countEl.textContent = result.count || 0;
         updateNotificationBadge();
-        // Refresh feed to update counters
-        setTimeout(() => loadFeed(true), 500);
+        
       } catch (err) {
+        // Revert optimistic update on error
         icon.className = originalClass;
-        toast('Failed to like post: ' + err.message);
+        if (originalText) {
+          btn.classList.add('text-danger');
+        } else {
+          btn.classList.remove('text-danger');
+        }
+        if (countEl) countEl.textContent = currentCount;
+        toast('Failed to like post: ' + err.message, 'error');
       } finally {
-        btn.disabled = false;
+        btn.dataset.processing = 'false';
       }
     }
 
@@ -4975,19 +5055,69 @@
       
       // Initialize reCAPTCHA when auth modal is shown
       let recaptchaInitialized = false;
-      document.getElementById('authModal').addEventListener('shown.bs.modal', function() {
-        if (!recaptchaInitialized && typeof grecaptcha !== 'undefined') {
-          try {
-            grecaptcha.render('recaptcha-container', {
-              'sitekey': '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', // Test site key
-              'theme': 'light'
-            });
-            recaptchaInitialized = true;
-          } catch (error) {
-            console.warn('reCAPTCHA initialization failed:', error);
-          }
+      
+      // Get appropriate reCAPTCHA v3 site key based on environment
+      function getRecaptchaSiteKey() {
+        const hostname = window.location.hostname;
+        
+        // Production key for Firebase Hosting domain (reCAPTCHA v3)
+        if (hostname === 'arthub-c46b2.web.app' || hostname === 'arthub-c46b2.firebaseapp.com') {
+          console.log('🔐 Using reCAPTCHA v3 production key for:', hostname);
+          return "6LdvxdgrAAAAAIcCXPLCipQV819ARwiuwys2fiq2";
         }
-      });
+        
+        // For localhost, still use test key (reCAPTCHA v2 test key for development)
+        console.log('🔧 Using reCAPTCHA v2 test key for development:', hostname);
+        return "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"; // Google's test key
+      }
+
+      // Initialize reCAPTCHA v3 when page loads
+      function initializeRecaptcha() {
+        if (typeof grecaptcha !== 'undefined') {
+          const hostname = window.location.hostname;
+          
+          // For production domains, use v3
+          if (hostname === 'arthub-c46b2.web.app' || hostname === 'arthub-c46b2.firebaseapp.com') {
+            console.log('🔐 Initializing reCAPTCHA v3 for production');
+            grecaptcha.ready(function() {
+              console.log('✅ reCAPTCHA v3 ready');
+              // Hide the container since v3 doesn't need visible element
+              const container = document.getElementById('recaptcha-container');
+              if (container) {
+                container.style.display = 'none';
+              }
+            });
+          } else {
+            // For localhost/development, use v2 test implementation
+            console.log('🔧 Setting up reCAPTCHA v2 test for development');
+            document.getElementById('authModal').addEventListener('shown.bs.modal', function() {
+              if (!recaptchaInitialized && typeof grecaptcha !== 'undefined') {
+                try {
+                  grecaptcha.render('recaptcha-container', {
+                    'sitekey': "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
+                    'theme': 'light',
+                    'size': 'normal'
+                  });
+                  recaptchaInitialized = true;
+                  console.log('✅ reCAPTCHA v2 test initialized');
+                } catch (error) {
+                  console.error('❌ reCAPTCHA v2 test initialization failed:', error);
+                }
+              }
+            });
+          }
+        } else {
+          console.warn('⚠️ reCAPTCHA script not loaded yet, retrying...');
+          setTimeout(initializeRecaptcha, 1000);
+        }
+      }
+      
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeRecaptcha);
+      } else {
+        initializeRecaptcha();
+      }
       
       // Resend verification code with countdown
       let resendCountdown = 0;

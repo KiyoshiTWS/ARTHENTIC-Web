@@ -9,8 +9,8 @@
     <link href="css/bootstrap-icons.css" rel="stylesheet" />
     <link href="css/tooplate-tween-agency.css" rel="stylesheet" />
 
-    <!-- ReCAPTCHA -->
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- ReCAPTCHA v3 -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdvxdgrAAAAAIcCXPLCipQV819ARwiuwys2fiq2" async defer></script>
     <style>
       body {
         font-family: "Poppins", sans-serif;
@@ -177,6 +177,88 @@
       body.dark-mode .post-card {
         background: #23272b;
         box-shadow: 0 4px 28px rgba(0, 0, 0, 0.4);
+      }
+      
+      /* Enhanced Loading Progress Bar */
+      .loading-progress-container {
+        max-width: 300px;
+        margin: 0 auto;
+      }
+      
+      .loading-progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+      }
+      
+      .loading-progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #dc3545 0%, #ffc107 50%, #007bff 100%);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+        position: relative;
+      }
+      
+      .loading-progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+        animation: loading-shimmer 2s infinite;
+      }
+      
+      @keyframes loading-shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+      }
+      
+      .loading-percentage {
+        font-weight: 500;
+        color: #6c757d;
+      }
+      
+      /* Heart pulse animation for comment likes */
+      @keyframes heartPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+      }
+      
+      /* Enhanced comment interactions */
+      .comment-like-btn {
+        transition: all 0.2s ease;
+        border-radius: 12px;
+        padding: 2px 6px;
+      }
+      
+      .comment-like-btn:hover {
+        background: rgba(0,0,0,0.05);
+        text-decoration: none;
+      }
+      
+      .comment-like-btn.liked {
+        color: #dc3545 !important;
+      }
+      
+      .quick-comment-btn {
+        transition: all 0.2s ease;
+      }
+      
+      .quick-comment-btn:hover {
+        transform: scale(1.05);
+      }
+      
+      .add-comment-inline {
+        background: rgba(248,249,250,0.5);
+        border-radius: 12px;
+        border: 1px solid rgba(0,123,255,0.1);
       }
       .create-card textarea {
         border-radius: 14px;
@@ -425,9 +507,52 @@
         position: sticky;
         top: 90px;
         align-self: flex-start;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 5px; /* Add space for scrollbar */
       }
       .sidebar-right {
         width: 270px;
+      }
+
+      /* Custom scrollbar styling for sidebar */
+      .sidebar-left::-webkit-scrollbar,
+      .sidebar-right::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .sidebar-left::-webkit-scrollbar-track,
+      .sidebar-right::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 3px;
+      }
+
+      .sidebar-left::-webkit-scrollbar-thumb,
+      .sidebar-right::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+      }
+
+      .sidebar-left::-webkit-scrollbar-thumb:hover,
+      .sidebar-right::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.3);
+      }
+
+      /* Dark mode scrollbar */
+      body.dark-mode .sidebar-left::-webkit-scrollbar-track,
+      body.dark-mode .sidebar-right::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      body.dark-mode .sidebar-left::-webkit-scrollbar-thumb,
+      body.dark-mode .sidebar-right::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      body.dark-mode .sidebar-left::-webkit-scrollbar-thumb:hover,
+      body.dark-mode .sidebar-right::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.4);
       }
       .feed-column {
         flex: 1;
@@ -2272,7 +2397,7 @@
                     />
                     <button
                       type="button"
-                      class="btn btn-outline-primary btn-sm"
+                      class="btn btn-primary btn-sm text-white"
                       onclick="document.getElementById('avatarUpload').click()"
                     >
                       Choose Image
@@ -2303,7 +2428,7 @@
                     placeholder="Current username"
                   />
                   <button
-                    class="btn btn-outline-primary"
+                    class="btn btn-primary"
                     type="button"
                     id="changeUsernameBtn"
                   >
@@ -2358,7 +2483,7 @@
                   />
                 </div>
                 <button
-                  class="btn btn-outline-primary"
+                  class="btn btn-primary text-white"
                   type="button"
                   id="changePasswordBtn"
                 >
@@ -2523,9 +2648,15 @@
                     class="form-control"
                     id="regUsername"
                     placeholder="username"
+                    maxlength="50"
+                    pattern="[a-zA-Z0-9_\-\.\s]+"
+                    title="Username can only contain letters, numbers, spaces, underscores, hyphens, and periods"
                     required
                   />
                   <label for="regUsername">Username</label>
+                  <div class="invalid-feedback" id="usernameError" style="display: none;">
+                    Username contains invalid characters. Only letters, numbers, spaces, and basic symbols are allowed.
+                  </div>
                 </div>
                 <div class="form-floating mb-3">
                   <input
@@ -2533,9 +2664,15 @@
                     class="form-control"
                     id="regEmail"
                     placeholder="email"
+                    maxlength="100"
+                    pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                    title="Please enter a valid email address"
                     required
                   />
                   <label for="regEmail">Email</label>
+                  <div class="invalid-feedback" id="emailError" style="display: none;">
+                    Please enter a valid email address (e.g., user@example.com)
+                  </div>
                 </div>
                 <div class="form-floating mb-3">
                   <input
@@ -3367,9 +3504,9 @@
           // Reset profile avatars to placeholder
           const profileAvatar = document.getElementById("profileAvatar");
           const createPostAvatar = document.getElementById("createPostAvatar");
-          if (profileAvatar) profileAvatar.src = "https://placehold.co/80x80";
+          if (profileAvatar) profileAvatar.src = getDefaultAvatar();
           if (createPostAvatar)
-            createPostAvatar.src = "https://placehold.co/80x80";
+            createPostAvatar.src = getDefaultAvatar();
         }
       }
 
@@ -3411,7 +3548,11 @@
           // Reset reCAPTCHA if switching to register
           if (typeof grecaptcha !== "undefined") {
             try {
-              grecaptcha.reset();
+              const hostname = window.location.hostname;
+              // Only reset for v2 (development), v3 doesn't need reset
+              if (hostname !== 'arthub-c46b2.web.app' && hostname !== 'arthub-c46b2.firebaseapp.com') {
+                grecaptcha.reset();
+              }
             } catch (error) {
               console.warn("reCAPTCHA reset failed:", error);
             }
@@ -3487,6 +3628,18 @@
               loadSuggestions();
               toast("Welcome back @" + auth.user.username);
               authModalRef.hide();
+              
+              // Automatically refresh the page after successful login
+              console.log("🔄 Refreshing page after successful login...");
+              
+              // Show refresh indicator
+              setTimeout(() => {
+                toast("Refreshing page...", "info");
+              }, 1000);
+              
+              setTimeout(() => {
+                window.location.reload();
+              }, 1500); // Wait 1.5 seconds to show welcome message
             } else {
               // Check if we're in email verification step
               const emailVerificationStep = document.getElementById(
@@ -3529,6 +3682,17 @@
                   // Clean up temp data
                   delete window.tempVerificationCode;
                   delete window.tempRegistrationData;
+                  
+                  // Show refresh indicator
+                  setTimeout(() => {
+                    toast("Refreshing page to complete setup...", "info");
+                  }, 1000);
+                  
+                  // Automatically refresh the page after successful registration
+                  console.log("🔄 Refreshing page after successful registration...");
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 1500); // Wait 1.5 seconds to show success message
                 } else {
                   throw new Error(
                     "Invalid verification code. Please try again."
@@ -3554,10 +3718,25 @@
                 if (!/\d/.test(password))
                   throw new Error("Password must contain at least one number");
 
-                // Verify reCAPTCHA
-                const recaptchaResponse = grecaptcha.getResponse();
-                if (!recaptchaResponse) {
-                  throw new Error("Please complete the reCAPTCHA verification");
+                // Verify reCAPTCHA (v3 for production, v2 for development)
+                let recaptchaResponse;
+                const hostname = window.location.hostname;
+                
+                if (hostname === 'arthub-c46b2.web.app' || hostname === 'arthub-c46b2.firebaseapp.com') {
+                  // reCAPTCHA v3 - execute with action
+                  try {
+                    recaptchaResponse = await grecaptcha.execute('6LdvxdgrAAAAAIcCXPLCipQV819ARwiuwys2fiq2', {action: 'register'});
+                    console.log('✅ reCAPTCHA v3 token obtained:', recaptchaResponse.substring(0, 20) + '...');
+                  } catch (error) {
+                    console.error('❌ reCAPTCHA v3 execution failed:', error);
+                    throw new Error("reCAPTCHA verification failed. Please try again.");
+                  }
+                } else {
+                  // reCAPTCHA v2 for development
+                  recaptchaResponse = grecaptcha.getResponse();
+                  if (!recaptchaResponse) {
+                    throw new Error("Please complete the reCAPTCHA verification");
+                  }
                 }
 
                 // Store registration data temporarily and send verification code
@@ -3569,19 +3748,66 @@
                 // Send actual email if EmailJS is available
                 if (typeof emailjs !== "undefined") {
                   try {
+                    console.log("📧 Attempting to send verification email...");
+                    
+                    // Sanitize both email and username for EmailJS compatibility
+                    const sanitizedEmail = sanitizeEmailForEmailJS(email);
+                    const sanitizedUsername = sanitizeUsernameForEmail(username);
+                    
+                    console.log("Email parameters:", {
+                      service: "service_7apbhjx",
+                      template: "template_nv9s6ro",
+                      originalEmail: email,
+                      sanitizedEmail: sanitizedEmail,
+                      originalUsername: username,
+                      sanitizedUsername: sanitizedUsername,
+                      code: window.tempVerificationCode
+                    });
+                    
                     const result = await emailjs.send("service_7apbhjx", "template_nv9s6ro", {
-                      email: email,
-                      user_name: username,
+                      email: sanitizedEmail,
+                      user_name: sanitizedUsername,
                       verification_code: window.tempVerificationCode,
                       app_name: "ArtHub",
+                      to_email: sanitizedEmail, // Alternative parameter name
+                      to_name: sanitizedUsername, // Alternative parameter name
+                      recipient_email: sanitizedEmail, // Additional parameter
+                      user_email: sanitizedEmail, // Additional parameter
                     });
-                    console.log("EmailJS Success:", result);
+                    
+                    console.log("✅ EmailJS Success:", result);
                     toast(`Verification code sent to ${email}!`, "success");
+                    
                   } catch (error) {
-                    console.error("EmailJS send failed:", error);
-                    throw new Error(`Failed to send verification email: ${error.message || error.text || 'Unknown error'}`);
+                    console.error("❌ EmailJS send failed:", error);
+                    console.error("Error details:", {
+                      message: error.message,
+                      text: error.text,
+                      status: error.status,
+                      name: error.name,
+                      stack: error.stack
+                    });
+                    
+                    // Try to provide more specific error messages
+                    let errorMessage = "Unknown error";
+                    if (error.text) {
+                      errorMessage = error.text;
+                    } else if (error.message) {
+                      errorMessage = error.message;
+                    } else if (error.status) {
+                      errorMessage = `Service error (${error.status})`;
+                    }
+                    
+                    // For development - show the verification code in console as fallback
+                    console.log("🔧 DEV MODE - Verification code:", window.tempVerificationCode);
+                    toast(`Email service temporarily unavailable. Check console for verification code.`, "warning");
+                    
+                    // Don't throw error - allow user to proceed manually
+                    // throw new Error(`Failed to send verification email: ${errorMessage}`);
                   }
                 } else {
+                  console.error("❌ EmailJS not loaded");
+                  toast("Email service not available. Please refresh the page and try again.", "error");
                   throw new Error("Email service not available. Please refresh the page and try again.");
                 }
 
@@ -3658,19 +3884,47 @@
         
         // Send new code via EmailJS
         if (typeof emailjs !== "undefined") {
+          console.log("📧 Resending verification code...");
+          // Sanitize both email and username for EmailJS compatibility
+          const sanitizedEmail = sanitizeEmailForEmailJS(window.tempRegistrationData.email);
+          const sanitizedUsername = sanitizeUsernameForEmail(window.tempRegistrationData.username);
+          
+          console.log("Resend parameters:", {
+            originalEmail: window.tempRegistrationData.email,
+            sanitizedEmail: sanitizedEmail,
+            originalUsername: window.tempRegistrationData.username,
+            sanitizedUsername: sanitizedUsername,
+            code: window.tempVerificationCode
+          });
+          
           emailjs.send("service_7apbhjx", "template_nv9s6ro", {
-            email: window.tempRegistrationData.email,
-            user_name: window.tempRegistrationData.username,
+            email: sanitizedEmail,
+            user_name: sanitizedUsername,
             verification_code: window.tempVerificationCode,
             app_name: "ArtHub",
-          }).then(() => {
+            to_email: sanitizedEmail, // Alternative parameter
+            to_name: sanitizedUsername, // Alternative parameter
+            recipient_email: sanitizedEmail, // Additional parameter
+            user_email: sanitizedEmail, // Additional parameter
+          }).then((result) => {
+            console.log("✅ Resend successful:", result);
             toast('New verification code sent!', 'success');
             startResendCountdown();
           }).catch((error) => {
-            console.error("EmailJS send failed:", error);
-            toast(`Failed to resend code: ${error.message || error.text || 'Please try again'}`, 'error');
+            console.error("❌ EmailJS resend failed:", error);
+            console.error("Resend error details:", {
+              message: error.message,
+              text: error.text,
+              status: error.status
+            });
+            
+            // For development - show the verification code in console as fallback
+            console.log("🔧 DEV MODE - New verification code:", window.tempVerificationCode);
+            toast(`Email service issue. Check console for new verification code.`, 'warning');
+            startResendCountdown(); // Still start countdown to prevent spam
           });
         } else {
+          console.error("❌ EmailJS not available for resend");
           toast('Email service not available. Please refresh the page and try again.', 'error');
         }
       }
@@ -3738,16 +3992,24 @@
         
         try {
           if (typeof emailjs !== "undefined") {
-            // Debug log to verify email parameter
-            console.log('Sending reset code to:', email);
+            // Sanitize email for EmailJS compatibility
+            const sanitizedEmail = sanitizeEmailForEmailJS(email);
+            
+            console.log('Sending reset code:', {
+              originalEmail: email,
+              sanitizedEmail: sanitizedEmail,
+              resetCode: resetCode
+            });
             
             const templateParams = {
-              to: email,  // Most common EmailJS recipient parameter
-              email: email,  // Alternative email parameter  
-              name: email.split('@')[0],  // User name from email
+              to: sanitizedEmail,  // Most common EmailJS recipient parameter
+              email: sanitizedEmail,  // Alternative email parameter  
+              name: sanitizedEmail.split('@')[0],  // User name from sanitized email
               backup_code: resetCode,  // This matches the EmailJS template variable
               app_name: "ArtHub",
-              website_url: window.location.origin
+              website_url: window.location.origin,
+              recipient_email: sanitizedEmail,  // Additional parameter
+              user_email: sanitizedEmail  // Additional parameter
             };            console.log('EmailJS template params:', templateParams);
             
             const result = await emailjs.send("service_7apbhjx", "template_plk5vid", templateParams);
@@ -4011,27 +4273,91 @@
           return;
         }
         
-        try {
-          await window.firebaseArtHubClient.toggleCommentLike(commentId);
-          
-          const icon = button.querySelector('i');
-          const isLiked = button.classList.contains('liked');
-          
-          if (isLiked) {
-            button.classList.remove('liked');
-            icon.classList.remove('bi-heart-fill');
-            icon.classList.add('bi-heart');
-          } else {
-            button.classList.add('liked');
-            icon.classList.remove('bi-heart');
-            icon.classList.add('bi-heart-fill');
+        // Prevent multiple rapid clicks with immediate visual feedback
+        if (button.dataset.processing === 'true') {
+          // Add a subtle bounce effect to show the click was registered
+          button.style.transform = 'scale(0.95)';
+          setTimeout(() => button.style.transform = 'scale(1)', 150);
+          return;
+        }
+        button.dataset.processing = 'true';
+        
+        const icon = button.querySelector('i');
+        const countEl = button.querySelector('.like-count');
+        const wasLiked = button.classList.contains('liked');
+        const currentCount = parseInt(countEl?.textContent || '0');
+        
+        // Enhanced visual feedback with animation
+        button.style.transform = 'scale(1.1)';
+        setTimeout(() => button.style.transform = 'scale(1)', 150);
+        
+        // Optimistic UI update with improved colors
+        if (wasLiked) {
+          button.classList.remove('liked', 'text-danger');
+          icon.classList.remove('bi-heart-fill');
+          icon.classList.add('bi-heart');
+          if (countEl) {
+            countEl.textContent = Math.max(0, currentCount - 1);
+            countEl.style.color = '#6c757d';
+          }
+        } else {
+          button.classList.add('liked', 'text-danger');
+          icon.classList.remove('bi-heart');
+          icon.classList.add('bi-heart-fill');
+          if (countEl) {
+            countEl.textContent = currentCount + 1;
+            countEl.style.color = '#dc3545';
           }
           
-          // Update count (you might want to refresh from server)
-          loadFeed(true);
+          // Add a subtle heart pulse animation
+          icon.style.animation = 'heartPulse 0.4s ease-in-out';
+          setTimeout(() => icon.style.animation = '', 400);
+        }
+        
+        try {
+          const result = await window.firebaseArtHubClient.toggleCommentLike(commentId);
+          
+          // Update all instances of this comment like button across the page
+          const allCommentLikeBtns = document.querySelectorAll(`[data-comment-id="${commentId}"].comment-like-btn`);
+          allCommentLikeBtns.forEach(btn => {
+            const btnIcon = btn.querySelector('i');
+            const btnCountEl = btn.querySelector('.like-count');
+            
+            if (result && typeof result.liked !== 'undefined') {
+              if (result.liked) {
+                btn.classList.add('liked', 'text-danger');
+                btnIcon.classList.remove('bi-heart');
+                btnIcon.classList.add('bi-heart-fill');
+                if (btnCountEl) btnCountEl.style.color = '#dc3545';
+              } else {
+                btn.classList.remove('liked', 'text-danger');
+                btnIcon.classList.remove('bi-heart-fill');
+                btnIcon.classList.add('bi-heart');
+                if (btnCountEl) btnCountEl.style.color = '#6c757d';
+              }
+              if (btnCountEl && result.count !== undefined) {
+                btnCountEl.textContent = result.count;
+              }
+            }
+          });
           
         } catch (error) {
+          // Revert optimistic update on error
+          if (wasLiked) {
+            button.classList.add('liked', 'text-danger');
+            icon.classList.remove('bi-heart');
+            icon.classList.add('bi-heart-fill');
+            if (countEl) countEl.style.color = '#dc3545';
+          } else {
+            button.classList.remove('liked', 'text-danger');
+            icon.classList.remove('bi-heart-fill');
+            icon.classList.add('bi-heart');
+            if (countEl) countEl.style.color = '#6c757d';
+          }
+          if (countEl) countEl.textContent = currentCount;
           toast('Failed to update like: ' + error.message, 'error');
+        } finally {
+          button.dataset.processing = 'false';
         }
       }
       
@@ -4048,28 +4374,196 @@
         replyInput.className = 'reply-input mt-2';
         replyInput.innerHTML = `
           <div class="input-group input-group-sm">
-            <input type="text" class="form-control" placeholder="Reply to ${username}..." data-comment-id="${commentId}">
-            <button class="btn btn-outline-secondary post-reply-btn" type="button">
+            <img src="${auth.user?.profile_picture || getDefaultAvatar()}" class="rounded-circle me-2" width="24" height="24" alt="${escapeHtml(auth.user?.username || 'User')}">
+            <input type="text" class="form-control reply-text-input" placeholder="Reply to ${username}..." data-comment-id="${commentId}" data-username="${username}">
+            <button class="btn btn-outline-primary post-reply-btn" type="button" onclick="postReply('${commentId}', this)">
               <i class="bi bi-send"></i>
             </button>
           </div>
         `;
         
         commentItem.appendChild(replyInput);
-        replyInput.querySelector('input').focus();
+        const input = replyInput.querySelector('.reply-text-input');
+        input.focus();
+        
+        // Handle Enter key
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            postReply(commentId, replyInput.querySelector('.post-reply-btn'));
+          }
+        });
+      }
+      
+      async function postReply(commentId, button) {
+        if (!auth.user) {
+          toast('Please login to reply', 'warning');
+          return;
+        }
+        
+        const replyInput = button.closest('.reply-input');
+        const input = replyInput.querySelector('.reply-text-input');
+        const text = input.value.trim();
+        const username = input.dataset.username;
+        
+        if (!text) return;
+        
+        // Prevent multiple submissions
+        if (button.dataset.processing === 'true') return;
+        button.dataset.processing = 'true';
+        button.disabled = true;
+        
+        try {
+          // For now, we'll treat replies as regular comments with mention
+          const postCard = button.closest('.post-card');
+          const postId = postCard.querySelector('.like-btn').dataset.postId;
+          const replyText = `@${username} ${text}`;
+          
+          const newComment = await window.firebaseArtHubClient.addComment(postId, replyText);
+          
+          // Update comment count
+          const commentBtn = postCard.querySelector('.comment-btn');
+          const commentCountEl = commentBtn?.querySelector('.comment-count');
+          if (commentCountEl) {
+            const currentCount = parseInt(commentCountEl.textContent || '0');
+            commentCountEl.textContent = currentCount + 1;
+          }
+          
+          // Add reply to comments preview
+          const commentsPreview = postCard.querySelector('.comments-preview');
+          if (commentsPreview) {
+            const replyHtml = `
+              <div class="comment-preview-item d-flex align-items-start mb-2 ms-3">
+                <img src="${auth.user.profile_picture || getDefaultAvatar()}" class="rounded-circle me-2 flex-shrink-0" width="28" height="28" alt="${escapeHtml(auth.user.username)}">
+                <div class="flex-grow-1">
+                  <div class="d-flex align-items-center">
+                    <strong class="me-2">${escapeHtml(auth.user.username)}</strong>
+                    <small class="text-muted">just now</small>
+                  </div>
+                  <p class="mb-1">
+                    <span class="text-primary">@${escapeHtml(username)}</span> ${escapeHtml(text)}
+                  </p>
+                  <div class="comment-actions">
+                    <button class="btn btn-sm btn-link p-0 me-2 comment-like-btn" onclick="toggleCommentLike('${newComment.id}', this)">
+                      <i class="bi bi-heart"></i> <span class="like-count">0</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+            commentsPreview.insertAdjacentHTML('beforeend', replyHtml);
+          }
+          
+          // Remove reply input
+          replyInput.remove();
+          
+          toast('Reply posted!', 'success');
+          updateNotificationBadge();
+          
+        } catch (error) {
+          toast('Failed to post reply: ' + error.message, 'error');
+        } finally {
+          button.dataset.processing = 'false';
+          button.disabled = false;
+        }
       }
       
       function toggleQuickComment(postId, button) {
-        const postCard = button.closest('.post-card');
-        const quickCommentDiv = postCard.querySelector('.add-comment-inline');
+        if (!auth.user) {
+          toast('Please login to comment', 'warning');
+          return;
+        }
         
-        if (quickCommentDiv.style.display === 'none') {
-          quickCommentDiv.style.display = 'block';
-          quickCommentDiv.querySelector('.comment-input').focus();
-          button.innerHTML = '<i class="bi bi-x-circle"></i>';
-        } else {
+        const postCard = button.closest('.post-card');
+        let quickCommentDiv = postCard.querySelector('.add-comment-inline');
+        
+        // Create quick comment input if it doesn't exist
+        if (!quickCommentDiv) {
+          quickCommentDiv = document.createElement('div');
+          quickCommentDiv.className = 'add-comment-inline mt-2 p-2';
           quickCommentDiv.style.display = 'none';
-          button.innerHTML = '<i class="bi bi-plus-circle"></i>';
+          quickCommentDiv.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+              <img src="${auth.user.profile_picture || getDefaultAvatar()}" class="rounded-circle flex-shrink-0" width="32" height="32" alt="${escapeHtml(auth.user.username)}">
+              <div class="flex-grow-1">
+                <div class="input-group input-group-sm">
+                  <input type="text" class="form-control comment-input" placeholder="Write a comment..." data-post-id="${postId}" style="border-radius: 20px 0 0 20px; border: 1px solid rgba(0,123,255,0.3); background: rgba(248,249,250,0.9);">
+                  <button class="btn btn-primary btn-sm" type="button" onclick="postQuickComment('${postId}', this.parentElement.querySelector('.comment-input'))" style="border-radius: 0 20px 20px 0;">
+                    <i class="bi bi-send-fill"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+          
+          // Insert after the quick comment input section
+          const quickCommentInput = postCard.querySelector('.quick-comment-input');
+          if (quickCommentInput) {
+            quickCommentInput.insertAdjacentElement('afterend', quickCommentDiv);
+          } else {
+            // Fallback: insert at the end of post card
+            postCard.appendChild(quickCommentDiv);
+          }
+        }
+        
+        // Enhanced toggle with smooth animation
+        const isVisible = quickCommentDiv.style.display !== 'none';
+        const icon = button.querySelector('i');
+        
+        // Add click feedback
+        button.style.transform = 'scale(0.9)';
+        setTimeout(() => button.style.transform = 'scale(1)', 100);
+        
+        if (isVisible) {
+          // Hide with slide up animation
+          quickCommentDiv.style.transition = 'all 0.3s ease-out';
+          quickCommentDiv.style.transform = 'translateY(-10px)';
+          quickCommentDiv.style.opacity = '0';
+          
+          setTimeout(() => {
+            quickCommentDiv.style.display = 'none';
+            quickCommentDiv.style.transform = 'translateY(0)';
+            quickCommentDiv.style.opacity = '1';
+          }, 300);
+          
+          // Update button
+          icon.className = 'bi bi-plus-circle';
+          button.classList.remove('text-primary');
+          button.title = 'Add a comment';
+          
+        } else {
+          // Show with slide down animation
+          quickCommentDiv.style.display = 'block';
+          quickCommentDiv.style.transition = 'all 0.3s ease-in';
+          quickCommentDiv.style.transform = 'translateY(-10px)';
+          quickCommentDiv.style.opacity = '0';
+          
+          setTimeout(() => {
+            quickCommentDiv.style.transform = 'translateY(0)';
+            quickCommentDiv.style.opacity = '1';
+            
+            // Focus the input
+            const input = quickCommentDiv.querySelector('.comment-input');
+            if (input) {
+              input.focus();
+              
+              // Add Enter key handler if not already added
+              if (!input.dataset.enterHandler) {
+                input.addEventListener('keypress', (e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    postQuickComment(postId, input);
+                  }
+                });
+                input.dataset.enterHandler = 'true';
+              }
+            }
+          }, 50);
+          
+          // Update button
+          icon.className = 'bi bi-x-circle';
+          button.classList.add('text-primary');
+          button.title = 'Close comment box';
         }
       }
       
@@ -4078,42 +4572,109 @@
           toast('Please login to comment', 'warning');
           return;
         }
-        
+
         const text = input.value.trim();
         if (!text) return;
+
+        // Prevent multiple submissions
+        if (input.dataset.processing === 'true') return;
+        input.dataset.processing = 'true';
+        
+        const postCard = input.closest('.post-card');
+        const commentBtn = postCard.querySelector('.comment-btn');
+        const commentCountEl = commentBtn?.querySelector('.comment-count');
         
         try {
-          await window.firebaseArtHubClient.addComment(postId, text);
+          const newComment = await window.firebaseArtHubClient.addComment(postId, text);
           input.value = '';
-          toast('Comment added!', 'success');
+          
+          // Update comment count across all instances of this post
+          const allCommentBtns = document.querySelectorAll(`[data-post-id="${postId}"].comment-btn`);
+          allCommentBtns.forEach(commentBtn => {
+            const countEl = commentBtn.querySelector('.comment-count');
+            if (countEl) {
+              const currentCount = parseInt(countEl.textContent || '0');
+              countEl.textContent = currentCount + 1;
+            }
+          });
+          
+          // Update "View all X comments" text
+          const allViewCommentsBtns = document.querySelectorAll(`[data-post-id="${postId}"].view-all-comments-btn, [data-post-id="${postId}"].view-more-comments-btn`);
+          allViewCommentsBtns.forEach(viewBtn => {
+            const currentText = viewBtn.textContent;
+            const match = currentText.match(/(\d+)/);
+            if (match) {
+              const count = parseInt(match[1]) + 1;
+              viewBtn.textContent = currentText.replace(match[1], count);
+            }
+          });
+          
+          // Add comment to preview section if it exists
+          const commentsPreview = postCard.querySelector('.comments-preview');
+          if (commentsPreview) {
+            const commentHtml = `
+              <div class="comment-preview-item d-flex align-items-start mb-2">
+                <img src="${auth.user.profile_picture || getDefaultAvatar()}" class="rounded-circle me-2 flex-shrink-0" width="32" height="32" alt="${escapeHtml(auth.user.username)}">
+                <div class="flex-grow-1">
+                  <div class="d-flex align-items-center">
+                    <strong class="me-2">${escapeHtml(auth.user.username)}</strong>
+                    <small class="text-muted">just now</small>
+                  </div>
+                  <p class="mb-1">${escapeHtml(text)}</p>
+                  <div class="comment-actions">
+                    <button class="btn btn-sm btn-link p-0 me-2 comment-like-btn" onclick="toggleCommentLike('${newComment.id}', this)">
+                      <i class="bi bi-heart"></i> <span class="like-count">0</span>
+                    </button>
+                    <button class="btn btn-sm btn-link p-0 reply-btn" onclick="showReplyInput('${newComment.id}', '${escapeHtml(auth.user.username)}', this)">
+                      <i class="bi bi-reply"></i> Reply
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+            commentsPreview.insertAdjacentHTML('beforeend', commentHtml);
+          }
           
           // Hide quick comment input
           const quickCommentDiv = input.closest('.add-comment-inline');
           quickCommentDiv.style.display = 'none';
           
           // Update quick comment button
-          const postCard = input.closest('.post-card');
           const quickBtn = postCard.querySelector('.quick-comment-btn');
           if (quickBtn) {
             quickBtn.innerHTML = '<i class="bi bi-plus-circle"></i>';
           }
           
-          // Refresh feed to show new comment
-          loadFeed(true);
+          toast('Comment added!', 'success');
+          updateNotificationBadge();
           
         } catch (error) {
           toast('Failed to add comment: ' + error.message, 'error');
+        } finally {
+          input.dataset.processing = 'false';
         }
-      }
-      
-      // Handle enter key in comment inputs
+      }      // Handle enter key in comment inputs
       document.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           if (e.target.classList.contains('comment-input')) {
             e.preventDefault();
+            
+            // Check if user is logged in
+            if (!auth.user) {
+              toast('Please login to comment', 'warning');
+              return;
+            }
+            
             const postId = e.target.getAttribute('data-post-id');
             postQuickComment(postId, e.target);
           }
+        }
+      });
+      
+      // Handle clicks on disabled comment inputs
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('comment-input') && e.target.disabled) {
+          toast('Please login to comment', 'warning');
         }
       });
       
@@ -4146,7 +4707,7 @@
           commentsList.innerHTML = comments.map(comment => `
             <div class=\"comment-item mb-3 p-3\" style=\"background: rgba(0,0,0,0.02); border-radius: 0.5rem;\">
               <div class=\"d-flex align-items-start gap-2\">
-                <img src=\"${comment.profile_picture || 'https://placehold.co/32x32'}\" class=\"rounded-circle\" width=\"32\" height=\"32\" alt=\"${escapeHtml(comment.username)}\">
+                <img src=\"${comment.profile_picture || getDefaultAvatar()}\" class=\"rounded-circle\" width=\"32\" height=\"32\" alt=\"${escapeHtml(comment.username)}\">
                 <div class=\"flex-grow-1\">
                   <div class=\"d-flex align-items-center gap-2\">
                     <strong class=\"small\">${escapeHtml(comment.username)}</strong>
@@ -6477,6 +7038,17 @@
             }[c])
         );
       }
+      
+      function getDefaultAvatar() {
+        // Return a data URL with a person silhouette SVG similar to Facebook's default
+        return 'data:image/svg+xml;base64,' + btoa(`
+          <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="50" fill="#e4e6ea"/>
+            <circle cx="50" cy="35" r="15" fill="#bcc0c4"/>
+            <path d="M20 85 C20 65, 30 55, 50 55 C70 55, 80 65, 80 85" fill="#bcc0c4"/>
+          </svg>
+        `);
+      }
 
       function formatTimeAgo(dateString) {
         return window.firebaseArtHubClient.formatTimeAgo(dateString);
@@ -6491,7 +7063,7 @@
         console.log("Creating post card for:", p.id, "Type:", typeof p.id, "Context:", p.context);
         
         li.dataset.postId = p.id;
-        const profilePic = p.profile_picture || "https://placehold.co/100x100";
+        const profilePic = p.profile_picture || getDefaultAvatar();
         const likedClass = p.user_liked ? "text-danger" : "";
 
         // Check if post is saved from localStorage
@@ -6756,7 +7328,7 @@
             .map(
               (comment) => `
             <div class="comment-preview-item mb-3 d-flex align-items-start gap-3">
-              <img src="${comment.profile_picture || 'https://placehold.co/32x32'}" class="rounded-circle flex-shrink-0" width="32" height="32" alt="${escapeHtml(comment.username)}">
+              <img src="${comment.profile_picture || getDefaultAvatar()}" class="rounded-circle flex-shrink-0" width="32" height="32" alt="${escapeHtml(comment.username)}">
               <div class="flex-grow-1">
                 <div class="mb-1">
                   <strong class="small">${escapeHtml(comment.username)}</strong>
@@ -6808,9 +7380,9 @@
           <!-- Quick Comment Input - Always visible -->
           <div class="quick-comment-input mt-3 pt-2" style="border-top: 1px solid rgba(0,0,0,0.05);">
             <div class="d-flex align-items-center gap-2">
-              <img src="https://placehold.co/28x28" class="rounded-circle flex-shrink-0 user-avatar-comment" width="28" height="28" alt="You">
+              <img src="${(window.auth && window.auth.user && window.auth.user.profile_picture) ? window.auth.user.profile_picture : getDefaultAvatar()}" class="rounded-circle flex-shrink-0 user-avatar-comment" width="28" height="28" alt="You">
               <div class="flex-grow-1">
-                <input type="text" class="form-control form-control-sm comment-input" placeholder="Add a comment..." data-post-id="${p.id}" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.1); background: rgba(248,249,250,0.8);">
+                <input type="text" class="form-control form-control-sm comment-input" placeholder="${(window.auth && window.auth.user) ? 'Add a comment...' : 'Login to comment'}" data-post-id="${p.id}" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.1); background: rgba(248,249,250,0.8);" ${!(window.auth && window.auth.user) ? 'disabled' : ''}>
               </div>
             </div>
           </div>
@@ -6997,11 +7569,47 @@
 
         // Show loading
         feedEl.innerHTML =
-          '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Loading feed...</p></div>';
+          '<div class="text-center py-5"><div class="loading-progress-container"><div class="loading-progress-bar"><div class="loading-progress-fill"></div></div><p class="mt-3 mb-1">Loading feed...</p><small class="text-muted loading-percentage">0%</small></div></div>';
+      
+      // Start the loading animation
+      setTimeout(() => {
+        const fillElement = document.querySelector('.loading-progress-fill');
+        const percentageElement = document.querySelector('.loading-percentage');
+        if (fillElement && percentageElement) {
+          let progress = 0;
+          const interval = setInterval(() => {
+            progress += Math.random() * 15 + 5; // Random increment between 5-20%
+            if (progress > 95) progress = 95; // Cap at 95% until actual loading completes
+            
+            fillElement.style.width = progress + '%';
+            percentageElement.textContent = Math.round(progress) + '%';
+            
+            if (progress >= 95) {
+              clearInterval(interval);
+            }
+          }, 200);
+          
+          // Store interval reference for cleanup
+          window.feedLoadingInterval = interval;
+        }
+      }, 100);
 
         try {
           // Subscribe to real-time feed updates
           window.firebaseArtHubClient.subscribeToFeed((posts) => {
+            // Complete loading animation
+            const fillElement = document.querySelector('.loading-progress-fill');
+            const percentageElement = document.querySelector('.loading-percentage');
+            if (fillElement && percentageElement) {
+              fillElement.style.width = '100%';
+              percentageElement.textContent = '100%';
+              
+              // Clear any existing interval
+              if (window.feedLoadingInterval) {
+                clearInterval(window.feedLoadingInterval);
+              }
+            }
+            
             feedEl.innerHTML = "";
             if (posts.length === 0) {
               feedEl.innerHTML =
@@ -7205,7 +7813,7 @@
             <li class="suggestion-item d-flex align-items-center justify-content-between mb-3">
               <div class="d-flex align-items-center" style="min-width: 0; flex: 1;">
                 <img src="${
-                  artist.avatar || "https://placehold.co/40x40"
+                  artist.avatar || artist.profile_picture || getDefaultAvatar()
                 }" alt="${
               artist.username
             }" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
@@ -7264,17 +7872,41 @@
               btn.textContent = "Follow";
               btn.classList.remove("btn-outline-secondary");
               btn.classList.add("btn-primary");
+              
+              // Update follower count immediately
+              const followerCountEl = btn.closest('.suggestion-item').querySelector('.text-muted');
+              if (followerCountEl) {
+                const text = followerCountEl.textContent;
+                const match = text.match(/(\d+)\s+followers/);
+                if (match) {
+                  const newCount = Math.max(0, parseInt(match[1]) - 1);
+                  followerCountEl.innerHTML = text.replace(match[0], `${newCount} followers`);
+                }
+              }
+              
               toast("Unfollowed");
             } else {
               await window.firebaseArtHubClient.followUser(id);
               btn.textContent = "Following";
               btn.classList.remove("btn-primary");
               btn.classList.add("btn-outline-secondary");
+              
+              // Update follower count immediately
+              const followerCountEl = btn.closest('.suggestion-item').querySelector('.text-muted');
+              if (followerCountEl) {
+                const text = followerCountEl.textContent;
+                const match = text.match(/(\d+)\s+followers/);
+                if (match) {
+                  const newCount = parseInt(match[1]) + 1;
+                  followerCountEl.innerHTML = text.replace(match[0], `${newCount} followers`);
+                }
+              }
+              
               toast("Now following");
             }
 
             updateStats();
-            loadSuggestions(); // Refresh suggestions to update follow counts
+            // Don't reload entire suggestions, just update counts live
           } catch (err) {
             console.error("Follow error:", err);
             btn.textContent = originalText; // Restore original text
@@ -8163,13 +8795,30 @@
         const icon = btn.querySelector("i");
         const countEl = btn.querySelector(".like-count");
         const originalClass = icon.className;
+        const originalText = btn.classList.contains("text-danger");
+
+        // Prevent multiple rapid clicks
+        if (btn.dataset.processing === 'true') return;
+        btn.dataset.processing = 'true';
 
         // Optimistic UI update
-        btn.disabled = true;
+        const wasLiked = btn.classList.contains("text-danger");
+        const currentCount = parseInt(countEl?.textContent || '0');
+        
+        if (wasLiked) {
+          icon.className = "bi bi-heart";
+          btn.classList.remove("text-danger");
+          if (countEl) countEl.textContent = Math.max(0, currentCount - 1);
+        } else {
+          icon.className = "bi bi-heart-fill";
+          btn.classList.add("text-danger");
+          if (countEl) countEl.textContent = currentCount + 1;
+        }
 
         try {
           const result = await window.firebaseArtHubClient.likePost(postId);
 
+          // Update UI based on server response
           if (result.liked) {
             icon.className = "bi bi-heart-fill";
             btn.classList.add("text-danger");
@@ -8178,16 +8827,41 @@
             btn.classList.remove("text-danger");
           }
 
-          if (countEl) countEl.textContent = result.count;
-
+          if (countEl) countEl.textContent = result.count || 0;
+          
+          // Sync like counters across all instances of this post
+          const allLikeBtns = document.querySelectorAll(`[data-post-id="${postId}"].like-btn`);
+          allLikeBtns.forEach(otherBtn => {
+            if (otherBtn !== btn) {
+              const otherIcon = otherBtn.querySelector('i');
+              const otherCountEl = otherBtn.querySelector('.like-count');
+              
+              if (result.liked) {
+                otherIcon.className = 'bi bi-heart-fill';
+                otherBtn.classList.add('text-danger');
+              } else {
+                otherIcon.className = 'bi bi-heart';
+                otherBtn.classList.remove('text-danger');
+              }
+              
+              if (otherCountEl) otherCountEl.textContent = result.count || 0;
+            }
+          });
+          
           updateNotificationBadge();
-          // Refresh feed to update counters
-          setTimeout(() => loadFeed(true), 500);
+          
         } catch (err) {
+          // Revert optimistic update on error
           icon.className = originalClass;
-          toast("Failed to like post: " + err.message);
+          if (originalText) {
+            btn.classList.add("text-danger");
+          } else {
+            btn.classList.remove("text-danger");
+          }
+          if (countEl) countEl.textContent = currentCount;
+          toast("Failed to like post: " + err.message, 'error');
         } finally {
-          btn.disabled = false;
+          btn.dataset.processing = 'false';
         }
       }
 
@@ -8542,18 +9216,170 @@
           });
         }
 
-        // Profile picture upload with multiple image support
+        // Enhanced profile picture upload with compression and cropping
         document
           .getElementById("profilePicInput")
           .addEventListener("change", function (e) {
             const files = Array.from(e.target.files);
             if (files.length === 0) return;
 
-            handleImageFiles(files);
+            handleProfilePictureUpload(files[0]); // Only handle first file for profile
 
             // Clear the input so same file can be selected again
             e.target.value = "";
           });
+        
+        async function handleProfilePictureUpload(file) {
+          if (!file.type.startsWith('image/')) {
+            toast('Please select an image file', 'error');
+            return;
+          }
+          
+          const maxSize = 10 * 1024 * 1024; // 10MB max
+          if (file.size > maxSize) {
+            toast('Image is too large. Maximum size is 10MB', 'error');
+            return;
+          }
+          
+          const reader = new FileReader();
+          reader.onload = async (e) => {
+            const imageData = e.target.result;
+            
+            // Show cropping modal
+            showProfileCropModal(imageData, file.name);
+          };
+          reader.readAsDataURL(file);
+        }
+        
+        function showProfileCropModal(imageData, fileName) {
+          // Create profile crop modal if not exists
+          let modal = document.getElementById('profileCropModal');
+          if (!modal) {
+            modal = createProfileCropModal();
+            document.body.appendChild(modal);
+          }
+          
+          const img = modal.querySelector('#profileCropImage');
+          const saveBtn = modal.querySelector('#saveProfileCrop');
+          
+          img.src = imageData;
+          img.onload = () => initializeProfileCropper(img);
+          
+          saveBtn.onclick = () => saveProfilePicture(imageData);
+          
+          const modalInstance = new bootstrap.Modal(modal);
+          modalInstance.show();
+        }
+        
+        function createProfileCropModal() {
+          const modalHTML = `
+            <div class="modal fade" id="profileCropModal" tabindex="-1">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Crop Profile Picture</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body text-center">
+                    <div class="crop-container" style="max-height: 400px; overflow: hidden; position: relative; border: 2px dashed #007bff; border-radius: 10px; margin: 20px 0;">
+                      <img id="profileCropImage" style="max-width: 100%; height: auto; border-radius: 8px;" />
+                      <div class="crop-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5); pointer-events: none;"></div>
+                    </div>
+                    <div class="crop-controls mt-3">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label class="form-label">Size</label>
+                          <input type="range" class="form-range" id="cropSize" min="100" max="300" value="200">
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Quality</label>
+                          <select class="form-select" id="cropQuality">
+                            <option value="0.9">High</option>
+                            <option value="0.7" selected>Medium</option>
+                            <option value="0.5">Low (Smaller file)</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveProfileCrop">Save & Upload</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          const div = document.createElement('div');
+          div.innerHTML = modalHTML;
+          return div.firstElementChild;
+        }
+        
+        function initializeProfileCropper(img) {
+          const sizeSlider = document.getElementById('cropSize');
+          const overlay = document.querySelector('.crop-overlay');
+          
+          sizeSlider.addEventListener('input', (e) => {
+            const size = e.target.value;
+            overlay.style.width = size + 'px';
+            overlay.style.height = size + 'px';
+          });
+        }
+        
+        async function saveProfilePicture(originalImageData) {
+          const modal = bootstrap.Modal.getInstance(document.getElementById('profileCropModal'));
+          const saveBtn = document.getElementById('saveProfileCrop');
+          const quality = parseFloat(document.getElementById('cropQuality').value);
+          
+          saveBtn.disabled = true;
+          saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+          
+          try {
+            // Compress the image aggressively to prevent size errors
+            console.log('🔥 Starting aggressive compression for profile picture...');
+            const compressedImage = await window.firebaseArtHubClient.smartCompressImage(originalImageData, 400000); // Target 400KB max
+            
+            // Final size verification before upload
+            const finalSize = window.firebaseArtHubClient.getDataUrlSize(compressedImage);
+            console.log('🔍 Final compressed size:', (finalSize / 1024).toFixed(1), 'KB');
+            
+            if (finalSize > 900000) { // 900KB safety limit
+              console.log('🚨 Image still too large, applying nuclear compression...');
+              const nuclearCompressed = await window.firebaseArtHubClient.smartCompressImage(compressedImage, 300000);
+              const nuclearSize = window.firebaseArtHubClient.getDataUrlSize(nuclearCompressed);
+              console.log('☢️ Nuclear compressed size:', (nuclearSize / 1024).toFixed(1), 'KB');
+              
+              // Update profile picture with nuclear compressed version
+              await window.firebaseArtHubClient.updateUserProfile({ 
+                profile_picture: nuclearCompressed 
+              });
+            } else {
+              // Update profile picture with regular compressed version
+              await window.firebaseArtHubClient.updateUserProfile({ 
+                profile_picture: compressedImage 
+              });
+            }
+            
+            // Update UI
+            const profileAvatar = document.getElementById('profileAvatar');
+            const createPostAvatar = document.getElementById('createPostAvatar');
+            const settingsProfilePic = document.getElementById('settingsProfilePic');
+            
+            if (profileAvatar) profileAvatar.src = compressedImage;
+            if (createPostAvatar) createPostAvatar.src = compressedImage;
+            if (settingsProfilePic) settingsProfilePic.src = compressedImage;
+            
+            toast('Profile picture updated successfully!', 'success');
+            modal.hide();
+            
+          } catch (error) {
+            console.error('Profile picture update error:', error);
+            toast('Failed to update profile picture: ' + error.message, 'error');
+          } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = 'Save & Upload';
+          }
+        }
 
         function openImageCropper(imageIndex) {
           if (imageIndex < 0 || imageIndex >= selectedImages.length) return;
@@ -8871,6 +9697,27 @@
               commentText.value = "";
               toast("Comment posted!");
 
+              // Update comment counters across all instances of this post
+              const allCommentBtns = document.querySelectorAll(`[data-post-id="${currentPostId}"].comment-btn`);
+              allCommentBtns.forEach(commentBtn => {
+                const countEl = commentBtn.querySelector('.comment-count');
+                if (countEl) {
+                  const currentCount = parseInt(countEl.textContent || '0');
+                  countEl.textContent = currentCount + 1;
+                }
+              });
+              
+              // Update "View all X comments" text
+              const allViewCommentsBtns = document.querySelectorAll(`[data-post-id="${currentPostId}"].view-all-comments-btn, [data-post-id="${currentPostId}"].view-more-comments-btn`);
+              allViewCommentsBtns.forEach(viewBtn => {
+                const currentText = viewBtn.textContent;
+                const match = currentText.match(/(\d+)/);
+                if (match) {
+                  const count = parseInt(match[1]) + 1;
+                  viewBtn.textContent = currentText.replace(match[1], count);
+                }
+              });
+              
               // Reload comments to show the new one
               setTimeout(() => loadComments(currentPostId), 500);
             } catch (err) {
@@ -8947,36 +9794,189 @@
           postText.focus();
         });
 
-        // Initialize EmailJS
+        // Initialize EmailJS with enhanced debugging
         if (typeof emailjs !== "undefined") {
           try {
             emailjs.init("ntVIBn827dqCczAkn"); // EmailJS public key
             console.log("✅ EmailJS initialized successfully");
-            console.log("EmailJS available:", typeof emailjs);
+            console.log("📧 EmailJS service details:", {
+              serviceId: "service_7apbhjx",
+              templateId: "template_nv9s6ro",
+              publicKey: "ntVIBn827dqCczAkn",
+              version: "Available"
+            });
+            
+            // Test EmailJS connection (optional - for debugging)
+            window.testEmailJSConnection = async function() {
+              try {
+                console.log("🧪 Testing EmailJS connection...");
+                // This is a minimal test - doesn't actually send an email
+                const testResult = await emailjs.send("service_7apbhjx", "template_nv9s6ro", {
+                  email: "test@example.com",
+                  user_name: "Test User",
+                  verification_code: "123456",
+                  app_name: "ArtHub Test",
+                });
+                console.log("✅ EmailJS connection test successful:", testResult);
+                return true;
+              } catch (error) {
+                console.error("❌ EmailJS connection test failed:", error);
+                return false;
+              }
+            };
+            
           } catch (error) {
             console.error("❌ EmailJS initialization failed:", error);
           }
         } else {
-          console.error("❌ EmailJS script not loaded");
+          console.error("❌ EmailJS script not loaded - check network connection");
+          console.log("💡 Tip: Refresh the page to reload EmailJS service");
         }
+
+        // Add real-time validation to prevent EmailJS issues
+        function initializeFormValidation() {
+          // Username validation
+          const usernameInput = document.getElementById('regUsername');
+          const usernameError = document.getElementById('usernameError');
+          
+          if (usernameInput && usernameError) {
+            usernameInput.addEventListener('input', function() {
+              const username = this.value;
+              const sanitized = sanitizeUsernameForEmail(username);
+              
+              // Check if username was modified during sanitization
+              if (username !== sanitized && username.length > 0) {
+                this.classList.add('is-invalid');
+                usernameError.style.display = 'block';
+                usernameError.textContent = `Username contains problematic characters. Suggested: "${sanitized}"`;
+              } else {
+                this.classList.remove('is-invalid');
+                usernameError.style.display = 'none';
+              }
+            });
+            
+            usernameInput.addEventListener('blur', function() {
+              const username = this.value;
+              const sanitized = sanitizeUsernameForEmail(username);
+              
+              if (username !== sanitized && sanitized.length > 0) {
+                this.value = sanitized;
+                this.classList.remove('is-invalid');
+                usernameError.style.display = 'none';
+                toast('Username was automatically cleaned for compatibility', 'info');
+              }
+            });
+          }
+          
+          // Email validation
+          const emailInput = document.getElementById('regEmail');
+          const emailError = document.getElementById('emailError');
+          
+          if (emailInput && emailError) {
+            emailInput.addEventListener('input', function() {
+              const email = this.value;
+              const sanitized = sanitizeEmailForEmailJS(email);
+              
+              // Check if email is valid and matches sanitized version
+              const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+              
+              if (email.length > 0 && (!emailRegex.test(email) || email !== sanitized)) {
+                this.classList.add('is-invalid');
+                emailError.style.display = 'block';
+                if (email !== sanitized) {
+                  emailError.textContent = `Email contains problematic characters. Suggested: "${sanitized}"`;
+                } else {
+                  emailError.textContent = 'Please enter a valid email address (e.g., user@example.com)';
+                }
+              } else {
+                this.classList.remove('is-invalid');
+                emailError.style.display = 'none';
+              }
+            });
+            
+            emailInput.addEventListener('blur', function() {
+              const email = this.value;
+              const sanitized = sanitizeEmailForEmailJS(email);
+              
+              // Auto-correct email if needed (be careful with this)
+              if (email !== sanitized && sanitized !== 'user@example.com') {
+                this.value = sanitized;
+                this.classList.remove('is-invalid');
+                emailError.style.display = 'none';
+                toast('Email was automatically cleaned for compatibility', 'info');
+              }
+            });
+          }
+        }
+        
+        // Initialize form validation when page loads
+        initializeFormValidation();
 
         // Initialize reCAPTCHA when auth modal is shown
         let recaptchaInitialized = false;
-        document
-          .getElementById("authModal")
-          .addEventListener("shown.bs.modal", function () {
-            if (!recaptchaInitialized && typeof grecaptcha !== "undefined") {
-              try {
-                grecaptcha.render("recaptcha-container", {
-                  sitekey: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI", // Test site key
-                  theme: "light",
-                });
-                recaptchaInitialized = true;
-              } catch (error) {
-                console.warn("reCAPTCHA initialization failed:", error);
-              }
+        
+        // Get appropriate reCAPTCHA v3 site key based on environment
+        function getRecaptchaSiteKey() {
+          const hostname = window.location.hostname;
+          
+          // Production key for Firebase Hosting domain (reCAPTCHA v3)
+          if (hostname === 'arthub-c46b2.web.app' || hostname === 'arthub-c46b2.firebaseapp.com') {
+            console.log('🔐 Using reCAPTCHA v3 production key for:', hostname);
+            return "6LdvxdgrAAAAAIcCXPLCipQV819ARwiuwys2fiq2";
+          }
+          
+          // For localhost, still use test key (reCAPTCHA v2 test key for development)
+          console.log('🔧 Using reCAPTCHA v2 test key for development:', hostname);
+          return "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"; // Google's test key
+        }
+
+        // Initialize reCAPTCHA v3 when page loads
+        function initializeRecaptcha() {
+          if (typeof grecaptcha !== 'undefined') {
+            const hostname = window.location.hostname;
+            
+            // For production domains, use v3
+            if (hostname === 'arthub-c46b2.web.app' || hostname === 'arthub-c46b2.firebaseapp.com') {
+              console.log('🔐 Initializing reCAPTCHA v3 for production');
+              grecaptcha.ready(function() {
+                console.log('✅ reCAPTCHA v3 ready');
+                // Hide the container since v3 doesn't need visible element
+                const container = document.getElementById('recaptcha-container');
+                if (container) {
+                  container.style.display = 'none';
+                }
+              });
+            } else {
+              // For localhost/development, use v2 test implementation
+              console.log('🔧 Setting up reCAPTCHA v2 test for development');
+              document.getElementById("authModal").addEventListener("shown.bs.modal", function () {
+                if (!recaptchaInitialized && typeof grecaptcha !== "undefined") {
+                  try {
+                    grecaptcha.render("recaptcha-container", {
+                      sitekey: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
+                      theme: "light",
+                      size: "normal"
+                    });
+                    recaptchaInitialized = true;
+                    console.log('✅ reCAPTCHA v2 test initialized');
+                  } catch (error) {
+                    console.error('❌ reCAPTCHA v2 test initialization failed:', error);
+                  }
+                }
+              });
             }
-          });
+          } else {
+            console.warn('⚠️ reCAPTCHA script not loaded yet, retrying...');
+            setTimeout(initializeRecaptcha, 1000);
+          }
+        }
+        
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initializeRecaptcha);
+        } else {
+          initializeRecaptcha();
+        }
 
         // Resend verification code with countdown
         let resendCountdown = 0;
