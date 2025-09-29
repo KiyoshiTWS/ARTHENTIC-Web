@@ -1998,41 +1998,7 @@
             </div>
             <div class="small text-muted mb-2">Popular tags:</div>
             <div class="tag-buttons" id="popularTags">
-              <button
-                class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip"
-                data-tag="art"
-                onclick="toggleSearchTag('art', this)"
-              >
-                #art
-              </button>
-              <button
-                class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip"
-                data-tag="digital"
-                onclick="toggleSearchTag('digital', this)"
-              >
-                #digital
-              </button>
-              <button
-                class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip"
-                data-tag="painting"
-                onclick="toggleSearchTag('painting', this)"
-              >
-                #painting
-              </button>
-              <button
-                class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip"
-                data-tag="sketch"
-                onclick="toggleSearchTag('sketch', this)"
-              >
-                #sketch
-              </button>
-              <button
-                class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip"
-                data-tag="photography"
-                onclick="toggleSearchTag('photography', this)"
-              >
-                #photography
-              </button>
+              <p class="text-muted small">Loading popular tags...</p>
             </div>
             <button
               class="btn btn-sm btn-outline-secondary mt-2"
@@ -3935,7 +3901,13 @@
       let selectedTags = new Set();
       
       function toggleTagFilter(tag, element) {
-        const tagName = tag.startsWith('#') ? tag.substring(1) : tag;
+        const tagName = (tag.startsWith('#') ? tag.substring(1) : tag).toLowerCase();
+        
+        // Clear trending tag selection when using search tags
+        currentTrendingTag = null;
+        document.querySelectorAll('.trending-tag').forEach(btn => {
+          btn.classList.remove('selected');
+        });
         
         if (selectedTags.has(tagName)) {
           selectedTags.delete(tagName);
@@ -3945,8 +3917,15 @@
           element.classList.add('selected');
         }
         
-        filterPostsByTags();
-        updateTagVisualState();
+        console.log('🏷️ Currently selected tags:', Array.from(selectedTags));
+        
+        if (selectedTags.size === 0) {
+          console.log('🏠 No tags selected - reverting to default home page');
+          loadFeed(true); // Fresh load to show all posts from database
+        } else {
+          filterPostsByTags();
+          updateTagVisualState();
+        }
       }
       
       function filterPostsByTags() {
@@ -4481,6 +4460,60 @@
       function refreshTrendingTags() {
         trendingTagsCache = null; // Clear cache
         loadTrendingTags(true); // Force refresh
+        loadPopularTags(true); // Also refresh popular tags
+      }
+      
+      // Load popular tags from trending data
+      async function loadPopularTags(forceRefresh = false) {
+        console.log('🔍 Loading popular tags...');
+        try {
+          const popularTagsElement = document.getElementById('popularTags');
+          if (!popularTagsElement) {
+            console.error('❌ popularTags element not found');
+            return;
+          }
+
+          // Get trending tags data (top 8 for popular section)
+          const trendingTags = await window.firebaseArtHubClient.getTrendingTags(8);
+          
+          if (trendingTags && trendingTags.length > 0) {
+            console.log('✅ Found', trendingTags.length, 'popular tags from trending data');
+            
+            const popularTagsHTML = trendingTags.map(tagData => {
+              const safeTag = tagData.tag.replace(/'/g, "\'"); // Escape quotes
+              return `<button
+                class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip"
+                data-tag="${tagData.tag.toLowerCase()}"
+                onclick="toggleSearchTag('${safeTag.toLowerCase()}', this)"
+                title="Used ${tagData.count} time${tagData.count > 1 ? 's' : ''}"
+              >
+                #${tagData.tag}
+              </button>`;
+            }).join('');
+            
+            popularTagsElement.innerHTML = popularTagsHTML;
+          } else {
+            console.log('⚠️ No trending tags found for popular section');
+            // Fallback to default tags if no trending data available
+            popularTagsElement.innerHTML = `
+              <button class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip" data-tag="art" onclick="toggleSearchTag('art', this)">#art</button>
+              <button class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip" data-tag="digital" onclick="toggleSearchTag('digital', this)">#digital</button>
+              <button class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip" data-tag="painting" onclick="toggleSearchTag('painting', this)">#painting</button>
+              <button class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip" data-tag="sketch" onclick="toggleSearchTag('sketch', this)">#sketch</button>
+            `;
+          }
+        } catch (error) {
+          console.error('❌ Error loading popular tags:', error);
+          // Fallback to default tags on error
+          const popularTagsElement = document.getElementById('popularTags');
+          if (popularTagsElement) {
+            popularTagsElement.innerHTML = `
+              <button class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip" data-tag="art" onclick="toggleSearchTag('art', this)">#art</button>
+              <button class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip" data-tag="digital" onclick="toggleSearchTag('digital', this)">#digital</button>
+              <button class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip" data-tag="painting" onclick="toggleSearchTag('painting', this)">#painting</button>
+            `;
+          }
+        }
       }
       
       // Handle search section tag toggle (multi-selection)
@@ -4579,26 +4612,34 @@
         }
       }
       
-      // Handle trending tag selection (single selection only)
+      // Handle trending tag selection (works with multiple selection system)
       function selectTrendingTag(tag, element) {
-        // Clear previous selection
-        document.querySelectorAll('.trending-tag').forEach(btn => {
-          btn.classList.remove('selected');
-        });
+        console.log('🔥 Selecting trending tag:', tag);
         
-        // Toggle current selection
-        if (currentTrendingTag === tag) {
-          currentTrendingTag = null;
-          clearTagFilters();
+        const tagLower = tag.toLowerCase();
+        
+        if (selectedTags.has(tagLower)) {
+          // Remove tag if already selected
+          selectedTags.delete(tagLower);
+          element.classList.remove('selected');
+          console.log('➖ Removed trending tag:', tag);
         } else {
-          currentTrendingTag = tag;
+          // Add tag to selection
+          selectedTags.add(tagLower);
           element.classList.add('selected');
-          
-          // Clear multiple tag filter and apply single trending tag
-          selectedTags.clear();
-          selectedTags.add(tag);
-          filterPostsByTags();
+          console.log('➕ Added trending tag:', tag);
+        }
+        
+        console.log('🏷️ Currently selected tags:', Array.from(selectedTags));
+        
+        // Check if all tags are now deselected
+        if (selectedTags.size === 0) {
+          console.log('🏠 No tags selected - reverting to default home page');
+          currentTrendingTag = null;
+          loadFeed(true); // Fresh load to show all posts from database
+        } else {
           updateTagVisualState();
+          filterPostsByTags();
         }
       }
       
@@ -8278,6 +8319,7 @@
         loadFeed();
         loadSuggestions();
         loadTrendingTags(); // Load trending tags after client is ready
+        loadPopularTags(); // Load popular tags after client is ready
         initializeSearchInput(); // Initialize search tag input functionality
         updateNotificationBadge(); // Update notification count on load
 
