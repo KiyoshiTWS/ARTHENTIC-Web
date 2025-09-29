@@ -3447,7 +3447,63 @@
         }
       }
 
-      async function postEnhancedReply(commentId, input) {\n        const user = getCurrentUser();\n        if (!user) {\n          showAuthModal();\n          return;\n        }\n        \n        const text = input.value.trim();\n        if (!text) return;\n        \n        const btn = input.parentElement.querySelector('.enhanced-reply-post');\n        const originalContent = btn.innerHTML;\n        \n        btn.innerHTML = '<span class=\"spinner-border spinner-border-sm\" style=\"width: 12px; height: 12px;\"></span>';\n        btn.disabled = true;\n        input.disabled = true;\n        \n        try {\n          // This would need to be implemented in the backend\n          // await window.firebaseArtHubClient.addReply(commentId, text);\n          \n          // For now, show success feedback\n          input.style.borderColor = 'rgba(40, 167, 69, 0.5)';\n          toast('Reply posted! 💬', 'success');\n          \n          // Remove reply input after success\n          setTimeout(() => {\n            const replyDiv = input.closest('.reply-input');\n            replyDiv.style.opacity = '0';\n            replyDiv.style.transform = 'translateY(-10px)';\n            setTimeout(() => replyDiv.remove(), 300);\n          }, 1000);\n          \n        } catch (error) {\n          input.style.borderColor = 'rgba(220, 53, 69, 0.5)';\n          toast('Failed to post reply: ' + error.message, 'error');\n        } finally {\n          btn.innerHTML = originalContent;\n          btn.disabled = false;\n          input.disabled = false;\n        }\n      }\n      \n      function updateAllCommentInputs() {\n        const commentInputs = document.querySelectorAll('.enhanced-comment-input');\n        commentInputs.forEach(input => {\n          const container = input.closest('.quick-comment-input');\n          if (container) {\n            const avatar = container.querySelector('.user-avatar-comment');\n            const authPrompt = container.querySelector('.auth-prompt');\n            const actions = container.querySelector('.comment-actions');\n            updateCommentInputAuth(container, input, avatar, authPrompt, actions);\n          }\n        });\n      }\n      \n      function authUI() {
+      async function postEnhancedReply(commentId, input) {
+        const user = getCurrentUser();
+        if (!user) {
+          showAuthModal();
+          return;
+        }
+        
+        const text = input.value.trim();
+        if (!text) return;
+        
+        const btn = input.parentElement.querySelector('.enhanced-reply-post');
+        const originalContent = btn.innerHTML;
+        
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width: 12px; height: 12px;"></span>';
+        btn.disabled = true;
+        input.disabled = true;
+        
+        try {
+          // This would need to be implemented in the backend
+          // await window.firebaseArtHubClient.addReply(commentId, text);
+          
+          // For now, show success feedback
+          input.style.borderColor = 'rgba(40, 167, 69, 0.5)';
+          toast('Reply posted! 💬', 'success');
+          
+          // Remove reply input after success
+          setTimeout(() => {
+            const replyDiv = input.closest('.reply-input');
+            replyDiv.style.opacity = '0';
+            replyDiv.style.transform = 'translateY(-10px)';
+            setTimeout(() => replyDiv.remove(), 300);
+          }, 1000);
+          
+        } catch (error) {
+          input.style.borderColor = 'rgba(220, 53, 69, 0.5)';
+          toast('Failed to post reply: ' + error.message, 'error');
+        } finally {
+          btn.innerHTML = originalContent;
+          btn.disabled = false;
+          input.disabled = false;
+        }
+      }
+      
+      function updateAllCommentInputs() {
+        const commentInputs = document.querySelectorAll('.enhanced-comment-input');
+        commentInputs.forEach(input => {
+          const container = input.closest('.quick-comment-input');
+          if (container) {
+            const avatar = container.querySelector('.user-avatar-comment');
+            const authPrompt = container.querySelector('.auth-prompt');
+            const actions = container.querySelector('.comment-actions');
+            updateCommentInputAuth(container, input, avatar, authPrompt, actions);
+          }
+        });
+      }
+      
+      function authUI() {
         const box = document.getElementById("authMini");
         if (!box) return;
 
@@ -9056,20 +9112,31 @@
             }
           }
 
-          if (result.saved) {
-            icon.className = "bi bi-bookmark-fill";
-            btn.classList.add("text-warning");
-            saveText.textContent = "Saved";
-            toast("Post saved!");
-          } else {
-            icon.className = "bi bi-bookmark";
-            btn.classList.remove("text-warning");
-            saveText.textContent = "Save";
-            toast("Post unsaved");
-          }
+          // Update all save buttons for this post across the page
+          const allSaveBtns = document.querySelectorAll(`[data-post-id="${postId}"].save-btn`);
+          allSaveBtns.forEach(saveBtn => {
+            const btnIcon = saveBtn.querySelector('i');
+            const btnText = saveBtn.querySelector('.save-text');
+            
+            if (result.saved) {
+              btnIcon.className = "bi bi-bookmark-fill";
+              saveBtn.classList.add("text-warning");
+              if (btnText) btnText.textContent = "Saved";
+              
+              // Add subtle animation
+              saveBtn.style.transform = 'scale(1.1)';
+              setTimeout(() => saveBtn.style.transform = 'scale(1)', 200);
+            } else {
+              btnIcon.className = "bi bi-bookmark";
+              saveBtn.classList.remove("text-warning");
+              if (btnText) btnText.textContent = "Save";
+            }
+          });
+          
+          toast(result.saved ? "Post saved! 📌" : "Post unsaved", result.saved ? 'success' : 'info');
 
-          // Refresh feed to update counters
-          setTimeout(() => loadFeed(true), 500);
+          // Save state updated locally - no need to refresh entire feed
+          updateNotificationBadge();
         } catch (err) {
           icon.className = originalClass;
           saveText.textContent = originalText;
