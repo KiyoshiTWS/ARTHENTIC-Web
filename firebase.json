@@ -18,8 +18,27 @@
     ],
     "rewrites": [
       {
+        "source": "/",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/arthub",
+        "destination": "/arthub.html"
+      },
+      {
+        "source": "/app",
+        "destination": "/arthub.html"  
+      },
+      {
         "source": "**",
         "destination": "/index.html"
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/home",
+        "destination": "/arthub.html",
+        "type": 301
       }
     ],
     "headers": [

@@ -29,6 +29,11 @@ import {
 // Check if configuration is loaded
 if (!window.FIREBASE_PROJECT_ID) {
   console.warn('⚠️ Firebase configuration not loaded. Falling back to demo mode.');
+  console.warn('⚠️ Make sure firebase-config-local.js is loaded before firebase-config.js');
+  console.warn('⚠️ Expected project: arthub-c46b2, falling back to: arthub-demo');
+} else {
+  console.log('✅ Firebase configuration loaded successfully');
+  console.log('📊 Project ID:', window.FIREBASE_PROJECT_ID);
 }
 
 // Connection resilience variables
@@ -38,14 +43,20 @@ let isReconnecting = false;
 let connectionHealthTimer = null;
 
 const firebaseConfig = {
-  apiKey: window.FIREBASE_API_KEY || "demo-api-key",
-  authDomain: window.FIREBASE_AUTH_DOMAIN || "arthub-demo.firebaseapp.com",
-  projectId: window.FIREBASE_PROJECT_ID || "arthub-demo",
-  storageBucket: window.FIREBASE_STORAGE_BUCKET || "arthub-demo.appspot.com",
-  messagingSenderId: window.FIREBASE_MESSAGING_SENDER_ID || "000000000000",
-  appId: window.FIREBASE_APP_ID || "demo-app-id",
-  measurementId: window.FIREBASE_MEASUREMENT_ID || "G-DEMO"
+  apiKey: window.FIREBASE_API_KEY || "AIzaSyB78EbKxjIxBPBudIHw6zVvfyVjZjMeDUk",
+  authDomain: window.FIREBASE_AUTH_DOMAIN || "arthub-c46b2.firebaseapp.com", 
+  projectId: window.FIREBASE_PROJECT_ID || "arthub-c46b2",
+  storageBucket: window.FIREBASE_STORAGE_BUCKET || "arthub-c46b2.firebasestorage.app",
+  messagingSenderId: window.FIREBASE_MESSAGING_SENDER_ID || "354841988675",
+  appId: window.FIREBASE_APP_ID || "1:354841988675:web:9e62897abf73d69d3f8ef6",
+  measurementId: window.FIREBASE_MEASUREMENT_ID || "G-QKFQXVBHFH"
 };
+
+console.log('🔧 Using Firebase configuration:', {
+  projectId: firebaseConfig.projectId,
+  authDomain: firebaseConfig.authDomain,
+  fromWindow: !!window.FIREBASE_PROJECT_ID
+});
 
 // Initialize Firebase
 let app, db;
