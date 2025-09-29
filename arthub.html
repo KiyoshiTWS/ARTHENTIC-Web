@@ -3447,7 +3447,7 @@
         }
       }
 
-      function authUI() {
+      async function postEnhancedReply(commentId, input) {\n        const user = getCurrentUser();\n        if (!user) {\n          showAuthModal();\n          return;\n        }\n        \n        const text = input.value.trim();\n        if (!text) return;\n        \n        const btn = input.parentElement.querySelector('.enhanced-reply-post');\n        const originalContent = btn.innerHTML;\n        \n        btn.innerHTML = '<span class=\"spinner-border spinner-border-sm\" style=\"width: 12px; height: 12px;\"></span>';\n        btn.disabled = true;\n        input.disabled = true;\n        \n        try {\n          // This would need to be implemented in the backend\n          // await window.firebaseArtHubClient.addReply(commentId, text);\n          \n          // For now, show success feedback\n          input.style.borderColor = 'rgba(40, 167, 69, 0.5)';\n          toast('Reply posted! 💬', 'success');\n          \n          // Remove reply input after success\n          setTimeout(() => {\n            const replyDiv = input.closest('.reply-input');\n            replyDiv.style.opacity = '0';\n            replyDiv.style.transform = 'translateY(-10px)';\n            setTimeout(() => replyDiv.remove(), 300);\n          }, 1000);\n          \n        } catch (error) {\n          input.style.borderColor = 'rgba(220, 53, 69, 0.5)';\n          toast('Failed to post reply: ' + error.message, 'error');\n        } finally {\n          btn.innerHTML = originalContent;\n          btn.disabled = false;\n          input.disabled = false;\n        }\n      }\n      \n      function updateAllCommentInputs() {\n        const commentInputs = document.querySelectorAll('.enhanced-comment-input');\n        commentInputs.forEach(input => {\n          const container = input.closest('.quick-comment-input');\n          if (container) {\n            const avatar = container.querySelector('.user-avatar-comment');\n            const authPrompt = container.querySelector('.auth-prompt');\n            const actions = container.querySelector('.comment-actions');\n            updateCommentInputAuth(container, input, avatar, authPrompt, actions);\n          }\n        });\n      }\n      \n      function authUI() {
         const box = document.getElementById("authMini");
         if (!box) return;
 
@@ -4267,17 +4267,17 @@
       }
       
       // Comment interaction functions
-      async function toggleCommentLike(commentId, button) {
-        if (!auth.user) {
-          toast('Please login to like comments', 'warning');
+      async function toggleEnhancedCommentLike(commentId, button) {
+        const user = getCurrentUser();
+        if (!user) {
+          showAuthModal();
           return;
         }
         
-        // Prevent multiple rapid clicks with immediate visual feedback
+        // Prevent multiple rapid clicks with enhanced feedback
         if (button.dataset.processing === 'true') {
-          // Add a subtle bounce effect to show the click was registered
-          button.style.transform = 'scale(0.95)';
-          setTimeout(() => button.style.transform = 'scale(1)', 150);
+          button.style.transform = 'scale(0.9) rotate(5deg)';
+          setTimeout(() => button.style.transform = 'scale(1) rotate(0deg)', 200);
           return;
         }
         button.dataset.processing = 'true';
@@ -4287,11 +4287,12 @@
         const wasLiked = button.classList.contains('liked');
         const currentCount = parseInt(countEl?.textContent || '0');
         
-        // Enhanced visual feedback with animation
-        button.style.transform = 'scale(1.1)';
-        setTimeout(() => button.style.transform = 'scale(1)', 150);
+        // Enhanced visual feedback with spring animation
+        button.style.transition = 'transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+        button.style.transform = 'scale(1.2)';
+        setTimeout(() => button.style.transform = 'scale(1)', 200);
         
-        // Optimistic UI update with improved colors
+        // Optimistic UI update with enhanced animations
         if (wasLiked) {
           button.classList.remove('liked', 'text-danger');
           icon.classList.remove('bi-heart-fill');
@@ -4299,6 +4300,8 @@
           if (countEl) {
             countEl.textContent = Math.max(0, currentCount - 1);
             countEl.style.color = '#6c757d';
+            countEl.style.transform = 'scale(0.8)';
+            setTimeout(() => countEl.style.transform = 'scale(1)', 150);
           }
         } else {
           button.classList.add('liked', 'text-danger');
@@ -4307,32 +4310,47 @@
           if (countEl) {
             countEl.textContent = currentCount + 1;
             countEl.style.color = '#dc3545';
+            countEl.style.transform = 'scale(1.3)';
+            setTimeout(() => countEl.style.transform = 'scale(1)', 150);
           }
           
-          // Add a subtle heart pulse animation
-          icon.style.animation = 'heartPulse 0.4s ease-in-out';
-          setTimeout(() => icon.style.animation = '', 400);
+          // Enhanced heart animation with particles effect
+          icon.style.animation = 'heartBeat 0.6s ease-in-out';
+          setTimeout(() => icon.style.animation = '', 600);
+          
+          // Create floating heart animation
+          createFloatingHeart(button);
         }
         
         try {
           const result = await window.firebaseArtHubClient.toggleCommentLike(commentId);
           
-          // Update all instances of this comment like button across the page
-          const allCommentLikeBtns = document.querySelectorAll(`[data-comment-id="${commentId}"].comment-like-btn`);
+          // Update all instances with enhanced sync
+          const allCommentLikeBtns = document.querySelectorAll(`[data-comment-id="${commentId}"]`);
           allCommentLikeBtns.forEach(btn => {
+            if (btn === button) return; // Skip the clicked button
+            
             const btnIcon = btn.querySelector('i');
             const btnCountEl = btn.querySelector('.like-count');
             
             if (result && typeof result.liked !== 'undefined') {
               if (result.liked) {
                 btn.classList.add('liked', 'text-danger');
-                btnIcon.classList.remove('bi-heart');
-                btnIcon.classList.add('bi-heart-fill');
-                if (btnCountEl) btnCountEl.style.color = '#dc3545';
+                if (btnIcon) {
+                  btnIcon.classList.remove('bi-heart');
+                  btnIcon.classList.add('bi-heart-fill');
+                }
+                if (btnCountEl) {
+                  btnCountEl.style.color = '#dc3545';
+                  btnCountEl.style.transform = 'scale(1.1)';
+                  setTimeout(() => btnCountEl.style.transform = 'scale(1)', 200);
+                }
               } else {
                 btn.classList.remove('liked', 'text-danger');
-                btnIcon.classList.remove('bi-heart-fill');
-                btnIcon.classList.add('bi-heart');
+                if (btnIcon) {
+                  btnIcon.classList.remove('bi-heart-fill');
+                  btnIcon.classList.add('bi-heart');
+                }
                 if (btnCountEl) btnCountEl.style.color = '#6c757d';
               }
               if (btnCountEl && result.count !== undefined) {
@@ -4342,7 +4360,11 @@
           });
           
         } catch (error) {
-          // Revert optimistic update on error
+          // Enhanced error recovery with visual feedback
+          button.style.borderColor = 'rgba(220, 53, 69, 0.5)';
+          setTimeout(() => button.style.borderColor = '', 2000);
+          
+          // Revert optimistic update
           if (wasLiked) {
             button.classList.add('liked', 'text-danger');
             icon.classList.remove('bi-heart');
@@ -4361,38 +4383,99 @@
         }
       }
       
-      function showReplyInput(commentId, username, button) {
+      function createFloatingHeart(button) {
+        const heart = document.createElement('div');
+        heart.innerHTML = '❤️';
+        heart.style.position = 'absolute';
+        heart.style.pointerEvents = 'none';
+        heart.style.fontSize = '14px';
+        heart.style.zIndex = '9999';
+        heart.style.transition = 'all 1s ease-out';
+        
+        const rect = button.getBoundingClientRect();
+        heart.style.left = rect.left + rect.width / 2 + 'px';
+        heart.style.top = rect.top + 'px';
+        
+        document.body.appendChild(heart);
+        
+        setTimeout(() => {
+          heart.style.transform = 'translateY(-30px) scale(0)';
+          heart.style.opacity = '0';
+        }, 100);
+        
+        setTimeout(() => heart.remove(), 1100);
+      }
+      
+      // Keep the original function for backwards compatibility
+      async function toggleCommentLike(commentId, button) {
+        return toggleEnhancedCommentLike(commentId, button);
+      }
+      
+      function showEnhancedReplyInput(commentId, username, button) {
+        const user = getCurrentUser();
+        if (!user) {
+          showAuthModal();
+          return;
+        }
+        
         const commentItem = button.closest('.comment-preview-item');
         let replyInput = commentItem.querySelector('.reply-input');
         
         if (replyInput) {
-          replyInput.remove();
+          replyInput.style.animation = 'slideUp 0.3s ease';
+          setTimeout(() => replyInput.remove(), 300);
           return;
         }
         
         replyInput = document.createElement('div');
         replyInput.className = 'reply-input mt-2';
+        replyInput.style.opacity = '0';
+        replyInput.style.transform = 'translateY(-10px)';
         replyInput.innerHTML = `
           <div class="input-group input-group-sm">
-            <img src="${auth.user?.profile_picture || getDefaultAvatar()}" class="rounded-circle me-2" width="24" height="24" alt="${escapeHtml(auth.user?.username || 'User')}">
-            <input type="text" class="form-control reply-text-input" placeholder="Reply to ${username}..." data-comment-id="${commentId}" data-username="${username}">
-            <button class="btn btn-outline-primary post-reply-btn" type="button" onclick="postReply('${commentId}', this)">
+            <img src="${user.profile_picture || getDefaultAvatar()}" class="rounded-circle me-2" width="24" height="24" alt="${escapeHtml(user.username)}">
+            <input type="text" class="form-control reply-text-input enhanced-reply-input" placeholder="Reply to ${username}..." data-comment-id="${commentId}" data-username="${username}" style="border: 1px solid rgba(0,123,255,0.3); transition: all 0.3s ease;">
+            <button class="btn btn-primary post-reply-btn enhanced-reply-post" type="button" data-comment-id="${commentId}" style="border-radius: 0 15px 15px 0;">
               <i class="bi bi-send"></i>
             </button>
           </div>
         `;
         
         commentItem.appendChild(replyInput);
-        const input = replyInput.querySelector('.reply-text-input');
-        input.focus();
         
-        // Handle Enter key
-        input.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            postReply(commentId, replyInput.querySelector('.post-reply-btn'));
-          }
-        });
+        // Animate in
+        setTimeout(() => {
+          replyInput.style.transition = 'all 0.3s ease';
+          replyInput.style.opacity = '1';
+          replyInput.style.transform = 'translateY(0)';
+          
+          const input = replyInput.querySelector('.reply-text-input');
+          input.focus();
+          
+          // Enhanced input interactions
+          input.addEventListener('focus', () => {
+            input.style.borderColor = 'rgba(0,123,255,0.6)';
+            input.style.boxShadow = '0 0 0 0.2rem rgba(0,123,255,0.1)';
+          });
+          
+          input.addEventListener('blur', (e) => {
+            if (!e.relatedTarget || !e.relatedTarget.classList.contains('enhanced-reply-post')) {
+              input.style.borderColor = 'rgba(0,123,255,0.3)';
+              input.style.boxShadow = 'none';
+            }
+          });
+          
+          input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && input.value.trim()) {
+              postEnhancedReply(commentId, input);
+            }
+          });
+        }, 50);
+      }
+      
+      // Keep original function for backwards compatibility
+      function showReplyInput(commentId, username, button) {
+        return showEnhancedReplyInput(commentId, username, button);
       }
       
       async function postReply(commentId, button) {
@@ -4567,38 +4650,62 @@
         }
       }
       
-      async function postQuickComment(postId, input) {
-        if (!auth.user) {
-          toast('Please login to comment', 'warning');
+      async function postEnhancedComment(postId, input) {
+        const user = getCurrentUser();
+        if (!user) {
+          showAuthModal();
           return;
         }
 
         const text = input.value.trim();
         if (!text) return;
 
-        // Prevent multiple submissions
+        // Prevent multiple submissions with visual feedback
         if (input.dataset.processing === 'true') return;
         input.dataset.processing = 'true';
         
-        const postCard = input.closest('.post-card');
-        const commentBtn = postCard.querySelector('.comment-btn');
-        const commentCountEl = commentBtn?.querySelector('.comment-count');
+        const container = input.closest('.quick-comment-input');
+        const postBtn = container.querySelector('.post-comment-btn');
+        const originalBtnContent = postBtn.innerHTML;
+        
+        // Enhanced loading state
+        postBtn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width: 12px; height: 12px;"></span>';
+        postBtn.disabled = true;
+        input.disabled = true;
+        input.style.opacity = '0.7';
         
         try {
           const newComment = await window.firebaseArtHubClient.addComment(postId, text);
-          input.value = '';
           
-          // Update comment count across all instances of this post
+          // Clear and reset input with smooth animation
+          input.value = '';
+          input.style.borderColor = 'rgba(40, 167, 69, 0.5)';
+          input.style.boxShadow = '0 0 0 0.2rem rgba(40, 167, 69, 0.1)';
+          
+          setTimeout(() => {
+            input.style.borderColor = 'rgba(0,123,255,0.2)';
+            input.style.boxShadow = 'none';
+            container.querySelector('.comment-actions').classList.add('d-none');
+          }, 2000);
+          
+          // Update comment count across all instances with animation
           const allCommentBtns = document.querySelectorAll(`[data-post-id="${postId}"].comment-btn`);
           allCommentBtns.forEach(commentBtn => {
             const countEl = commentBtn.querySelector('.comment-count');
             if (countEl) {
               const currentCount = parseInt(countEl.textContent || '0');
+              countEl.style.transform = 'scale(1.2)';
+              countEl.style.color = '#28a745';
               countEl.textContent = currentCount + 1;
+              
+              setTimeout(() => {
+                countEl.style.transform = 'scale(1)';
+                countEl.style.color = '';
+              }, 300);
             }
           });
           
-          // Update "View all X comments" text
+          // Update "View all X comments" text with animation
           const allViewCommentsBtns = document.querySelectorAll(`[data-post-id="${postId}"].view-all-comments-btn, [data-post-id="${postId}"].view-more-comments-btn`);
           allViewCommentsBtns.forEach(viewBtn => {
             const currentText = viewBtn.textContent;
@@ -4606,26 +4713,29 @@
             if (match) {
               const count = parseInt(match[1]) + 1;
               viewBtn.textContent = currentText.replace(match[1], count);
+              viewBtn.style.color = '#28a745';
+              setTimeout(() => viewBtn.style.color = '', 1500);
             }
           });
           
-          // Add comment to preview section if it exists
+          // Add comment to preview with smooth insertion
+          const postCard = container.closest('.post-card');
           const commentsPreview = postCard.querySelector('.comments-preview');
           if (commentsPreview) {
             const commentHtml = `
-              <div class="comment-preview-item d-flex align-items-start mb-2">
-                <img src="${auth.user.profile_picture || getDefaultAvatar()}" class="rounded-circle me-2 flex-shrink-0" width="32" height="32" alt="${escapeHtml(auth.user.username)}">
+              <div class="comment-preview-item d-flex align-items-start mb-2 new-comment" style="opacity: 0; transform: translateY(-10px);">
+                <img src="${user.profile_picture || getDefaultAvatar()}" class="rounded-circle me-2 flex-shrink-0" width="32" height="32" alt="${escapeHtml(user.username)}">
                 <div class="flex-grow-1">
                   <div class="d-flex align-items-center">
-                    <strong class="me-2">${escapeHtml(auth.user.username)}</strong>
+                    <strong class="me-2">${escapeHtml(user.username)}</strong>
                     <small class="text-muted">just now</small>
                   </div>
                   <p class="mb-1">${escapeHtml(text)}</p>
                   <div class="comment-actions">
-                    <button class="btn btn-sm btn-link p-0 me-2 comment-like-btn" onclick="toggleCommentLike('${newComment.id}', this)">
+                    <button class="btn btn-sm btn-link p-0 me-2 comment-like-btn enhanced-like-btn" data-comment-id="${newComment.id}">
                       <i class="bi bi-heart"></i> <span class="like-count">0</span>
                     </button>
-                    <button class="btn btn-sm btn-link p-0 reply-btn" onclick="showReplyInput('${newComment.id}', '${escapeHtml(auth.user.username)}', this)">
+                    <button class="btn btn-sm btn-link p-0 reply-btn enhanced-reply-btn" data-comment-id="${newComment.id}" data-username="${escapeHtml(user.username)}">
                       <i class="bi bi-reply"></i> Reply
                     </button>
                   </div>
@@ -4633,48 +4743,84 @@
               </div>
             `;
             commentsPreview.insertAdjacentHTML('beforeend', commentHtml);
+            
+            // Animate new comment in
+            const newCommentEl = commentsPreview.querySelector('.new-comment');
+            setTimeout(() => {
+              newCommentEl.style.transition = 'all 0.4s ease';
+              newCommentEl.style.opacity = '1';
+              newCommentEl.style.transform = 'translateY(0)';
+              newCommentEl.classList.remove('new-comment');
+            }, 100);
           }
           
-          // Hide quick comment input
-          const quickCommentDiv = input.closest('.add-comment-inline');
-          quickCommentDiv.style.display = 'none';
-          
-          // Update quick comment button
-          const quickBtn = postCard.querySelector('.quick-comment-btn');
-          if (quickBtn) {
-            quickBtn.innerHTML = '<i class="bi bi-plus-circle"></i>';
-          }
-          
-          toast('Comment added!', 'success');
+          // Success feedback
+          toast('Comment posted! 💬', 'success');
           updateNotificationBadge();
           
         } catch (error) {
-          toast('Failed to add comment: ' + error.message, 'error');
+          // Error feedback with helpful message
+          input.style.borderColor = 'rgba(220, 53, 69, 0.5)';
+          input.style.boxShadow = '0 0 0 0.2rem rgba(220, 53, 69, 0.1)';
+          toast('Failed to post comment: ' + error.message, 'error');
+          
+          setTimeout(() => {
+            input.style.borderColor = 'rgba(0,123,255,0.2)';
+            input.style.boxShadow = 'none';
+          }, 3000);
         } finally {
+          // Reset UI state
+          postBtn.innerHTML = originalBtnContent;
+          postBtn.disabled = false;
+          input.disabled = false;
+          input.style.opacity = '1';
           input.dataset.processing = 'false';
         }
-      }      // Handle enter key in comment inputs
-      document.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          if (e.target.classList.contains('comment-input')) {
-            e.preventDefault();
-            
-            // Check if user is logged in
-            if (!auth.user) {
-              toast('Please login to comment', 'warning');
-              return;
-            }
-            
-            const postId = e.target.getAttribute('data-post-id');
-            postQuickComment(postId, e.target);
-          }
-        }
-      });
+      }      // Helper functions for enhanced comment system
+      function getCurrentUser() {
+        return window.firebaseArtHubClient?.getCurrentUser() || auth?.user || null;
+      }
       
-      // Handle clicks on disabled comment inputs
+      function isUserLoggedIn() {
+        return getCurrentUser() !== null;
+      }
+      
+      function showAuthModal() {
+        const authModal = document.getElementById('authModal');
+        if (authModal) {
+          const modal = new bootstrap.Modal(authModal);
+          modal.show();
+        }
+      }
+      
+      // Enhanced event delegation for comment system
       document.addEventListener('click', (e) => {
-        if (e.target.classList.contains('comment-input') && e.target.disabled) {
-          toast('Please login to comment', 'warning');
+        // Post comment button clicks
+        if (e.target.classList.contains('post-comment-btn')) {
+          const postId = e.target.dataset.postId;
+          const input = e.target.closest('.quick-comment-input').querySelector('.enhanced-comment-input');
+          postEnhancedComment(postId, input);
+        }
+        
+        // Enhanced comment like button clicks
+        if (e.target.classList.contains('enhanced-like-btn') || e.target.closest('.enhanced-like-btn')) {
+          const btn = e.target.classList.contains('enhanced-like-btn') ? e.target : e.target.closest('.enhanced-like-btn');
+          const commentId = btn.dataset.commentId;
+          toggleEnhancedCommentLike(commentId, btn);
+        }
+        
+        // Enhanced reply button clicks
+        if (e.target.classList.contains('enhanced-reply-btn') || e.target.closest('.enhanced-reply-btn')) {
+          const btn = e.target.classList.contains('enhanced-reply-btn') ? e.target : e.target.closest('.enhanced-reply-btn');
+          const commentId = btn.dataset.commentId;
+          const username = btn.dataset.username;
+          showEnhancedReplyInput(commentId, username, btn);
+        }
+        
+        // Login link clicks
+        if (e.target.classList.contains('login-link')) {
+          e.preventDefault();
+          showAuthModal();
         }
       });
       
@@ -7377,13 +7523,21 @@
             </div>
           ` : ''}
           
-          <!-- Quick Comment Input - Always visible -->
-          <div class="quick-comment-input mt-3 pt-2" style="border-top: 1px solid rgba(0,0,0,0.05);">
+          <!-- Enhanced Quick Comment Input - Always visible -->
+          <div class="quick-comment-input mt-3 pt-2" style="border-top: 1px solid rgba(0,0,0,0.05);" data-post-id="${p.id}">
             <div class="d-flex align-items-center gap-2">
-              <img src="${(window.auth && window.auth.user && window.auth.user.profile_picture) ? window.auth.user.profile_picture : getDefaultAvatar()}" class="rounded-circle flex-shrink-0 user-avatar-comment" width="28" height="28" alt="You">
-              <div class="flex-grow-1">
-                <input type="text" class="form-control form-control-sm comment-input" placeholder="${(window.auth && window.auth.user) ? 'Add a comment...' : 'Login to comment'}" data-post-id="${p.id}" style="border-radius: 20px; border: 1px solid rgba(0,0,0,0.1); background: rgba(248,249,250,0.8);" ${!(window.auth && window.auth.user) ? 'disabled' : ''}>
+              <img src="${getDefaultAvatar()}" class="rounded-circle flex-shrink-0 user-avatar-comment" width="28" height="28" alt="You">
+              <div class="flex-grow-1 position-relative">
+                <input type="text" class="form-control form-control-sm comment-input enhanced-comment-input" placeholder="Add a comment..." data-post-id="${p.id}" style="border-radius: 20px; border: 1px solid rgba(0,123,255,0.2); background: rgba(248,249,250,0.9); transition: all 0.3s ease;">
+                <div class="comment-actions d-none position-absolute" style="right: 8px; top: 50%; transform: translateY(-50%);">
+                  <button class="btn btn-sm btn-primary post-comment-btn" type="button" data-post-id="${p.id}" style="border-radius: 15px; padding: 2px 8px; font-size: 11px;">
+                    <i class="bi bi-send"></i>
+                  </button>
+                </div>
               </div>
+            </div>
+            <div class="auth-prompt d-none text-center mt-2">
+              <small class="text-muted">Please <a href="#" class="text-primary login-link">login</a> to comment</small>
             </div>
           </div>
         </div>`
@@ -8992,6 +9146,11 @@
         updateStats();
         loadFeed();
         loadSuggestions();
+        
+        // Initialize enhanced comment system
+        setTimeout(() => {
+          initializeCommentInputs();
+        }, 1000);
         loadTrendingTags(); // Load trending tags after client is ready
         loadPopularTags(); // Load popular tags after client is ready
         initializeSearchInput(); // Initialize search tag input functionality
