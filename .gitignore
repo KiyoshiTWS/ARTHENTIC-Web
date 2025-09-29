@@ -42,6 +42,12 @@ logs/
 .env.local
 .env.production
 
+# Firebase
+.firebase/
+.firebaserc
+firebase-debug.log
+firebase-debug.*.log
+
 # IDE files
 .vscode/
 .idea/
