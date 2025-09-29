@@ -4841,6 +4841,107 @@
         return getCurrentUser() !== null;
       }
       
+      function initializeCommentInputs() {
+        // Initialize enhanced comment inputs with real-time auth detection
+        const commentInputs = document.querySelectorAll('.enhanced-comment-input, .comment-input');
+        
+        commentInputs.forEach(input => {
+          const container = input.closest('.quick-comment-input, .add-comment-inline');
+          if (!container) return;
+          
+          // Set up auth-based UI updates
+          updateCommentInputAuth(container, input);
+          
+          // Enhanced focus interactions
+          input.addEventListener('focus', () => {
+            input.style.transform = 'scale(1.02)';
+            input.style.borderColor = 'rgba(0,123,255,0.6)';
+            input.style.boxShadow = '0 0 0 0.2rem rgba(0,123,255,0.1)';
+          });
+          
+          input.addEventListener('blur', () => {
+            input.style.transform = 'scale(1)';
+            input.style.borderColor = 'rgba(0,123,255,0.3)';
+            input.style.boxShadow = 'none';
+          });
+          
+          // Enhanced Enter key handling
+          if (!input.dataset.enhancedEnter) {
+            input.addEventListener('keypress', (e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const postId = input.dataset.postId || input.getAttribute('data-post-id');
+                if (postId) {
+                  if (input.classList.contains('enhanced-comment-input')) {
+                    postEnhancedComment(postId, input);
+                  } else {
+                    postQuickComment(postId, input);
+                  }
+                }
+              }
+            });
+            input.dataset.enhancedEnter = 'true';
+          }
+        });
+        
+        // Update all comment inputs when auth state changes
+        updateAllCommentInputs();
+      }
+      
+      function updateCommentInputAuth(container, input, avatar, authPrompt, actions) {
+        const user = getCurrentUser();
+        
+        if (!container) return;
+        
+        // Find elements if not provided
+        avatar = avatar || container.querySelector('.user-avatar-comment');
+        authPrompt = authPrompt || container.querySelector('.auth-prompt');
+        actions = actions || container.querySelector('.comment-actions');
+        
+        if (user) {
+          // User is logged in - show interactive comment input
+          if (avatar) {
+            avatar.src = user.profile_picture || getDefaultAvatar();
+            avatar.alt = user.username;
+            avatar.style.display = 'block';
+          }
+          
+          if (authPrompt) {
+            authPrompt.style.display = 'none';
+          }
+          
+          if (input) {
+            input.placeholder = 'Write a comment...';
+            input.disabled = false;
+            input.style.opacity = '1';
+          }
+          
+          if (actions) {
+            actions.style.display = 'flex';
+          }
+        } else {
+          // User not logged in - show auth prompt
+          if (avatar) {
+            avatar.style.display = 'none';
+          }
+          
+          if (authPrompt) {
+            authPrompt.style.display = 'block';
+            authPrompt.innerHTML = '<span class="text-muted">Please <a href="#" class="login-link text-primary">login</a> to comment</span>';
+          }
+          
+          if (input) {
+            input.placeholder = 'Login to comment...';
+            input.disabled = true;
+            input.style.opacity = '0.7';
+          }
+          
+          if (actions) {
+            actions.style.display = 'none';
+          }
+        }
+      }
+      
       function showAuthModal() {
         const authModal = document.getElementById('authModal');
         if (authModal) {
