@@ -2403,7 +2403,7 @@
                       Choose Image
                     </button>
                     <div class="small text-muted mt-1">
-                      JPG, PNG, GIF up to 5MB
+                      JPG, PNG, GIF up to 1MB (auto-compressed with cropping)
                     </div>
                   </div>
                 </div>
@@ -6776,16 +6776,16 @@
         }
       }
 
-      // Avatar upload handler
+      // Avatar upload handler with cropping integration
       document
         .getElementById("avatarUpload")
         .addEventListener("change", function (e) {
           const file = e.target.files[0];
           if (!file) return;
 
-          // Validate file size (1MB limit for Firestore compatibility)
-          if (file.size > 1024 * 1024) {
-            toast("Image too large. Maximum size is 1MB due to Firestore limits.");
+          // Validate file size (allow up to 5MB initially for cropping, will compress after)
+          if (file.size > 5 * 1024 * 1024) {
+            toast("Image too large. Please choose a file under 5MB for cropping.");
             return;
           }
 
@@ -6796,28 +6796,9 @@
           }
 
           const reader = new FileReader();
-          reader.onload = async function (event) {
-            const imageData = event.target.result;
-
-            try {
-              // Update user profile in Firebase and localStorage
-              await window.firebaseArtHubClient.updateUserProfile({
-                profile_picture: imageData,
-              });
-
-              // Update preview
-              document.getElementById("currentAvatar").src = imageData;
-
-              // Refresh auth state
-              auth.user = window.firebaseArtHubClient.getCurrentUser();
-
-              // Update all avatars in the UI
-              updateAvatarsInUI(imageData);
-
-              toast("Profile picture updated!");
-            } catch (error) {
-              toast("Failed to update profile picture: " + error.message);
-            }
+          reader.onload = function (event) {
+            // Open cropping modal instead of direct upload
+            openCropModal(event.target.result);
           };
 
           reader.readAsDataURL(file);
@@ -10252,22 +10233,34 @@
                 
                 const croppedDataUrl = await applyCropToImage();
                 
-                // Use the cropped image as profile picture
-                const settingsModal = bootstrap.Modal.getInstance(document.getElementById('settingsModal'));
-                const profilePicPreview = document.getElementById('profilePicPreview');
-                
-                if (profilePicPreview) {
-                  profilePicPreview.src = croppedDataUrl;
+                // Update Firebase with the cropped profile picture
+                try {
+                  await window.firebaseArtHubClient.updateUserProfile({
+                    profile_picture: croppedDataUrl,
+                  });
+
+                  // Update the current avatar preview in settings
+                  const currentAvatar = document.getElementById('currentAvatar');
+                  if (currentAvatar) {
+                    currentAvatar.src = croppedDataUrl;
+                  }
+
+                  // Refresh auth state
+                  auth.user = window.firebaseArtHubClient.getCurrentUser();
+
+                  // Update all avatars in the UI
+                  updateAvatarsInUI(croppedDataUrl);
+
+                  // Close crop modal
+                  const cropModalInstance = bootstrap.Modal.getInstance(cropModal);
+                  cropModalInstance.hide();
+                  
+                  toast('Profile picture updated successfully!', 'success');
+                  
+                } catch (error) {
+                  console.error('Failed to save cropped profile picture:', error);
+                  toast('Failed to save profile picture: ' + error.message, 'error');
                 }
-                
-                // Store for saving
-                window.pendingProfilePicture = croppedDataUrl;
-                
-                // Close crop modal
-                const cropModalInstance = bootstrap.Modal.getInstance(cropModal);
-                cropModalInstance.hide();
-                
-                toast('Profile picture cropped successfully!', 'success');
                 
               } catch (error) {
                 console.error('Crop error:', error);
