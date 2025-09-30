@@ -8868,7 +8868,7 @@
         try {
           // Get posts count for current user
           const posts = await window.firebaseArtHubClient.getPosts();
-          const userPosts = posts.filter((p) => p.user_id === auth.user.id);
+          const userPosts = posts.filter((p) => p.user_id === auth.user?.id);
           document.getElementById("statPosts").textContent = userPosts.length;
 
           // Get follower counts from user profile
@@ -8883,7 +8883,7 @@
           // Update profile avatars
           const profileAvatar = document.getElementById("profileAvatar");
           const createPostAvatar = document.getElementById("createPostAvatar");
-          if (auth.user.profile_picture) {
+          if (auth.user?.profile_picture) {
             if (profileAvatar) profileAvatar.src = auth.user.profile_picture;
             if (createPostAvatar)
               createPostAvatar.src = auth.user.profile_picture;
@@ -10160,6 +10160,30 @@
           console.log("💡 Tip: Refresh the page to reload EmailJS service");
         }
 
+        // Username sanitization function for email compatibility
+        function sanitizeUsernameForEmail(username) {
+          if (!username || typeof username !== 'string') return '';
+          
+          return username
+            .toLowerCase()
+            .replace(/[^a-z0-9._-]/g, '') // Remove invalid characters
+            .replace(/^[._-]+|[._-]+$/g, '') // Remove leading/trailing special chars
+            .replace(/[._-]{2,}/g, '.') // Replace multiple special chars with single dot
+            .substring(0, 30); // Limit length for email compatibility
+        }
+        
+        // Email sanitization function for EmailJS compatibility
+        function sanitizeEmailForEmailJS(email) {
+          if (!email || typeof email !== 'string') return '';
+          
+          // Basic email validation and cleanup
+          return email
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9@._-]/g, '') // Keep only valid email characters
+            .substring(0, 254); // RFC 5321 email length limit
+        }
+        
         // Add real-time validation to prevent EmailJS issues
         function initializeFormValidation() {
           // Username validation
