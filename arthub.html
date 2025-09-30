@@ -2665,7 +2665,7 @@
                     id="regEmail"
                     placeholder="email"
                     maxlength="100"
-                    pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                    pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
                     title="Please enter a valid email address"
                     required
                   />
@@ -3295,6 +3295,30 @@
     <script src="js/arthub-client.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
+      // Username sanitization function for email compatibility (Global scope)
+      function sanitizeUsernameForEmail(username) {
+        if (!username || typeof username !== 'string') return '';
+        
+        return username
+          .toLowerCase()
+          .replace(/[^a-z0-9._-]/g, '') // Remove invalid characters
+          .replace(/^[._-]+|[._-]+$/g, '') // Remove leading/trailing special chars
+          .replace(/[._-]{2,}/g, '.') // Replace multiple special chars with single dot
+          .substring(0, 30); // Limit length for email compatibility
+      }
+      
+      // Email sanitization function for EmailJS compatibility (Global scope)
+      function sanitizeEmailForEmailJS(email) {
+        if (!email || typeof email !== 'string') return '';
+        
+        // Basic email validation and cleanup
+        return email
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9@._-]/g, '') // Keep only valid email characters
+          .substring(0, 254); // RFC 5321 email length limit
+      }
+      
       // --- Dark Mode and Navbar Scroll Behavior (synced with index.html) ---
       (function () {
         const darkModeBtn = document.getElementById("darkModeToggle");
@@ -10160,30 +10184,6 @@
           console.log("💡 Tip: Refresh the page to reload EmailJS service");
         }
 
-        // Username sanitization function for email compatibility
-        function sanitizeUsernameForEmail(username) {
-          if (!username || typeof username !== 'string') return '';
-          
-          return username
-            .toLowerCase()
-            .replace(/[^a-z0-9._-]/g, '') // Remove invalid characters
-            .replace(/^[._-]+|[._-]+$/g, '') // Remove leading/trailing special chars
-            .replace(/[._-]{2,}/g, '.') // Replace multiple special chars with single dot
-            .substring(0, 30); // Limit length for email compatibility
-        }
-        
-        // Email sanitization function for EmailJS compatibility
-        function sanitizeEmailForEmailJS(email) {
-          if (!email || typeof email !== 'string') return '';
-          
-          // Basic email validation and cleanup
-          return email
-            .toLowerCase()
-            .trim()
-            .replace(/[^a-z0-9@._-]/g, '') // Keep only valid email characters
-            .substring(0, 254); // RFC 5321 email length limit
-        }
-        
         // Add real-time validation to prevent EmailJS issues
         function initializeFormValidation() {
           // Username validation
