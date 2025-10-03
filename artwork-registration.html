@@ -59,17 +59,20 @@
       }
 
       .single-line {
-        white-space: nowrap; /* prevent wrapping */
+        /* Remove white-space: nowrap to allow wrapping */
         font-size: clamp(
           0.9rem,
           2vw,
           1.1rem
         ); /* auto-adjust size between mobile and desktop */
+        line-height: 1.5; /* Add proper line height for readability */
+        word-wrap: break-word; /* Ensure long words break if needed */
       }
 
       .text-center {
         margin-top: 0;
         margin-bottom: 0;
+        padding: 0 1rem; /* Add some padding to prevent text touching edges */
       }
 
       .form-control,
