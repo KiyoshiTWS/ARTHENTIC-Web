@@ -389,80 +389,142 @@
         opacity: 1;
       }
       
-      /* Edit Post Modal Styling - Consistent with Image Editor */
-      .modal-content:not(.image-editor-modal) {
+      /* Edit Post Modal Styling - Enhanced Specificity */
+      .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) {
         background-color: white !important;
         color: black !important;
       }
 
-      .modal-content:not(.image-editor-modal) .modal-header {
+      .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .modal-header {
         background-color: white !important;
         border-bottom-color: #dee2e6 !important;
         color: black !important;
       }
 
-      .modal-content:not(.image-editor-modal) .modal-body {
+      .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .modal-body {
         background-color: white !important;
         color: black !important;
       }
 
-      .modal-content:not(.image-editor-modal) .modal-footer {
+      .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .modal-footer {
         background-color: white !important;
         border-top-color: #dee2e6 !important;
       }
 
-      .modal-content:not(.image-editor-modal) .modal-title {
+      .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .modal-title {
         color: black !important;
+        background: none !important;
       }
 
-      .modal-content:not(.image-editor-modal) .form-label {
+      .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .form-label {
         color: black !important;
-        font-weight: 500;
+        font-weight: 500 !important;
+        background: none !important;
       }
 
-      .modal-content:not(.image-editor-modal) .text-muted {
+      .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .text-muted {
         color: #6c757d !important;
+        background: none !important;
       }
 
-      /* Dark mode for edit post modals */
-      body.dark-mode .modal-content:not(.image-editor-modal) {
+      .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .form-control {
+        background-color: white !important;
+        color: black !important;
+        border-color: #dee2e6 !important;
+      }
+
+      .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .form-control:focus {
+        background-color: white !important;
+        color: black !important;
+        border-color: #3498db !important;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25) !important;
+      }
+
+      /* Dark mode for edit post modals - Enhanced */
+      body.dark-mode .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) {
         background-color: #23272b !important;
         color: #fff !important;
       }
 
-      body.dark-mode .modal-content:not(.image-editor-modal) .modal-header {
+      body.dark-mode .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .modal-header {
         background-color: #23272b !important;
         border-bottom-color: #495057 !important;
         color: #fff !important;
       }
 
-      body.dark-mode .modal-content:not(.image-editor-modal) .modal-body {
+      body.dark-mode .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .modal-body {
         background-color: #23272b !important;
         color: #fff !important;
       }
 
-      body.dark-mode .modal-content:not(.image-editor-modal) .modal-footer {
+      body.dark-mode .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .modal-footer {
         background-color: #23272b !important;
         border-top-color: #495057 !important;
       }
 
-      body.dark-mode .modal-content:not(.image-editor-modal) .modal-title {
+      body.dark-mode .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .modal-title {
         color: #fff !important;
+        background: none !important;
       }
 
-      body.dark-mode .modal-content:not(.image-editor-modal) .form-label {
+      body.dark-mode .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .form-label {
         color: #fff !important;
+        background: none !important;
       }
 
-      body.dark-mode .modal-content:not(.image-editor-modal) .text-muted {
+      body.dark-mode .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .text-muted {
         color: #adb5bd !important;
+        background: none !important;
       }
 
-      body.dark-mode .modal-content:not(.image-editor-modal) .btn-close {
-        background-color: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: #fff;
-        opacity: 1;
+      body.dark-mode .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .form-control {
+        background-color: #343a40 !important;
+        color: #fff !important;
+        border-color: #495057 !important;
+      }
+
+      body.dark-mode .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .form-control:focus {
+        background-color: #343a40 !important;
+        color: #fff !important;
+        border-color: #3498db !important;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25) !important;
+      }
+
+      body.dark-mode .modal.fade .modal-dialog .modal-content:not(.image-editor-modal) .btn-close {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        color: #fff !important;
+        opacity: 1 !important;
+      }
+      
+      /* Prevent red highlighting and validation states in modals */
+      .modal-content:not(.image-editor-modal) * {
+        background-color: inherit !important;
+      }
+      
+      .modal-content:not(.image-editor-modal) .form-control.is-invalid,
+      .modal-content:not(.image-editor-modal) .form-control:invalid {
+        border-color: #dee2e6 !important;
+        background-image: none !important;
+      }
+      
+      body.dark-mode .modal-content:not(.image-editor-modal) .form-control.is-invalid,
+      body.dark-mode .modal-content:not(.image-editor-modal) .form-control:invalid {
+        border-color: #495057 !important;
+        background-image: none !important;
+      }
+      
+      /* Remove any red backgrounds or highlights */
+      .modal-content:not(.image-editor-modal) .was-validated .form-control:invalid,
+      .modal-content:not(.image-editor-modal) .form-control.is-invalid {
+        background-color: white !important;
+        border-color: #dee2e6 !important;
+      }
+      
+      body.dark-mode .modal-content:not(.image-editor-modal) .was-validated .form-control:invalid,
+      body.dark-mode .modal-content:not(.image-editor-modal) .form-control.is-invalid {
+        background-color: #343a40 !important;
+        border-color: #495057 !important;
       }
       
       /* Universal close button dark mode styling */
