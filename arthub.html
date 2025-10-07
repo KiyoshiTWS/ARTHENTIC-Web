@@ -364,6 +364,31 @@
         color: #fff !important;
       }
       
+      /* Image editor X button dark mode visibility */
+      .image-editor-modal .btn-close {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        opacity: 1;
+        color: #000;
+      }
+      
+      .image-editor-modal .btn-close:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        opacity: 1;
+      }
+      
+      body.dark-mode .image-editor-modal .btn-close {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        opacity: 1;
+      }
+      
+      body.dark-mode .image-editor-modal .btn-close:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        opacity: 1;
+      }
+      
       /* Ensure header icons are always visible */
       #notificationsBtn {
         color: #3498db !important;
@@ -8669,7 +8694,7 @@
         return li;
       }
 
-      // Image zoom functionality (Facebook-style)
+      // Image zoom functionality with pan and zoom
       function openImageZoom(imageUrl, caption) {
         const modal = document.createElement("div");
         modal.className = "image-zoom-modal";
@@ -8681,18 +8706,28 @@
         height: 100%;
         background: rgba(0,0,0,0.9);
         z-index: 9999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: zoom-out;
+        overflow: hidden;
+        cursor: grab;
       `;
 
         const container = document.createElement("div");
         container.style.cssText = `
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      `;
+
+        const imgContainer = document.createElement("div");
+        imgContainer.style.cssText = `
+        position: relative;
         max-width: 90vw;
         max-height: 90vh;
-        text-align: center;
-        position: relative;
+        overflow: auto;
+        border-radius: 8px;
       `;
 
         const img = document.createElement("img");
@@ -8703,61 +8738,183 @@
         object-fit: contain;
         border-radius: 8px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        cursor: grab;
+        transition: transform 0.2s ease;
       `;
 
         const closeBtn = document.createElement("button");
         closeBtn.innerHTML = '<i class="bi bi-x"></i>';
         closeBtn.style.cssText = `
-        position: absolute;
-        top: -40px;
-        right: 0;
-        background: rgba(255,255,255,0.2);
-        border: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0,0,0,0.7);
+        border: 2px solid rgba(255,255,255,0.3);
         color: white;
         font-size: 24px;
-        width: 35px;
-        height: 35px;
+        width: 45px;
+        height: 45px;
         border-radius: 50%;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 10001;
+        backdrop-filter: blur(10px);
       `;
 
+        // Pan and zoom functionality
+        let scale = 1;
+        let startX = 0, startY = 0;
+        let translateX = 0, translateY = 0;
+        let isDragging = false;
+
+        // Mouse wheel zoom
+        modal.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const delta = e.deltaY > 0 ? 0.9 : 1.1;
+          scale = Math.min(Math.max(0.5, scale * delta), 4);
+          img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+          img.style.cursor = scale > 1 ? 'grab' : 'grab';
+        });
+
+        // Mouse drag
+        img.addEventListener('mousedown', (e) => {
+          if (scale > 1) {
+            isDragging = true;
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
+            img.style.cursor = 'grabbing';
+            modal.style.cursor = 'grabbing';
+          }
+        });
+
+        modal.addEventListener('mousemove', (e) => {
+          if (isDragging && scale > 1) {
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+          }
+        });
+
+        modal.addEventListener('mouseup', () => {
+          isDragging = false;
+          img.style.cursor = scale > 1 ? 'grab' : 'grab';
+          modal.style.cursor = 'grab';
+        });
+
+        // Touch support for mobile
+        let initialDistance = 0;
+        let initialScale = 1;
+
+        modal.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 2) {
+            e.preventDefault();
+            initialDistance = Math.hypot(
+              e.touches[0].clientX - e.touches[1].clientX,
+              e.touches[0].clientY - e.touches[1].clientY
+            );
+            initialScale = scale;
+          }
+        });
+
+        modal.addEventListener('touchmove', (e) => {
+          if (e.touches.length === 2) {
+            e.preventDefault();
+            const currentDistance = Math.hypot(
+              e.touches[0].clientX - e.touches[1].clientX,
+              e.touches[0].clientY - e.touches[1].clientY
+            );
+            scale = Math.min(Math.max(0.5, initialScale * (currentDistance / initialDistance)), 4);
+            img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+          }
+        });
+
+        // Reset zoom on double click
+        img.addEventListener('dblclick', () => {
+          scale = 1;
+          translateX = 0;
+          translateY = 0;
+          img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+        });
+
+        imgContainer.appendChild(img);
+        container.appendChild(imgContainer);
+        
         if (caption) {
           const captionEl = document.createElement("div");
           captionEl.textContent = caption;
           captionEl.style.cssText = `
+          position: fixed;
+          bottom: 20px;
+          left: 50%;
+          transform: translateX(-50%);
           color: white;
-          margin-top: 15px;
           font-size: 14px;
-          max-width: 500px;
-          margin-left: auto;
-          margin-right: auto;
+          max-width: 80vw;
+          text-align: center;
+          background: rgba(0,0,0,0.7);
+          padding: 10px 20px;
+          border-radius: 20px;
+          backdrop-filter: blur(10px);
         `;
-          container.appendChild(captionEl);
+          modal.appendChild(captionEl);
         }
 
-        container.appendChild(img);
-        container.appendChild(closeBtn);
         modal.appendChild(container);
+        modal.appendChild(closeBtn);
         document.body.appendChild(modal);
+
+        // Instructions overlay
+        const instructions = document.createElement("div");
+        instructions.innerHTML = `
+          <div style="position: fixed; top: 20px; left: 20px; color: white; font-size: 12px; background: rgba(0,0,0,0.7); padding: 8px 12px; border-radius: 15px; backdrop-filter: blur(10px);">
+            🖱️ Scroll to zoom • 🖱️ Drag to pan • 👆 Double-click to reset
+          </div>
+        `;
+        modal.appendChild(instructions);
+        
+        // Auto-hide instructions
+        setTimeout(() => {
+          if (instructions.parentNode) {
+            instructions.style.opacity = '0';
+            instructions.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+              if (instructions.parentNode) {
+                modal.removeChild(instructions);
+              }
+            }, 500);
+          }
+        }, 3000);
 
         // Close handlers
         const closeModal = () => {
           modal.style.opacity = "0";
-          setTimeout(() => document.body.removeChild(modal), 200);
+          setTimeout(() => {
+            if (document.body.contains(modal)) {
+              document.body.removeChild(modal);
+            }
+          }, 200);
         };
 
         modal.addEventListener("click", (e) => {
-          if (e.target === modal) closeModal();
+          if (e.target === modal || e.target === container) closeModal();
         });
         closeBtn.addEventListener("click", closeModal);
+        
+        // Escape key to close
+        const handleEscape = (e) => {
+          if (e.key === 'Escape') {
+            closeModal();
+            document.removeEventListener('keydown', handleEscape);
+          }
+        };
+        document.addEventListener('keydown', handleEscape);
 
         // Smooth fade in
         modal.style.opacity = "0";
-        setTimeout(() => (modal.style.opacity = "1"), 10);
         modal.style.transition = "opacity 0.2s ease";
+        setTimeout(() => (modal.style.opacity = "1"), 10);
       }
 
       // Upload progress functionality
