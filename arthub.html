@@ -187,6 +187,85 @@
         border-color: #adb5bd;
       }
       
+      /* Image Editor Modal Dark Mode Support */
+      .image-editor-modal .modal-content {
+        background-color: white;
+        color: black;
+      }
+
+      .image-editor-container {
+        background: #f8f9fa !important;
+        border-color: #dee2e6 !important;
+      }
+
+      .image-editor-controls {
+        background-color: white;
+        border-color: #dee2e6;
+      }
+
+      .image-editor-controls .card-header {
+        background-color: #e9ecef;
+        border-bottom-color: #dee2e6;
+      }
+
+      /* Dark mode specific styles for image editor */
+      body.dark-mode .image-editor-modal .modal-content {
+        background-color: #23272b;
+        color: #fff;
+      }
+
+      body.dark-mode .image-editor-container {
+        background: #343a40 !important;
+        border-color: #495057 !important;
+      }
+
+      body.dark-mode .image-editor-controls {
+        background-color: #23272b;
+        border-color: #495057;
+      }
+
+      body.dark-mode .image-editor-controls .card-header {
+        background-color: #343a40;
+        border-bottom-color: #495057;
+        color: #fff;
+      }
+
+      body.dark-mode .image-editor-controls .card-body {
+        background-color: #23272b;
+        color: #fff;
+      }
+
+      /* Image editor button styling */
+      .image-editor-controls .btn-outline-secondary {
+        border-color: #6c757d;
+        color: #6c757d;
+      }
+
+      .image-editor-controls .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+      }
+
+      body.dark-mode .image-editor-controls .btn-outline-secondary {
+        border-color: #adb5bd;
+        color: #adb5bd;
+      }
+
+      body.dark-mode .image-editor-controls .btn-outline-secondary:hover {
+        background-color: #495057;
+        border-color: #adb5bd;
+        color: white;
+      }
+
+      body.dark-mode .image-editor-controls .text-muted {
+        color: #adb5bd !important;
+      }
+
+      body.dark-mode .image-editor-controls .form-label {
+        color: #fff;
+      }
+      
       /* Ensure header icons are always visible */
       #notificationsBtn {
         color: #3498db !important;
@@ -7693,7 +7772,7 @@
         modal.className = "modal fade";
         modal.innerHTML = `
         <div class="modal-dialog modal-xl modal-dialog-centered">
-          <div class="modal-content">
+          <div class="modal-content image-editor-modal">
             <div class="modal-header">
               <h5 class="modal-title">Edit Image</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -7701,12 +7780,12 @@
             <div class="modal-body text-center">
               <div class="row">
                 <div class="col-md-8">
-                  <div id="cropperContainer" class="border rounded p-3" style="background: #f8f9fa; min-height: 400px;">
-                    <img id="cropperImage" src="${imageData}" style="max-width: 100%; max-height: 400px; border: 2px dashed #007bff; border-radius: 8px;">
+                  <div id="cropperContainer" class="border rounded p-3 image-editor-container">
+                    <img id="cropperImage" src="${imageData}" style="max-width: 100%; max-height: 400px; border: 2px dashed #3498db; border-radius: 8px;">
                   </div>
                 </div>
                 <div class="col-md-4">
-                  <div class="card">
+                  <div class="card image-editor-controls">
                     <div class="card-header">
                       <h6 class="mb-0">Image Controls</h6>
                     </div>
