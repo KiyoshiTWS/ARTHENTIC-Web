@@ -527,6 +527,36 @@
         border-color: #495057 !important;
       }
       
+      /* Enhanced button responsiveness */
+      .btn, .icon-btn {
+        cursor: pointer !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+      }
+      
+      .btn i, .icon-btn i {
+        pointer-events: none !important;
+        user-select: none !important;
+      }
+      
+      .edit-post-btn, .report-post-btn, .delete-post-btn {
+        position: relative !important;
+        z-index: 1 !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+      }
+      
+      .like-comment-btn, .reply-comment-btn, .report-comment-btn {
+        position: relative !important;
+        z-index: 1 !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+      }
+      
       /* Universal close button dark mode styling */
       body.dark-mode .btn-close {
         filter: invert(1) grayscale(100%) brightness(200%);
@@ -9669,65 +9699,107 @@
           }
         }
 
-        // Edit post functionality
-        if (e.target.classList.contains("edit-post-btn")) {
+        // Edit post functionality - Enhanced with closest() for better responsiveness
+        const editBtn = e.target.closest(".edit-post-btn");
+        if (editBtn) {
           e.preventDefault();
-          const postId = e.target.getAttribute("data-post-id");
-          openEditModal(postId);
+          e.stopPropagation();
+          const postId = editBtn.getAttribute("data-post-id");
+          if (postId) {
+            openEditModal(postId);
+          }
+          return;
         }
 
-        // Report post functionality
-        if (e.target.classList.contains("report-post-btn")) {
+        // Report post functionality - Enhanced with closest() for better responsiveness  
+        const reportBtn = e.target.closest(".report-post-btn");
+        if (reportBtn) {
           e.preventDefault();
-          const postId = e.target.getAttribute("data-post-id");
-          const postAuthor = e.target.getAttribute("data-post-author");
-          openReportModal(postId, postAuthor);
+          e.stopPropagation();
+          const postId = reportBtn.getAttribute("data-post-id");
+          const postAuthor = reportBtn.getAttribute("data-post-author");
+          if (postId && postAuthor) {
+            openReportModal(postId, postAuthor);
+          }
+          return;
         }
 
-        // Admin actions
-        if (e.target.classList.contains("delete-post-btn")) {
+        // Admin actions - Enhanced with closest() for better responsiveness
+        const deleteBtn = e.target.closest(".delete-post-btn");
+        if (deleteBtn) {
           e.preventDefault();
-          const postId = e.target.getAttribute("data-post-id");
-          const reportId = e.target.getAttribute("data-report-id");
-          confirmDeletePost(postId, reportId);
+          e.stopPropagation();
+          const postId = deleteBtn.getAttribute("data-post-id");
+          const reportId = deleteBtn.getAttribute("data-report-id");
+          if (postId) {
+            confirmDeletePost(postId, reportId);
+          }
+          return;
         }
 
-        // Comment interactions
-        if (e.target.classList.contains("like-comment-btn")) {
+        // Comment interactions - Enhanced with closest() for better responsiveness
+        const likeCommentBtn = e.target.closest(".like-comment-btn");
+        if (likeCommentBtn) {
           e.preventDefault();
-          const commentId = e.target.getAttribute("data-comment-id");
-          toggleCommentLike(commentId, e.target);
+          e.stopPropagation();
+          const commentId = likeCommentBtn.getAttribute("data-comment-id");
+          if (commentId) {
+            toggleCommentLike(commentId, likeCommentBtn);
+          }
+          return;
         }
         
-        if (e.target.classList.contains("reply-comment-btn")) {
+        const replyCommentBtn = e.target.closest(".reply-comment-btn");
+        if (replyCommentBtn) {
           e.preventDefault();
-          const commentId = e.target.getAttribute("data-comment-id");
-          const username = e.target.getAttribute("data-username");
-          showReplyInput(commentId, username, e.target);
+          e.stopPropagation();
+          const commentId = replyCommentBtn.getAttribute("data-comment-id");
+          const username = replyCommentBtn.getAttribute("data-username");
+          if (commentId && username) {
+            showReplyInput(commentId, username, replyCommentBtn);
+          }
+          return;
         }
         
-        if (e.target.classList.contains("quick-comment-btn")) {
+        const quickCommentBtn = e.target.closest(".quick-comment-btn");
+        if (quickCommentBtn) {
           e.preventDefault();
-          const postId = e.target.getAttribute("data-post-id");
-          toggleQuickComment(postId, e.target);
+          e.stopPropagation();
+          const postId = quickCommentBtn.getAttribute("data-post-id");
+          if (postId) {
+            toggleQuickComment(postId, quickCommentBtn);
+          }
+          return;
         }
         
-        if (e.target.classList.contains("post-comment-inline-btn")) {
+        const postCommentBtn = e.target.closest(".post-comment-inline-btn");
+        if (postCommentBtn) {
           e.preventDefault();
-          const input = e.target.closest('.input-group').querySelector('.comment-input');
+          e.stopPropagation();
+          const input = postCommentBtn.closest('.input-group').querySelector('.comment-input');
           const postId = input.getAttribute('data-post-id');
-          postQuickComment(postId, input);
+          if (postId && input) {
+            postQuickComment(postId, input);
+          }
+          return;
         }
         
-        if (e.target.classList.contains("view-all-comments-btn") || e.target.classList.contains("view-more-comments-btn")) {
+        const viewCommentsBtn = e.target.closest(".view-all-comments-btn") || e.target.closest(".view-more-comments-btn");
+        if (viewCommentsBtn) {
           e.preventDefault();
-          const postId = e.target.getAttribute("data-post-id");
-          openCommentsModal(postId);
+          e.stopPropagation();
+          const postId = viewCommentsBtn.getAttribute("data-post-id");
+          if (postId) {
+            openCommentsModal(postId);
+          }
+          return;
         }
         
-        // Admin delete comment
-        if (e.target.classList.contains("admin-delete-comment-btn") || e.target.closest(".admin-delete-comment-btn")) {
+        // Admin delete comment - Enhanced with closest()
+        const adminDeleteCommentBtn = e.target.closest(".admin-delete-comment-btn");
+        if (adminDeleteCommentBtn) {
           e.preventDefault();
+          e.stopPropagation();
           e.stopPropagation();
           
           const deleteBtn = e.target.classList.contains("admin-delete-comment-btn") ? e.target : e.target.closest(".admin-delete-comment-btn");
@@ -9748,11 +9820,16 @@
           }
         }
         
-        // User report comment
-        if (e.target.classList.contains("report-comment-btn")) {
+        // User report comment - Enhanced with closest() for better responsiveness
+        const reportCommentBtn = e.target.closest(".report-comment-btn");
+        if (reportCommentBtn) {
           e.preventDefault();
-          const commentId = e.target.getAttribute("data-comment-id");
-          showReportCommentModal(commentId);
+          e.stopPropagation();
+          const commentId = reportCommentBtn.getAttribute("data-comment-id");
+          if (commentId) {
+            showReportCommentModal(commentId);
+          }
+          return;
         }
 
         // Admin context review actions
