@@ -7477,11 +7477,6 @@
                         </div>
                       </div>
                       <div class="mb-3">
-                        <label class="form-label">Quality</label>
-                        <input type="range" class="form-range" id="qualitySlider" min="10" max="100" value="80">
-                        <small class="text-muted" id="qualityValue">80%</small>
-                      </div>
-                      <div class="mb-3">
                         <small class="text-muted">
                           Original: ${(file.size / 1024 / 1024).toFixed(
                             1
@@ -7507,18 +7502,8 @@
 
         // Initialize cropper simulation variables
         let currentRotation = 0;
-        let currentQuality = 0.8;
         const cropperImage = modal.querySelector("#cropperImage");
-        const qualitySlider = modal.querySelector("#qualitySlider");
-        const qualityValue = modal.querySelector("#qualityValue");
         const newSizeSpan = modal.querySelector("#newSize");
-
-        // Quality slider handler
-        qualitySlider.addEventListener("input", (e) => {
-          currentQuality = e.target.value / 100;
-          qualityValue.textContent = e.target.value + "%";
-          updateSizeEstimate();
-        });
 
         // Rotation handlers
         modal.querySelector("#rotateLeft").addEventListener("click", () => {
@@ -7545,10 +7530,9 @@
         });
 
         function updateSizeEstimate() {
-          // Estimate compressed size based on quality
-          const estimatedSize =
-            (file.size * currentQuality * 0.7) / (1024 * 1024);
-          newSizeSpan.textContent = `Estimated: ${estimatedSize.toFixed(1)}MB`;
+          // Show original size estimate
+          const estimatedSize = file.size / (1024 * 1024);
+          newSizeSpan.textContent = `Estimated: ${estimatedSize.toFixed(1)}MB (will be auto-compressed)`;
         }
 
         // Apply edit handler
@@ -7566,7 +7550,7 @@
               const ctx = canvas.getContext("2d");
               const img = new Image();
 
-              img.onload = function () {
+              img.onload = async function () {
                 // Apply rotation and compression
                 canvas.width = img.width;
                 canvas.height = img.height;
@@ -7579,10 +7563,28 @@
                   ctx.drawImage(img, 0, 0);
                 }
 
-                const processedDataUrl = canvas.toDataURL(
-                  "image/jpeg",
-                  currentQuality
+                // Use automatic compression with compressImage function
+                const tempDataUrl = canvas.toDataURL("image/jpeg", 0.8);
+                
+                // Convert dataURL to File for compression
+                function dataURLtoFile(dataurl, filename) {
+                  const arr = dataurl.split(',');
+                  const mime = arr[0].match(/:(.*?);/)[1];
+                  const bstr = atob(arr[1]);
+                  let n = bstr.length;
+                  const u8arr = new Uint8Array(n);
+                  while(n--){
+                    u8arr[n] = bstr.charCodeAt(n);
+                  }
+                  return new File([u8arr], filename, {type:mime});
+                }
+                
+                const processedResult = await compressImage(
+                  dataURLtoFile(tempDataUrl, 'processed-image.jpg'), 
+                  0.9, 
+                  0.8
                 );
+                const processedDataUrl = processedResult.dataUrl;
                 const finalSize =
                   (processedDataUrl.length * 3) / 4 / (1024 * 1024);
 
