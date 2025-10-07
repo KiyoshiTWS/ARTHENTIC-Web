@@ -389,6 +389,82 @@
         opacity: 1;
       }
       
+      /* Edit Post Modal Styling - Consistent with Image Editor */
+      .modal-content:not(.image-editor-modal) {
+        background-color: white !important;
+        color: black !important;
+      }
+
+      .modal-content:not(.image-editor-modal) .modal-header {
+        background-color: white !important;
+        border-bottom-color: #dee2e6 !important;
+        color: black !important;
+      }
+
+      .modal-content:not(.image-editor-modal) .modal-body {
+        background-color: white !important;
+        color: black !important;
+      }
+
+      .modal-content:not(.image-editor-modal) .modal-footer {
+        background-color: white !important;
+        border-top-color: #dee2e6 !important;
+      }
+
+      .modal-content:not(.image-editor-modal) .modal-title {
+        color: black !important;
+      }
+
+      .modal-content:not(.image-editor-modal) .form-label {
+        color: black !important;
+        font-weight: 500;
+      }
+
+      .modal-content:not(.image-editor-modal) .text-muted {
+        color: #6c757d !important;
+      }
+
+      /* Dark mode for edit post modals */
+      body.dark-mode .modal-content:not(.image-editor-modal) {
+        background-color: #23272b !important;
+        color: #fff !important;
+      }
+
+      body.dark-mode .modal-content:not(.image-editor-modal) .modal-header {
+        background-color: #23272b !important;
+        border-bottom-color: #495057 !important;
+        color: #fff !important;
+      }
+
+      body.dark-mode .modal-content:not(.image-editor-modal) .modal-body {
+        background-color: #23272b !important;
+        color: #fff !important;
+      }
+
+      body.dark-mode .modal-content:not(.image-editor-modal) .modal-footer {
+        background-color: #23272b !important;
+        border-top-color: #495057 !important;
+      }
+
+      body.dark-mode .modal-content:not(.image-editor-modal) .modal-title {
+        color: #fff !important;
+      }
+
+      body.dark-mode .modal-content:not(.image-editor-modal) .form-label {
+        color: #fff !important;
+      }
+
+      body.dark-mode .modal-content:not(.image-editor-modal) .text-muted {
+        color: #adb5bd !important;
+      }
+
+      body.dark-mode .modal-content:not(.image-editor-modal) .btn-close {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        opacity: 1;
+      }
+      
       /* Ensure header icons are always visible */
       #notificationsBtn {
         color: #3498db !important;
@@ -8726,8 +8802,11 @@
         position: relative;
         max-width: 90vw;
         max-height: 90vh;
-        overflow: auto;
+        overflow: hidden;
         border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       `;
 
         const img = document.createElement("img");
@@ -8769,13 +8848,48 @@
         let translateX = 0, translateY = 0;
         let isDragging = false;
 
-        // Mouse wheel zoom
+        // Enhanced mouse wheel zoom with centering
+        const centerImage = () => {
+          const containerRect = imgContainer.getBoundingClientRect();
+          const imgRect = img.getBoundingClientRect();
+          const containerCenterX = containerRect.width / 2;
+          const containerCenterY = containerRect.height / 2;
+          const imgCenterX = (imgRect.width / scale) / 2;
+          const imgCenterY = (imgRect.height / scale) / 2;
+          
+          translateX = containerCenterX - imgCenterX;
+          translateY = containerCenterY - imgCenterY;
+        };
+
         modal.addEventListener('wheel', (e) => {
           e.preventDefault();
+          const rect = img.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
           const delta = e.deltaY > 0 ? 0.9 : 1.1;
-          scale = Math.min(Math.max(0.5, scale * delta), 4);
-          img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
-          img.style.cursor = scale > 1 ? 'grab' : 'grab';
+          const newScale = Math.min(Math.max(0.5, scale * delta), 4);
+          
+          if (newScale !== scale) {
+            // Calculate zoom point for centering
+            const scaleRatio = newScale / scale;
+            translateX = x - (x - translateX) * scaleRatio;
+            translateY = y - (y - translateY) * scaleRatio;
+            
+            scale = newScale;
+            
+            // Always center when at 1x scale
+            if (scale === 1) {
+              translateX = 0;
+              translateY = 0;
+            }
+            
+            img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+            img.style.cursor = scale > 1 ? 'grab' : 'grab';
+            
+            // Update scrollbar visibility
+            imgContainer.style.overflow = scale > 1 ? 'auto' : 'hidden';
+          }
         });
 
         // Mouse drag
@@ -8825,17 +8939,31 @@
               e.touches[0].clientX - e.touches[1].clientX,
               e.touches[0].clientY - e.touches[1].clientY
             );
-            scale = Math.min(Math.max(0.5, initialScale * (currentDistance / initialDistance)), 4);
-            img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+            const newScale = Math.min(Math.max(0.5, initialScale * (currentDistance / initialDistance)), 4);
+            
+            if (newScale !== scale) {
+              scale = newScale;
+              
+              // Center when at 1x scale
+              if (scale === 1) {
+                translateX = 0;
+                translateY = 0;
+              }
+              
+              img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+              imgContainer.style.overflow = scale > 1 ? 'auto' : 'hidden';
+            }
           }
         });
 
-        // Reset zoom on double click
+        // Reset zoom on double click with centering
         img.addEventListener('dblclick', () => {
           scale = 1;
           translateX = 0;
           translateY = 0;
           img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+          imgContainer.style.overflow = 'hidden';
+          img.style.cursor = 'grab';
         });
 
         imgContainer.appendChild(img);
