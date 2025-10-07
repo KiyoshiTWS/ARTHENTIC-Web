@@ -41,31 +41,129 @@
       body.dark-mode #darkModeToggle {
         color: #5dade2 !important;
         border-color: #5dade2 !important;
+        position: relative;
       }
       body.dark-mode #notificationsBtn {
         color: #5dade2 !important;
         border-color: #5dade2 !important;
+        position: relative;
       }
       body.dark-mode #notificationsBtn i {
         color: #5dade2 !important;
+        z-index: 2;
+        position: relative;
       }
       body.dark-mode #darkModeToggle i {
         color: #5dade2 !important;
+        z-index: 2;
+        position: relative;
       }
+      
+      /* Dark mode hover colors to black */
+      body.dark-mode #notificationsBtn:hover {
+        background-color: rgba(0, 0, 0, 0.3) !important;
+        border-color: #333 !important;
+        color: #333 !important;
+      }
+      body.dark-mode #notificationsBtn:hover i {
+        color: #333 !important;
+      }
+      body.dark-mode #darkModeToggle:hover {
+        background-color: rgba(0, 0, 0, 0.3) !important;
+        border-color: #333 !important;
+        color: #333 !important;
+      }
+      body.dark-mode #darkModeToggle:hover i {
+        color: #333 !important;
+      }
+      /* Preserve protect button original styling */
+      .custom-btn {
+        background: #dc3545 !important;
+        border-color: #dc3545 !important;
+        color: white !important;
+      }
+      
+      .custom-btn:hover {
+        background: #c82333 !important;
+        border-color: #c82333 !important;
+        color: white !important;
+      }
+      
+      body.dark-mode .custom-btn {
+        background: #dc3545 !important;
+        border-color: #dc3545 !important;
+        color: white !important;
+      }
+      
+      body.dark-mode .custom-btn:hover {
+        background: #c82333 !important;
+        border-color: #c82333 !important;
+        color: white !important;
+      }
+      
+      /* Notification badge styling (Discord-like) */
+      .notification-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #e74c3c;
+        color: white;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 10px;
+        min-width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      }
+      
+      body.dark-mode .notification-badge {
+        border-color: #23272b;
+      }
+      
       /* Ensure header icons are always visible */
       #notificationsBtn {
         color: #3498db !important;
         border-color: #3498db !important;
+        position: relative;
       }
       #notificationsBtn i {
         color: #3498db !important;
+        z-index: 2;
+        position: relative;
       }
       #darkModeToggle {
         color: #3498db !important;
         border-color: #3498db !important;
+        position: relative;
       }
       #darkModeToggle i {
         color: #3498db !important;
+        z-index: 2;
+        position: relative;
+      }
+      
+      /* Fix hover colors to black */
+      #notificationsBtn:hover {
+        background-color: rgba(0, 0, 0, 0.1) !important;
+        border-color: #000 !important;
+        color: #000 !important;
+      }
+      #notificationsBtn:hover i {
+        color: #000 !important;
+      }
+      #darkModeToggle:hover {
+        background-color: rgba(0, 0, 0, 0.1) !important;
+        border-color: #000 !important;
+        color: #000 !important;
+      }
+      #darkModeToggle:hover i {
+        color: #000 !important;
       }
 
       /* Mobile Touch Interactions */
@@ -834,6 +932,33 @@
         background-color: #0d6efd !important;
         border-color: #0d6efd !important;
         color: #ffffff !important;
+      }
+      
+      /* Crop modal dark mode support */
+      body.dark-mode .crop-container {
+        background: #2d2d2d !important;
+        border-color: #404040 !important;
+      }
+      
+      body.dark-mode #imageCropModal .modal-content,
+      body.dark-mode #profileCropModal .modal-content,
+      body.dark-mode #cropModal .modal-content {
+        background: #23272b !important;
+        border: 1px solid #404040 !important;
+        color: #e0e0e0 !important;
+      }
+      
+      body.dark-mode #imageCropModal .modal-header,
+      body.dark-mode #profileCropModal .modal-header,
+      body.dark-mode #cropModal .modal-header {
+        border-bottom: 1px solid #404040 !important;
+        color: #e0e0e0 !important;
+      }
+      
+      body.dark-mode #imageCropModal .modal-footer,
+      body.dark-mode #profileCropModal .modal-footer,
+      body.dark-mode #cropModal .modal-footer {
+        border-top: 1px solid #404040 !important;
       }
       
       /* Small phone optimizations */
@@ -2503,7 +2628,7 @@
             <!-- Notifications Dropdown -->
             <div class="dropdown" id="notificationsDropdown">
               <button
-                class="btn btn-outline-danger position-relative"
+                class="btn btn-outline-primary position-relative"
                 type="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
@@ -2512,9 +2637,9 @@
               >
                 <i class="bi bi-bell notification-icon"></i>
                 <span
-                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  class="notification-badge"
                   id="notificationsBadge"
-                  style="font-size: 0.6rem; display: none"
+                  style="display: none"
                   >0</span
                 >
               </button>
@@ -2547,7 +2672,7 @@
             ></a>
             <button
               id="darkModeToggle"
-              class="btn btn-outline-danger"
+              class="btn btn-outline-primary"
               style="
                 border-radius: 50px;
                 padding: 0.5rem 0.9rem;
