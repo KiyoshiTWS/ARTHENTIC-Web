@@ -187,24 +187,30 @@
         border-color: #adb5bd;
       }
       
-      /* Image Editor Modal Dark Mode Support */
+      /* Image Editor Modal Light Mode Support */
       .image-editor-modal {
-        background-color: white;
-        color: black;
+        background-color: white !important;
+        color: black !important;
       }
 
       .image-editor-modal .modal-header {
-        background-color: white;
-        border-bottom-color: #dee2e6;
+        background-color: white !important;
+        border-bottom-color: #dee2e6 !important;
+        color: black !important;
       }
 
       .image-editor-modal .modal-body {
-        background-color: white;
+        background-color: white !important;
+        color: black !important;
       }
 
       .image-editor-modal .modal-footer {
-        background-color: white;
-        border-top-color: #dee2e6;
+        background-color: white !important;
+        border-top-color: #dee2e6 !important;
+      }
+
+      .image-editor-modal .modal-title {
+        color: black !important;
       }
 
       .image-editor-container {
@@ -213,13 +219,19 @@
       }
 
       .image-editor-controls {
-        background-color: white;
-        border-color: #dee2e6;
+        background-color: white !important;
+        border-color: #dee2e6 !important;
       }
 
       .image-editor-controls .card-header {
-        background-color: #e9ecef;
-        border-bottom-color: #dee2e6;
+        background-color: #e9ecef !important;
+        border-bottom-color: #dee2e6 !important;
+        color: black !important;
+      }
+
+      .image-editor-controls .card-body {
+        background-color: white !important;
+        color: black !important;
       }
 
       /* Dark mode specific styles for image editor */
@@ -269,27 +281,53 @@
         color: #fff !important;
       }
 
-      /* Image editor button styling */
+      /* Image editor button styling - Light Mode */
       .image-editor-controls .btn-outline-secondary {
-        border-color: #6c757d;
-        color: #6c757d;
+        border-color: #6c757d !important;
+        color: #6c757d !important;
+        background-color: transparent !important;
       }
 
       .image-editor-controls .btn-outline-secondary:hover {
-        background-color: #6c757d;
-        border-color: #6c757d;
-        color: white;
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+        color: white !important;
       }
 
+      .image-editor-controls .btn-outline-secondary:focus {
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+        color: white !important;
+        box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25) !important;
+      }
+
+      .image-editor-controls .text-muted {
+        color: #6c757d !important;
+      }
+
+      .image-editor-controls .form-label {
+        color: black !important;
+        font-weight: 500;
+      }
+
+      /* Dark mode overrides */
       body.dark-mode .image-editor-controls .btn-outline-secondary {
-        border-color: #adb5bd;
-        color: #adb5bd;
+        border-color: #adb5bd !important;
+        color: #adb5bd !important;
+        background-color: transparent !important;
       }
 
       body.dark-mode .image-editor-controls .btn-outline-secondary:hover {
-        background-color: #495057;
-        border-color: #adb5bd;
-        color: white;
+        background-color: #495057 !important;
+        border-color: #adb5bd !important;
+        color: white !important;
+      }
+
+      body.dark-mode .image-editor-controls .btn-outline-secondary:focus {
+        background-color: #495057 !important;
+        border-color: #adb5bd !important;
+        color: white !important;
+        box-shadow: 0 0 0 0.2rem rgba(173, 181, 189, 0.25) !important;
       }
 
       body.dark-mode .image-editor-controls .text-muted {
@@ -297,7 +335,7 @@
       }
 
       body.dark-mode .image-editor-controls .form-label {
-        color: #fff;
+        color: #fff !important;
       }
       
       /* Ensure header icons are always visible */
