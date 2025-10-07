@@ -465,6 +465,17 @@
         opacity: 1;
       }
       
+      /* Universal close button dark mode styling */
+      body.dark-mode .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+        opacity: 1 !important;
+      }
+      
+      body.dark-mode .btn-close:hover {
+        filter: invert(1) grayscale(100%) brightness(150%);
+        opacity: 1 !important;
+      }
+      
       /* Ensure header icons are always visible */
       #notificationsBtn {
         color: #3498db !important;
@@ -2941,7 +2952,7 @@
   <body>
     <nav class="navbar fixed-top navbar-expand-lg">
       <div class="container">
-        <a href="index.html" class="navbar-brand">
+        <a href="arthub.html" class="navbar-brand">
           <img id="siteLogo" src="logo.png" alt="ARTHENTIC Logo" />
         </a>
         <button
@@ -8033,6 +8044,26 @@
         document.body.appendChild(modal);
         const modalInstance = new bootstrap.Modal(modal);
 
+        // Add cancel/close handlers to reset button states
+        const cancelBtn = modal.querySelector('[data-bs-dismiss="modal"]');
+        const closeBtn = modal.querySelector('.btn-close');
+        
+        const resetButtonStates = () => {
+          imageButtonText.textContent = "Add Images";
+          imageHint.textContent = "PNG, JPG up to 5MB";
+          currentImageFile = null;
+        };
+        
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', resetButtonStates);
+        }
+        if (closeBtn) {
+          closeBtn.addEventListener('click', resetButtonStates);
+        }
+
+        // Add modal hidden event listener for cleanup
+        modal.addEventListener('hidden.bs.modal', resetButtonStates);
+
         // Initialize cropper simulation variables
         let currentRotation = 0;
         const cropperImage = modal.querySelector("#cropperImage");
@@ -8155,7 +8186,12 @@
       // File input change handler with compression and cropping workflow
       imageInput.addEventListener("change", async (e) => {
         const file = e.target.files[0];
-        if (!file) return;
+        if (!file) {
+          // Reset button states when no file selected or cancelled
+          imageButtonText.textContent = "Add Images";
+          imageHint.textContent = "PNG, JPG up to 5MB";
+          return;
+        }
 
         // Validate file type
         if (!file.type.startsWith("image/")) {
@@ -8770,7 +8806,7 @@
         return li;
       }
 
-      // Image zoom functionality with pan and zoom
+      // Simple image zoom functionality - centered and clean
       function openImageZoom(imageUrl, caption) {
         const modal = document.createElement("div");
         modal.className = "image-zoom-modal";
@@ -8782,28 +8818,18 @@
         height: 100%;
         background: rgba(0,0,0,0.9);
         z-index: 9999;
-        overflow: hidden;
-        cursor: grab;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: zoom-out;
       `;
 
         const container = document.createElement("div");
         container.style.cssText = `
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        max-width: 95vw;
+        max-height: 95vh;
+        text-align: center;
         position: relative;
-        overflow: hidden;
-      `;
-
-        const imgContainer = document.createElement("div");
-        imgContainer.style.cssText = `
-        position: relative;
-        max-width: 90vw;
-        max-height: 90vh;
-        overflow: hidden;
-        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -8817,7 +8843,7 @@
         object-fit: contain;
         border-radius: 8px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        cursor: grab;
+        cursor: zoom-out;
         transition: transform 0.2s ease;
       `;
 
@@ -8842,82 +8868,22 @@
         backdrop-filter: blur(10px);
       `;
 
-        // Pan and zoom functionality
+        // Simple zoom on scroll - always centered
         let scale = 1;
-        let startX = 0, startY = 0;
-        let translateX = 0, translateY = 0;
-        let isDragging = false;
-
-        // Enhanced mouse wheel zoom with centering
-        const centerImage = () => {
-          const containerRect = imgContainer.getBoundingClientRect();
-          const imgRect = img.getBoundingClientRect();
-          const containerCenterX = containerRect.width / 2;
-          const containerCenterY = containerRect.height / 2;
-          const imgCenterX = (imgRect.width / scale) / 2;
-          const imgCenterY = (imgRect.height / scale) / 2;
-          
-          translateX = containerCenterX - imgCenterX;
-          translateY = containerCenterY - imgCenterY;
-        };
-
         modal.addEventListener('wheel', (e) => {
           e.preventDefault();
-          const rect = img.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          
           const delta = e.deltaY > 0 ? 0.9 : 1.1;
-          const newScale = Math.min(Math.max(0.5, scale * delta), 4);
-          
-          if (newScale !== scale) {
-            // Calculate zoom point for centering
-            const scaleRatio = newScale / scale;
-            translateX = x - (x - translateX) * scaleRatio;
-            translateY = y - (y - translateY) * scaleRatio;
-            
-            scale = newScale;
-            
-            // Always center when at 1x scale
-            if (scale === 1) {
-              translateX = 0;
-              translateY = 0;
-            }
-            
-            img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
-            img.style.cursor = scale > 1 ? 'grab' : 'grab';
-            
-            // Update scrollbar visibility
-            imgContainer.style.overflow = scale > 1 ? 'auto' : 'hidden';
-          }
+          scale = Math.min(Math.max(0.5, scale * delta), 3);
+          img.style.transform = `scale(${scale})`;
         });
 
-        // Mouse drag
-        img.addEventListener('mousedown', (e) => {
-          if (scale > 1) {
-            isDragging = true;
-            startX = e.clientX - translateX;
-            startY = e.clientY - translateY;
-            img.style.cursor = 'grabbing';
-            modal.style.cursor = 'grabbing';
-          }
+        // Reset zoom on double click
+        img.addEventListener('dblclick', () => {
+          scale = 1;
+          img.style.transform = `scale(${scale})`;
         });
 
-        modal.addEventListener('mousemove', (e) => {
-          if (isDragging && scale > 1) {
-            translateX = e.clientX - startX;
-            translateY = e.clientY - startY;
-            img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
-          }
-        });
-
-        modal.addEventListener('mouseup', () => {
-          isDragging = false;
-          img.style.cursor = scale > 1 ? 'grab' : 'grab';
-          modal.style.cursor = 'grab';
-        });
-
-        // Touch support for mobile
+        // Touch pinch zoom for mobile
         let initialDistance = 0;
         let initialScale = 1;
 
@@ -8939,35 +8905,12 @@
               e.touches[0].clientX - e.touches[1].clientX,
               e.touches[0].clientY - e.touches[1].clientY
             );
-            const newScale = Math.min(Math.max(0.5, initialScale * (currentDistance / initialDistance)), 4);
-            
-            if (newScale !== scale) {
-              scale = newScale;
-              
-              // Center when at 1x scale
-              if (scale === 1) {
-                translateX = 0;
-                translateY = 0;
-              }
-              
-              img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
-              imgContainer.style.overflow = scale > 1 ? 'auto' : 'hidden';
-            }
+            scale = Math.min(Math.max(0.5, initialScale * (currentDistance / initialDistance)), 3);
+            img.style.transform = `scale(${scale})`;
           }
         });
 
-        // Reset zoom on double click with centering
-        img.addEventListener('dblclick', () => {
-          scale = 1;
-          translateX = 0;
-          translateY = 0;
-          img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
-          imgContainer.style.overflow = 'hidden';
-          img.style.cursor = 'grab';
-        });
-
-        imgContainer.appendChild(img);
-        container.appendChild(imgContainer);
+        container.appendChild(img);
         
         if (caption) {
           const captionEl = document.createElement("div");
@@ -8993,11 +8936,11 @@
         modal.appendChild(closeBtn);
         document.body.appendChild(modal);
 
-        // Instructions overlay
+        // Simple instructions
         const instructions = document.createElement("div");
         instructions.innerHTML = `
           <div style="position: fixed; top: 20px; left: 20px; color: white; font-size: 12px; background: rgba(0,0,0,0.7); padding: 8px 12px; border-radius: 15px; backdrop-filter: blur(10px);">
-            🖱️ Scroll to zoom • 🖱️ Drag to pan • 👆 Double-click to reset
+            🖱️ Scroll to zoom • 👆 Double-click to reset
           </div>
         `;
         modal.appendChild(instructions);
