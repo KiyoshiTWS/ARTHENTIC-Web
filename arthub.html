@@ -783,6 +783,59 @@
         }
       }
       
+      /* Crop Modal Button Styling */
+      .crop-preset,
+      #rotateLeft,
+      #rotateRight {
+        background-color: #ffffff !important;
+        border: 1px solid #dee2e6 !important;
+        color: #212529 !important;
+        font-weight: 500;
+      }
+      
+      .crop-preset:hover,
+      #rotateLeft:hover,
+      #rotateRight:hover {
+        background-color: #e9ecef !important;
+        border-color: #adb5bd !important;
+        color: #000 !important;
+      }
+      
+      .crop-preset.active {
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+        color: #ffffff !important;
+      }
+      
+      .crop-preset:focus,
+      #rotateLeft:focus,
+      #rotateRight:focus {
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+      }
+      
+      /* Dark mode crop button styling */
+      body.dark-mode .crop-preset,
+      body.dark-mode #rotateLeft,
+      body.dark-mode #rotateRight {
+        background-color: #495057 !important;
+        border-color: #6c757d !important;
+        color: #ffffff !important;
+      }
+      
+      body.dark-mode .crop-preset:hover,
+      body.dark-mode #rotateLeft:hover,
+      body.dark-mode #rotateRight:hover {
+        background-color: #5a6268 !important;
+        border-color: #7c848a !important;
+        color: #ffffff !important;
+      }
+      
+      body.dark-mode .crop-preset.active {
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+        color: #ffffff !important;
+      }
+      
       /* Small phone optimizations */
       @media (max-width: 576px) {
         .main-header h1 {
@@ -7692,7 +7745,7 @@
             toast("Failed to process image: " + error.message);
             // Reset UI on error
             imageButtonText.textContent = "Add Image";
-            imageHint.textContent = "PNG, JPG up to 5MB";
+            imageHint.textContent = "PNG, JPG below or = 1MB";
           }
         };
 
