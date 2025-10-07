@@ -188,9 +188,23 @@
       }
       
       /* Image Editor Modal Dark Mode Support */
-      .image-editor-modal .modal-content {
+      .image-editor-modal {
         background-color: white;
         color: black;
+      }
+
+      .image-editor-modal .modal-header {
+        background-color: white;
+        border-bottom-color: #dee2e6;
+      }
+
+      .image-editor-modal .modal-body {
+        background-color: white;
+      }
+
+      .image-editor-modal .modal-footer {
+        background-color: white;
+        border-top-color: #dee2e6;
       }
 
       .image-editor-container {
@@ -209,9 +223,29 @@
       }
 
       /* Dark mode specific styles for image editor */
-      body.dark-mode .image-editor-modal .modal-content {
-        background-color: #23272b;
-        color: #fff;
+      body.dark-mode .image-editor-modal {
+        background-color: #23272b !important;
+        color: #fff !important;
+      }
+
+      body.dark-mode .image-editor-modal .modal-header {
+        background-color: #23272b !important;
+        border-bottom-color: #495057 !important;
+        color: #fff !important;
+      }
+
+      body.dark-mode .image-editor-modal .modal-body {
+        background-color: #23272b !important;
+        color: #fff !important;
+      }
+
+      body.dark-mode .image-editor-modal .modal-footer {
+        background-color: #23272b !important;
+        border-top-color: #495057 !important;
+      }
+
+      body.dark-mode .image-editor-modal .modal-title {
+        color: #fff !important;
       }
 
       body.dark-mode .image-editor-container {
@@ -220,19 +254,19 @@
       }
 
       body.dark-mode .image-editor-controls {
-        background-color: #23272b;
-        border-color: #495057;
+        background-color: #23272b !important;
+        border-color: #495057 !important;
       }
 
       body.dark-mode .image-editor-controls .card-header {
-        background-color: #343a40;
-        border-bottom-color: #495057;
-        color: #fff;
+        background-color: #343a40 !important;
+        border-bottom-color: #495057 !important;
+        color: #fff !important;
       }
 
       body.dark-mode .image-editor-controls .card-body {
-        background-color: #23272b;
-        color: #fff;
+        background-color: #23272b !important;
+        color: #fff !important;
       }
 
       /* Image editor button styling */
@@ -7772,7 +7806,7 @@
         modal.className = "modal fade";
         modal.innerHTML = `
         <div class="modal-dialog modal-xl modal-dialog-centered">
-          <div class="modal-content image-editor-modal">
+          <div class="image-editor-modal modal-content">
             <div class="modal-header">
               <h5 class="modal-title">Edit Image</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
