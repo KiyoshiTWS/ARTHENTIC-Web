@@ -42,21 +42,27 @@
         color: #5dade2 !important;
         border-color: #5dade2 !important;
         position: relative;
+        opacity: 1 !important;
+        background: rgba(93, 173, 226, 0.1) !important;
       }
       body.dark-mode #notificationsBtn {
         color: #5dade2 !important;
         border-color: #5dade2 !important;
         position: relative;
+        opacity: 1 !important;
+        background: rgba(93, 173, 226, 0.1) !important;
       }
       body.dark-mode #notificationsBtn i {
         color: #5dade2 !important;
         z-index: 2;
         position: relative;
+        opacity: 1 !important;
       }
       body.dark-mode #darkModeToggle i {
         color: #5dade2 !important;
         z-index: 2;
         position: relative;
+        opacity: 1 !important;
       }
       
       /* Dark mode hover colors to black */
@@ -64,17 +70,21 @@
         background-color: rgba(0, 0, 0, 0.3) !important;
         border-color: #333 !important;
         color: #333 !important;
+        opacity: 1 !important;
       }
       body.dark-mode #notificationsBtn:hover i {
         color: #333 !important;
+        opacity: 1 !important;
       }
       body.dark-mode #darkModeToggle:hover {
         background-color: rgba(0, 0, 0, 0.3) !important;
         border-color: #333 !important;
         color: #333 !important;
+        opacity: 1 !important;
       }
       body.dark-mode #darkModeToggle:hover i {
         color: #333 !important;
+        opacity: 1 !important;
       }
       /* Preserve protect button original styling */
       .custom-btn {
@@ -126,26 +136,81 @@
         border-color: #23272b;
       }
       
+      /* NSFW Toggle Styling */
+      .nsfw-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      
+      .nsfw-arrow {
+        background: transparent;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 0.25rem 0.4rem;
+        cursor: pointer;
+        font-size: 0.8rem;
+        color: #6c757d;
+        transition: all 0.2s ease;
+      }
+      
+      .nsfw-arrow:hover {
+        background: #f8f9fa;
+        border-color: #adb5bd;
+      }
+      
+      .nsfw-arrow.expanded {
+        transform: rotate(90deg);
+      }
+      
+      .nsfw-checkbox-container {
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      
+      .nsfw-checkbox-container.show {
+        display: flex;
+        opacity: 1;
+      }
+      
+      body.dark-mode .nsfw-arrow {
+        border-color: #6c757d;
+        color: #adb5bd;
+      }
+      
+      body.dark-mode .nsfw-arrow:hover {
+        background: #343a40;
+        border-color: #adb5bd;
+      }
+      
       /* Ensure header icons are always visible */
       #notificationsBtn {
         color: #3498db !important;
         border-color: #3498db !important;
         position: relative;
+        opacity: 1 !important;
       }
       #notificationsBtn i {
         color: #3498db !important;
         z-index: 2;
         position: relative;
+        opacity: 1 !important;
       }
       #darkModeToggle {
         color: #3498db !important;
         border-color: #3498db !important;
         position: relative;
+        opacity: 1 !important;
       }
       #darkModeToggle i {
         color: #3498db !important;
         z-index: 2;
         position: relative;
+        opacity: 1 !important;
       }
       
       /* Fix hover colors to black */
@@ -153,17 +218,21 @@
         background-color: rgba(0, 0, 0, 0.1) !important;
         border-color: #000 !important;
         color: #000 !important;
+        opacity: 1 !important;
       }
       #notificationsBtn:hover i {
         color: #000 !important;
+        opacity: 1 !important;
       }
       #darkModeToggle:hover {
         background-color: rgba(0, 0, 0, 0.1) !important;
         border-color: #000 !important;
         color: #000 !important;
+        opacity: 1 !important;
       }
       #darkModeToggle:hover i {
         color: #000 !important;
+        opacity: 1 !important;
       }
 
       /* Mobile Touch Interactions */
@@ -2873,11 +2942,19 @@
                   placeholder="Add tags (e.g., #art #digital #painting)"
                   style="border: 1px solid #e9ecef"
                 />
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="nsfwCheck">
-                  <label class="form-check-label text-warning" for="nsfwCheck">
-                    <i class="bi bi-exclamation-triangle"></i> This content is NSFW (18+)
-                  </label>
+                <div class="nsfw-toggle">
+                  <button type="button" class="nsfw-arrow" id="nsfwToggleArrow">
+                    <i class="bi bi-chevron-right"></i>
+                  </button>
+                  <span class="small text-muted">Adult Content</span>
+                </div>
+                <div class="nsfw-checkbox-container" id="nsfwContainer">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="nsfwCheck">
+                    <label class="form-check-label text-warning" for="nsfwCheck">
+                      <i class="bi bi-exclamation-triangle"></i> This content is NSFW (18+)
+                    </label>
+                  </div>
                 </div>
                 <div class="small text-muted mt-1">
                   <i class="bi bi-hash me-1"></i>Separate tags with spaces. Tags
@@ -11404,6 +11481,28 @@
             }
           }
         }, { passive: true });
+        
+        // NSFW toggle functionality
+        const nsfwArrow = document.getElementById('nsfwToggleArrow');
+        const nsfwContainer = document.getElementById('nsfwContainer');
+        
+        if (nsfwArrow && nsfwContainer) {
+          nsfwArrow.addEventListener('click', function() {
+            const isExpanded = nsfwContainer.classList.contains('show');
+            
+            if (isExpanded) {
+              // Collapse
+              nsfwContainer.classList.remove('show');
+              nsfwArrow.classList.remove('expanded');
+              nsfwArrow.innerHTML = '<i class="bi bi-chevron-right"></i>';
+            } else {
+              // Expand
+              nsfwContainer.classList.add('show');
+              nsfwArrow.classList.add('expanded');
+              nsfwArrow.innerHTML = '<i class="bi bi-chevron-down"></i>';
+            }
+          });
+        }
       });
     </script>
 
