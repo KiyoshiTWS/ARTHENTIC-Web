@@ -1,0 +1,104 @@
+// Firestore Security Rules for ArtHub
+// Updated: October 24, 2025
+// Permissive rules until Firebase Authentication is fully configured
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isValidRequest() {
+      return request.resource.data.user_id is string && 
+             request.resource.data.user_id.size() > 0;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
+    }
+    
+    // Posts collection
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if isValidRequest();
+      allow update: if true;
+      allow delete: if true;
+    }
+    
+    // Comments collection
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if isValidRequest();
+      allow update: if true;
+      allow delete: if true;
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
+    }
+    
+    // Saved posts collection
+    match /saved_posts/{saveId} {
+      allow read: if true;
+      allow create: if isValidRequest();
+      allow update: if true;
+      allow delete: if true;
+    }
+    
+    // Follows collection
+    match /follows/{followId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
+    }
+    
+    // Contexts collection (Community Notes)
+    match /contexts/{contextId} {
+      allow read: if true;
+      allow create: if isValidRequest();
+      allow update: if true;
+      allow delete: if true;
+    }
+    
+    // Protected Artworks Collection (Updated size limits)
+    match /protected_artworks/{artworkId} {
+      allow read: if true;
+      allow create: if isValidRequest() &&
+                      request.resource.data.artwork_id is string &&
+                      request.resource.data.artwork_name is string;
+      allow update: if true;
+      allow delete: if true;
+    }
+    
+    // Trending tags collection
+    match /trending_tags/{tagId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // Premium subscriptions collection
+    match /premium_subscriptions/{subId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // Catch-all for other collections
+    match /{document=**} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}
+
+// SECURITY NOTES:
+// ⚠️ These are PERMISSIVE rules for development
+// Firebase Authentication not yet configured
+// For production, enable Firebase Auth and use strict rules

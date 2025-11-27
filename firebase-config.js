@@ -1,6 +1,22 @@
 // Firebase Configuration
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { 
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+  sendPasswordResetEmail,
+  sendEmailVerification,
+  linkWithCredential,
+  EmailAuthProvider
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { 
   getFirestore, 
   initializeFirestore,
   collection, 
@@ -21,19 +37,19 @@ import {
   arrayRemove,
   writeBatch,
   enableNetwork,
-  disableNetwork
+  disableNetwork,
+  setDoc
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 // Firebase configuration - Using environment variables for security
 
-// Check if configuration is loaded
-if (!window.FIREBASE_PROJECT_ID) {
-  console.warn('⚠️ Firebase configuration not loaded. Falling back to demo mode.');
-  console.warn('⚠️ Make sure firebase-config-local.js is loaded before firebase-config.js');
-  console.warn('⚠️ Expected project: arthub-c46b2, falling back to: arthub-demo');
-} else {
-  console.log('✅ Firebase configuration loaded successfully');
+// Check if configuration is loaded (optional external config)
+if (window.FIREBASE_PROJECT_ID) {
+  console.log('✅ External Firebase configuration detected');
   console.log('📊 Project ID:', window.FIREBASE_PROJECT_ID);
+} else {
+  console.log('✅ Using embedded Firebase configuration');
+  console.log('📊 Project ID: arthub-c46b2');
 }
 
 // Connection resilience variables
@@ -59,12 +75,16 @@ console.log('🔧 Using Firebase configuration:', {
 });
 
 // Initialize Firebase with comprehensive error handling
-let app, db;
+let app, db, auth;
 let activeListeners = new Map(); // Track active listeners for cleanup
 let isFirestoreHealthy = true;
 
 try {
   app = initializeApp(firebaseConfig);
+  
+  // Initialize Firebase Authentication
+  auth = getAuth(app);
+  console.log('🔐 Firebase Authentication initialized');
   
   // Force long polling and add additional resilience settings
   try {
@@ -297,6 +317,7 @@ class DemoArtHubClient {
 
   checkUsernameExists(username) {
     const users = this.getCollection('users');
+    // Case-insensitive check to prevent duplicates like "User" and "user"
     const exists = users.find(u => u.username.toLowerCase() === username.toLowerCase());
     console.log(`Username "${username}" exists:`, !!exists);
     if (exists) console.log('User data:', exists);
@@ -330,13 +351,14 @@ class DemoArtHubClient {
   async registerUser(username, email, password, requireEmailVerification = true) {
     const users = this.getCollection('users');
     
-    if (users.find(u => u.username === username)) {
+    // Case-insensitive check to prevent duplicates but preserve capitalization
+    if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
       throw new Error('Username already exists');
     }
 
     const newUser = {
       id: Date.now().toString(),
-      username,
+      username, // Keep original capitalization
       email,
       password,
       profile_picture: null,
@@ -1111,72 +1133,414 @@ class FirebaseArtHubClient {
       throw new Error('Firestore database not initialized');
     }
     this.db = db;
+    this.auth = auth;  // Available but not required
     this.currentUser = null;
     this.unsubscribers = [];
+    
+    // Try to use Firebase Auth if configured, otherwise use localStorage
+    if (auth) {
+      try {
+        onAuthStateChanged(this.auth, async (firebaseUser) => {
+          if (firebaseUser) {
+            console.log('🔐 User authenticated:', firebaseUser.uid);
+            try {
+              const userDoc = await getDoc(doc(this.db, 'users', firebaseUser.uid));
+              if (userDoc.exists()) {
+                this.currentUser = {
+                  id: firebaseUser.uid,
+                  email: firebaseUser.email,
+                  ...userDoc.data()
+                };
+                localStorage.setItem('arthub_user', JSON.stringify(this.currentUser));
+                window.dispatchEvent(new CustomEvent('authStateChanged', { 
+                  detail: { user: this.currentUser } 
+                }));
+              }
+            } catch (error) {
+              console.error('Error loading user data:', error);
+            }
+          } else {
+            console.log('🔐 User signed out');
+            this.currentUser = null;
+          }
+        });
+      } catch (error) {
+        console.log('⚠️ Firebase Auth not configured, using localStorage auth');
+      }
+    }
   }
 
-  // User Management
+  // User Management - Works with or without Firebase Auth
   async loginUser(username, password) {
     try {
-      // Simple username/password check (in production, use Firebase Auth)
+      if (!username || !password) {
+        throw new Error('Please enter username and password');
+      }
+
+      console.log('🔐 Attempting login for:', username);
+
+      // First, check if user exists and has localStorage auth (password field)
       const usersRef = collection(this.db, 'users');
-      const q = query(usersRef, where('username', '==', username));
-      const querySnapshot = await getDocs(q);
+      let q, querySnapshot;
       
-      if (!querySnapshot.empty) {
-        const userData = querySnapshot.docs[0].data();
+      // Check if username is email or username
+      if (username.includes('@')) {
+        q = query(usersRef, where('email', '==', username));
+      } else {
+        q = query(usersRef, where('username', '==', username));
+      }
+      
+      querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        throw new Error('Invalid username or password');
+      }
+
+      const userData = querySnapshot.docs[0].data();
+      const userId = querySnapshot.docs[0].id;
+      
+      // If user has password field, use localStorage auth
+      if (userData.password) {
         if (userData.password === password) {
-          this.currentUser = { id: querySnapshot.docs[0].id, ...userData };
+          this.currentUser = { id: userId, ...userData };
           localStorage.setItem('arthub_user', JSON.stringify(this.currentUser));
           localStorage.setItem('arthub_token', 'firebase_token_' + this.currentUser.id);
+          console.log('✅ User logged in with localStorage auth:', this.currentUser.username);
           return { success: true, user: this.currentUser };
+        } else {
+          throw new Error('Invalid username or password');
         }
       }
-      throw new Error('Invalid credentials');
+      
+      // If no password field, try Firebase Auth
+      if (this.auth && auth) {
+        try {
+          const userEmail = userData.email;
+          const userCredential = await signInWithEmailAndPassword(this.auth, userEmail, password);
+          const firebaseUser = userCredential.user;
+          
+          this.currentUser = {
+            id: firebaseUser.uid,
+            email: firebaseUser.email,
+            username: userData.username,
+            ...userData
+          };
+          
+          localStorage.setItem('arthub_user', JSON.stringify(this.currentUser));
+          localStorage.setItem('arthub_token', await firebaseUser.getIdToken());
+          
+          console.log('✅ User logged in with Firebase Auth:', this.currentUser.username);
+          return { success: true, user: this.currentUser };
+        } catch (authError) {
+          console.error('❌ Firebase Auth error:', authError.code);
+          throw new Error('Invalid username or password');
+        }
+      }
+      
+      // No valid auth method
+      throw new Error('Invalid username or password');
     } catch (error) {
+      console.error('Login error:', error);
+      if (error.message.includes('Invalid username or password')) {
+        throw error;
+      }
       throw new Error('Login failed: ' + error.message);
     }
   }
 
-  async registerUser(username, email, password) {
+  async registerUser(username, email, password, useFirebaseAuth = true) {
     try {
-      // Check if username exists
-      const usersRef = collection(this.db, 'users');
-      const q = query(usersRef, where('username', '==', username));
-      const querySnapshot = await getDocs(q);
+      if (!username || username.length < 3) {
+        throw new Error('Username must be at least 3 characters');
+      }
+      if (!email || !email.includes('@')) {
+        throw new Error('Please enter a valid email');
+      }
+      if (!password || password.length < 6) {
+        throw new Error('Password must be at least 6 characters');
+      }
       
-      if (!querySnapshot.empty) {
-        throw new Error('Username already exists');
+      console.log('📝 Registering new user:', username, '| Firebase Auth:', useFirebaseAuth);
+      
+      const usersRef = collection(this.db, 'users');
+      const allUsersSnapshot = await getDocs(usersRef);
+      const usernameLower = username.toLowerCase();
+      const emailLower = email.toLowerCase();
+      
+      // Check if username exists
+      const usernameExists = allUsersSnapshot.docs.some(doc => 
+        doc.data().username.toLowerCase() === usernameLower
+      );
+      
+      if (usernameExists) {
+        throw new Error('Username already taken');
       }
 
-      // Create new user
+      // Check if email exists
+      const emailExists = allUsersSnapshot.docs.some(doc => 
+        doc.data().email.toLowerCase() === emailLower
+      );
+      
+      if (emailExists) {
+        throw new Error('Email already registered');
+      }
+
+      // NEW USERS: Use Firebase Auth (recommended)
+      if (useFirebaseAuth && this.auth && auth) {
+        try {
+          console.log('🔐 Creating Firebase Auth account for:', email);
+          const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
+          const firebaseUser = userCredential.user;
+          
+          await updateProfile(firebaseUser, { displayName: username });
+
+          const newUser = {
+            username,
+            email,
+            profile_picture: null,
+            about_me: '',
+            is_premium: false,
+            followers: [],
+            following: [],
+            posts_count: 0,
+            auth_type: 'firebase_auth', // Mark as Firebase Auth user
+            created_at: serverTimestamp()
+          };
+
+          // Use Firebase UID as document ID for Firebase Auth users
+          await setDoc(doc(this.db, 'users', firebaseUser.uid), newUser);
+          
+          this.currentUser = { 
+            id: firebaseUser.uid, 
+            email: firebaseUser.email,
+            auth_type: 'firebase_auth',
+            ...newUser 
+          };
+          
+          localStorage.setItem('arthub_user', JSON.stringify(this.currentUser));
+          localStorage.setItem('arthub_token', await firebaseUser.getIdToken());
+          localStorage.setItem('arthub_auth_type', 'firebase_auth');
+          
+          console.log('✅ New user registered with Firebase Auth:', this.currentUser.username);
+          console.log('📊 User document created with ID:', firebaseUser.uid);
+          return { success: true, user: this.currentUser };
+        } catch (authError) {
+          console.error('❌ Firebase Auth registration failed:', authError.code, authError.message);
+          
+          // If Firebase Auth fails, inform user
+          if (authError.code === 'auth/email-already-in-use') {
+            throw new Error('Email already in use. Please try logging in instead.');
+          }
+          
+          throw new Error('Registration failed: ' + authError.message);
+        }
+      }
+
+      // FALLBACK: LocalStorage auth (for compatibility or if Firebase Auth unavailable)
+      console.log('⚠️ Using localStorage auth for registration');
       const newUser = {
         username,
         email,
-        password, // In production, hash this!
+        password, // Store password hash in production!
         profile_picture: null,
+        about_me: '',
+        is_premium: false,
         followers: [],
         following: [],
         posts_count: 0,
+        auth_type: 'localStorage', // Mark as localStorage user
         created_at: serverTimestamp()
       };
 
       const docRef = await addDoc(usersRef, newUser);
-      this.currentUser = { id: docRef.id, ...newUser };
+      this.currentUser = { id: docRef.id, auth_type: 'localStorage', ...newUser };
       localStorage.setItem('arthub_user', JSON.stringify(this.currentUser));
       localStorage.setItem('arthub_token', 'firebase_token_' + this.currentUser.id);
+      localStorage.setItem('arthub_auth_type', 'localStorage');
+      
+      console.log('✅ User registered with localStorage auth:', this.currentUser.username);
+      return { success: true, user: this.currentUser };
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
+  }
+  
+  async logoutUser() {
+    try {
+      if (this.auth && auth) {
+        try {
+          await signOut(this.auth);
+        } catch (e) {
+          console.log('Firebase Auth signout skipped');
+        }
+      }
+      this.currentUser = null;
+      localStorage.removeItem('arthub_user');
+      localStorage.removeItem('arthub_token');
+      console.log('✅ User logged out successfully');
+      return { success: true };
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw new Error('Logout failed: ' + error.message);
+    }
+  }
+
+  // Google Sign-In
+  async loginWithGoogle() {
+    try {
+      console.log('🔐 Attempting Google Sign-In...');
+      console.log('🔐 Auth instance:', this.auth ? 'Available' : 'NOT Available');
+      console.log('🔐 Global auth:', typeof auth !== 'undefined' ? 'Available' : 'NOT Available');
+      
+      if (!this.auth && !auth) {
+        throw new Error('Firebase Authentication not configured. Please enable Firebase Auth in Console.');
+      }
+
+      const authInstance = this.auth || auth;
+      const provider = new GoogleAuthProvider();
+      provider.addScope('profile');
+      provider.addScope('email');
+      
+      console.log('🔐 Opening Google Sign-In popup...');
+      const result = await signInWithPopup(authInstance, provider);
+      const firebaseUser = result.user;
+      
+      console.log('✅ Google Sign-In successful:', firebaseUser.email);
+      
+      // Check if user document exists
+      const userDocRef = doc(this.db, 'users', firebaseUser.uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (!userDoc.exists()) {
+        console.log('📝 Creating new user document...');
+        // Create new user document
+        const newUser = {
+          username: firebaseUser.displayName || firebaseUser.email.split('@')[0],
+          email: firebaseUser.email,
+          profile_picture: firebaseUser.photoURL,
+          about_me: '',
+          is_premium: false,
+          followers: [],
+          following: [],
+          posts_count: 0,
+          auth_provider: 'google',
+          auth_type: 'firebase_auth',
+          created_at: serverTimestamp()
+        };
+        
+        await setDoc(userDocRef, newUser);
+        
+        this.currentUser = {
+          id: firebaseUser.uid,
+          ...newUser
+        };
+      } else {
+        console.log('✅ User document found');
+        this.currentUser = {
+          id: firebaseUser.uid,
+          ...userDoc.data()
+        };
+      }
+      
+      localStorage.setItem('arthub_user', JSON.stringify(this.currentUser));
+      localStorage.setItem('arthub_token', await firebaseUser.getIdToken());
+      localStorage.setItem('arthub_auth_type', 'firebase_auth');
+      
+      console.log('✅ User logged in with Google:', this.currentUser.username);
       
       return { success: true, user: this.currentUser };
     } catch (error) {
-      throw new Error('Registration failed: ' + error.message);
+      console.error('❌ Google login error:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      
+      if (error.code === 'auth/popup-closed-by-user') {
+        throw new Error('Login cancelled');
+      } else if (error.code === 'auth/popup-blocked') {
+        throw new Error('Popup blocked. Please allow popups for this site.');
+      } else if (error.message.includes('not configured')) {
+        throw error; // Re-throw our custom error
+      } else {
+        throw new Error('Google login failed: ' + error.message);
+      }
+    }
+  }
+
+  // Facebook Login
+  async loginWithFacebook() {
+    try {
+      if (!this.auth) {
+        throw new Error('Firebase Authentication not configured');
+      }
+
+      const provider = new FacebookAuthProvider();
+      provider.addScope('email');
+      provider.addScope('public_profile');
+      
+      const result = await signInWithPopup(this.auth, provider);
+      const firebaseUser = result.user;
+      
+      // Check if user document exists
+      const userDocRef = doc(this.db, 'users', firebaseUser.uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (!userDoc.exists()) {
+        // Create new user document
+        const newUser = {
+          username: firebaseUser.displayName || firebaseUser.email.split('@')[0],
+          email: firebaseUser.email,
+          profile_picture: firebaseUser.photoURL,
+          about_me: '',
+          is_premium: false,
+          followers: [],
+          following: [],
+          posts_count: 0,
+          auth_provider: 'facebook',
+          created_at: serverTimestamp()
+        };
+        
+        await setDoc(userDocRef, newUser);
+        
+        this.currentUser = {
+          id: firebaseUser.uid,
+          ...newUser
+        };
+      } else {
+        this.currentUser = {
+          id: firebaseUser.uid,
+          ...userDoc.data()
+        };
+      }
+      
+      localStorage.setItem('arthub_user', JSON.stringify(this.currentUser));
+      localStorage.setItem('arthub_token', await firebaseUser.getIdToken());
+      
+      console.log('✅ User logged in with Facebook:', this.currentUser.username);
+      
+      return { success: true, user: this.currentUser };
+    } catch (error) {
+      console.error('Facebook login error:', error);
+      
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        throw new Error('An account already exists with this email using a different sign-in method.');
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        throw new Error('Login cancelled');
+      } else if (error.code === 'auth/popup-blocked') {
+        throw new Error('Popup blocked. Please allow popups for this site.');
+      } else {
+        throw new Error('Facebook login failed: ' + error.message);
+      }
     }
   }
 
   getCurrentUser() {
-    // Always check localStorage for the most recent user data
-    const stored = localStorage.getItem('arthub_user');
-    if (stored) {
-      this.currentUser = JSON.parse(stored);
+    // Return current user from localStorage
+    if (!this.currentUser) {
+      const stored = localStorage.getItem('arthub_user');
+      if (stored) {
+        this.currentUser = JSON.parse(stored);
+      }
     }
     return this.currentUser;
   }
@@ -1519,12 +1883,29 @@ class FirebaseArtHubClient {
     if (!this.currentUser) throw new Error('User not authenticated');
     
     return await this.executeWithRetry(async () => {
+      // Support both single image (string) and multiple images (array)
+      let imageUrl = null;
+      let imageUrls = [];
+      
+      if (imageData) {
+        if (Array.isArray(imageData)) {
+          // Multiple images
+          imageUrls = imageData;
+          imageUrl = imageData[0]; // Keep first image for backward compatibility
+        } else {
+          // Single image
+          imageUrl = imageData;
+          imageUrls = [imageData];
+        }
+      }
+      
       const post = {
         user_id: this.currentUser.id,
         username: this.currentUser.username,
         profile_picture: this.currentUser.profile_picture,
         body: text,
-        image_url: imageData,
+        image_url: imageUrl, // First image for backward compatibility
+        image_urls: imageUrls, // Array of all images
         context: context,
         tags: tags || [],
         is_nsfw: isNSFW,
@@ -3043,39 +3424,131 @@ class FirebaseArtHubClient {
     });
     this.unsubscribers = [];
   }
+} // End of FirebaseArtHubClient class
+
+// Export Firebase modules globally for direct Firestore access
+window.firebaseModules = {
+  // Firestore
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc,
+  increment,
+  orderBy,
+  query,
+  limit,
+  where,
+  onSnapshot,
+  serverTimestamp,
+  getDoc,
+  arrayUnion,
+  arrayRemove,
+  writeBatch,
+  enableNetwork,
+  disableNetwork,
+  setDoc,
+  // Authentication
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+  sendPasswordResetEmail,
+  sendEmailVerification,
+  linkWithCredential,
+  EmailAuthProvider
+};
+console.log('🔥 Firebase modules exposed globally (Firestore + Auth + Social Login)');
+
+// Export Firebase client - Initialize immediately and ensure window access
+let defaultClient;
+
+function initializeFirebaseClient() {
+  try {
+    console.log('🚀 Initializing Firebase ArtHub Client...');
+    console.log('📊 Firebase App initialized:', !!app);
+    console.log('📊 Firestore initialized:', !!db);
+    console.log('📊 Auth initialized:', !!auth);
+    
+    if (!db) {
+      console.error('❌ Firestore (db) is not initialized!');
+      throw new Error('Firestore database not initialized');
+    }
+    
+    const artHubClient = new FirebaseArtHubClient();
+    console.log('✅ FirebaseArtHubClient instance created');
+    console.log('🔥 Using Firebase - Data stored in cloud');
+    console.log('🔥 Firebase client methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(artHubClient)));
+    
+    window.firebaseArtHubClient = artHubClient;
+    window.firebaseAuth = auth; // Export auth instance globally
+    window.artHubClient = artHubClient;
+    
+    console.log('✅ Firebase client and auth attached to window');
+    console.log('✅ window.firebaseArtHubClient available:', !!window.firebaseArtHubClient);
+    console.log('✅ getSavedPosts method available:', typeof window.firebaseArtHubClient.getSavedPosts === 'function');
+    console.log('✅ loginUser method available:', typeof window.firebaseArtHubClient.loginUser === 'function');
+    
+    defaultClient = artHubClient;
+    return artHubClient;
+  } catch (error) {
+    console.error('❌ Failed to initialize Firebase client:', error);
+    console.error('❌ Error message:', error.message);
+    console.error('❌ Error stack:', error.stack);
+    
+    // Fallback to demo client
+    try {
+      console.log('🔄 Attempting to initialize DemoArtHubClient as fallback...');
+      const demoClient = new DemoArtHubClient();
+      window.firebaseArtHubClient = demoClient;
+      window.artHubClient = demoClient;
+      console.log('✅ DemoArtHubClient initialized successfully');
+      
+      if (window.FIREBASE_PROJECT_ID === 'arthub-demo' || !window.FIREBASE_PROJECT_ID) {
+        console.log('ℹ️ Using demo mode (Firebase config not loaded)');
+        console.log('ℹ️ To use real Firebase: ensure firebase-config-local.js is loaded or GitHub Secrets are configured');
+      } else {
+        console.log('⚠️ Using demo client as fallback due to Firebase connection error');
+      }
+      
+      console.log('📋 If you see this on GitHub Pages, check that all Firebase secrets are properly configured');
+      
+      defaultClient = demoClient;
+      return demoClient;
+    } catch (demoError) {
+      console.error('❌ CRITICAL: Even demo client failed to initialize!', demoError);
+      // Last resort - create minimal client stub
+      const stubClient = {
+        loginUser: () => Promise.reject(new Error('Firebase client not initialized')),
+        registerUser: () => Promise.reject(new Error('Firebase client not initialized'))
+      };
+      window.firebaseArtHubClient = stubClient;
+      window.artHubClient = stubClient;
+      console.error('⚠️ Using stub client (all operations will fail)');
+      return stubClient;
+    }
+  }
 }
 
-// Export Firebase client
-let defaultClient;
-try {
-  const artHubClient = new FirebaseArtHubClient();
-  console.log('🔥 Using Firebase - Data stored in cloud');
-  console.log('🔥 Firebase client methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(artHubClient)));
-  
-  window.firebaseArtHubClient = artHubClient;
-  console.log('🔥 Firebase client attached to window');
-  
-  // Also make it available for module imports
-  window.artHubClient = artHubClient;
-  defaultClient = artHubClient;
-} catch (error) {
-  console.error('❌ Failed to initialize Firebase client:', error);
-  
-  // Fallback to demo client
-  const demoClient = new DemoArtHubClient();
-  window.firebaseArtHubClient = demoClient;
-  window.artHubClient = demoClient;
-  
-  if (window.FIREBASE_PROJECT_ID === 'arthub-demo' || !window.FIREBASE_PROJECT_ID) {
-    console.log('ℹ️ Using demo mode (Firebase config not loaded)');
-    console.log('ℹ️ To use real Firebase: ensure firebase-config-local.js is loaded or GitHub Secrets are configured');
-  } else {
-    console.log('⚠️ Using demo client as fallback due to Firebase connection error');
-  }
-  
-  console.log('📋 If you see this on GitHub Pages, check that all Firebase secrets are properly configured');
-  
-  defaultClient = demoClient;
+// Initialize immediately when module loads
+const initializedClient = initializeFirebaseClient();
+
+// Also make it available for delayed access
+window.initializeFirebaseClient = initializeFirebaseClient;
+
+// Dispatch custom event to signal Firebase is ready
+if (typeof window !== 'undefined') {
+  window.dispatchEvent(new CustomEvent('firebaseReady', { 
+    detail: { client: initializedClient }
+  }));
+  console.log('📢 Dispatched firebaseReady event');
 }
 
 export default defaultClient;

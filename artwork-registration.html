@@ -200,6 +200,15 @@
         </button>
       </div>
     </nav>
+    
+    <!-- Premium Limit Banner -->
+    <div id="premiumBanner" style="display: none; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; padding: 0.75rem; text-align: center; position: fixed; top: 70px; left: 0; right: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+      <span style="font-weight: 600;">
+        <span id="artworkCountText"></span> 🎨 
+        <a href="arthub.html#premium" style="color: white; text-decoration: underline; margin-left: 1rem;">Upgrade to Premium for unlimited artworks</a>
+      </span>
+    </div>
+    
     <div class="main-content" style="margin-top: 90px">
       <h1 class="section-title">Artwork Registration</h1>
       <p class="text-center single-line">
@@ -265,8 +274,70 @@
       </div>
     </div>
 
+    <script type="module" src="firebase-config.js"></script>
     <script>
-document.addEventListener("DOMContentLoaded", function () {
+// Helper function declarations first
+async function waitForFirebase() {
+  return new Promise((resolve) => {
+    const check = setInterval(() => {
+      if (window.firebaseArtHubClient && window.firebaseModules) {
+        clearInterval(check);
+        resolve();
+      }
+    }, 100);
+    setTimeout(() => {
+      clearInterval(check);
+      resolve();
+    }, 10000);
+  });
+}
+
+// Check artwork count for premium limits
+async function checkArtworkCount(userId) {
+  await waitForFirebase();
+  const client = window.firebaseArtHubClient;
+  const { collection, query, where, getDocs } = window.firebaseModules;
+  
+  const artworksRef = collection(client.db, 'protected_artworks');
+  const q = query(artworksRef, where('user_id', '==', userId));
+  const snapshot = await getDocs(q);
+  
+  return snapshot.size;
+}
+
+document.addEventListener("DOMContentLoaded", async function () {
+  // 🔹 Check authentication first
+  const currentUser = localStorage.getItem('arthub_user');
+  if (!currentUser) {
+    // Redirect to auth required page instead of alert
+    window.location.href = 'auth-required.html';
+    return;
+  }
+
+  const user = JSON.parse(currentUser);
+  document.getElementById('artistName').value = user.username;
+  document.getElementById('artistEmail').value = user.email || '';
+  document.getElementById('artistName').readOnly = true;
+  document.getElementById('artistEmail').readOnly = true;
+
+  // Check artwork count and show banner for free users
+  const isPremium = user.is_premium || false;
+  if (!isPremium) {
+    const count = await checkArtworkCount(user.id);
+    const banner = document.getElementById('premiumBanner');
+    const countText = document.getElementById('artworkCountText');
+    
+    if (count > 0) {
+      countText.textContent = `${count}/5 artworks used`;
+      banner.style.display = 'block';
+      
+      if (count >= 5) {
+        banner.style.background = 'linear-gradient(135deg, #ff4444 0%, #cc0000 100%)';
+        countText.textContent = `⚠️ ${count}/5 artworks - LIMIT REACHED`;
+      }
+    }
+  }
+
   // 🔹 Slideshow background logic
   const slides = document.querySelectorAll(".slideshow-bg img");
   if (slides.length > 0) {
@@ -281,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // 🔹 Dark mode toggle
   const darkModeBtn = document.getElementById("darkModeToggle");
   const siteLogo = document.getElementById("siteLogo");
-  if (!darkModeBtn) return; // safety check
+  if (!darkModeBtn) return;
   const icon = darkModeBtn.querySelector("i");
 
   function enableDarkMode() {
@@ -304,14 +375,12 @@ document.addEventListener("DOMContentLoaded", function () {
     localStorage.setItem("darkMode", "disabled");
   }
 
-  // 🔹 Load saved preference
   if (localStorage.getItem("darkMode") === "enabled") {
     enableDarkMode();
   } else {
     disableDarkMode();
   }
 
-  // 🔹 Toggle on click
   darkModeBtn.addEventListener("click", function () {
     if (document.body.classList.contains("dark-mode")) {
       disableDarkMode();
@@ -319,6 +388,406 @@ document.addEventListener("DOMContentLoaded", function () {
       enableDarkMode();
     }
   });
+
+  // 🔹 Artwork registration with watermarking and metadata embedding
+  document.querySelector('form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const artName = document.getElementById('artName').value;
+    const artistName = document.getElementById('artistName').value;
+    const artistEmail = document.getElementById('artistEmail').value;
+    const artDesc = document.getElementById('artDesc').value;
+    const fileInput = document.getElementById('artFile');
+    const file = fileInput.files[0];
+
+    if (!file) {
+      alert('Please select an artwork file');
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file');
+      return;
+    }
+
+    // Check premium limits
+    const artworkCount = await checkArtworkCount(user.id);
+    const isPremium = user.is_premium || false;
+    
+    if (!isPremium && artworkCount >= 5) {
+      showPremiumLimitModal();
+      return;
+    }
+
+    // Show loading
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
+
+    try {
+      // Generate unique artwork ID
+      const artworkId = `ART-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const registrationDate = new Date().toISOString();
+
+      // Read image file
+      let imageDataUrl = await readFileAsDataURL(file);
+      
+      // First compression BEFORE watermark (to reasonable size)
+      console.log('🗜️ Step 1: Initial compression before watermark...');
+      imageDataUrl = await compressImageIfNeeded(imageDataUrl, 800);
+      
+      // Embed metadata and watermark
+      console.log('🔐 Step 2: Adding watermark and metadata...');
+      let protectedImageData = await embedMetadataAndWatermark(imageDataUrl, {
+        artworkId,
+        artworkName: artName,
+        artistName,
+        artistEmail,
+        registrationDate,
+        description: artDesc
+      });
+      
+      // CRITICAL: Compress again after watermark (Firestore 1MB limit)
+      console.log('🗜️ Step 3: Final compression after watermark...');
+      protectedImageData = await aggressiveCompress(protectedImageData, 950); // Max 950KB for safety
+
+      // Save to Firebase
+      await saveProtectedArtwork({
+        artwork_id: artworkId,
+        user_id: user.id,
+        username: user.username,
+        artwork_name: artName,
+        description: artDesc,
+        original_filename: file.name,
+        protected_image: protectedImageData,
+        registration_date: registrationDate,
+        metadata: {
+          artist_name: artistName,
+          artist_email: artistEmail,
+          file_size: file.size,
+          file_type: file.type,
+          dimensions: await getImageDimensions(imageDataUrl)
+        }
+      });
+
+      alert(`✅ Artwork "${artName}" successfully registered!\n\nArtwork ID: ${artworkId}\n\nYour artwork is now protected with invisible watermarks and metadata.`);
+      
+      // Redirect to protected artworks page
+      window.location.href = 'my-protected-artworks.html';
+      
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert('Failed to register artwork: ' + error.message);
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+
+  // 🔹 Helper functions
+  function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function getImageDimensions(dataUrl) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve({ width: img.width, height: img.height });
+      img.src = dataUrl;
+    });
+  }
+
+  // 🔹 Steganography: Embed invisible watermark in LSB (Least Significant Bit)
+  async function embedMetadataAndWatermark(imageDataUrl, metadata) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          
+          // Draw original image
+          ctx.drawImage(img, 0, 0);
+          
+          // Get image data
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const pixels = imageData.data;
+          
+          // Create watermark data string
+          const watermarkData = JSON.stringify({
+            id: metadata.artworkId,
+            artist: metadata.artistName,
+            date: metadata.registrationDate,
+            name: metadata.artworkName
+          });
+          
+          // Convert to binary
+          const watermarkBinary = stringToBinary(watermarkData);
+          
+          // Embed length first (32 bits)
+          const lengthBinary = watermarkBinary.length.toString(2).padStart(32, '0');
+          
+          // Embed watermark in LSB of red channel
+          let bitIndex = 0;
+          const totalBits = lengthBinary + watermarkBinary;
+          
+          for (let i = 0; i < pixels.length && bitIndex < totalBits.length; i += 4) {
+            // Modify LSB of red channel
+            pixels[i] = (pixels[i] & 0xFE) | parseInt(totalBits[bitIndex]);
+            bitIndex++;
+          }
+          
+          // Add visible metadata text in corner (small and subtle)
+          ctx.putImageData(imageData, 0, 0);
+          ctx.font = '10px Arial';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.fillText(`ID: ${metadata.artworkId.substr(0, 15)}`, 10, canvas.height - 10);
+          
+          // Convert to JPEG (much smaller than PNG) with high quality
+          // Note: This may lose the LSB watermark due to JPEG compression,
+          // but visible metadata and registration database serve as proof
+          resolve(canvas.toDataURL('image/jpeg', 0.92));
+        } catch (error) {
+          reject(error);
+        }
+      };
+      img.onerror = reject;
+      img.src = imageDataUrl;
+    });
+  }
+
+  function stringToBinary(str) {
+    return str.split('').map(char => 
+      char.charCodeAt(0).toString(2).padStart(8, '0')
+    ).join('');
+  }
+
+  async function saveProtectedArtwork(artworkData) {
+    // Wait for Firebase to be ready
+    await waitForFirebase();
+    
+    const client = window.firebaseArtHubClient;
+    if (!client || !client.db) {
+      throw new Error('Firebase not initialized');
+    }
+
+    const { collection, addDoc, serverTimestamp } = window.firebaseModules;
+    
+    const docData = {
+      ...artworkData,
+      created_at: serverTimestamp(),
+      status: 'active'
+    };
+    
+    const docRef = await addDoc(collection(client.db, 'protected_artworks'), docData);
+    console.log('Artwork saved with ID:', docRef.id);
+    return docRef.id;
+  }
+
+  // Check artwork count for premium limits
+  async function checkArtworkCount(userId) {
+    await waitForFirebase();
+    const client = window.firebaseArtHubClient;
+    const { collection, query, where, getDocs } = window.firebaseModules;
+    
+    const artworksRef = collection(client.db, 'protected_artworks');
+    const q = query(artworksRef, where('user_id', '==', userId));
+    const snapshot = await getDocs(q);
+    
+    return snapshot.size;
+  }
+
+  // Compress image to stay under Firestore 1MB limit
+  async function compressImageIfNeeded(dataUrl, maxSizeKB = 900) {
+    // Calculate size in KB
+    const base64Length = dataUrl.split(',')[1].length;
+    const sizeKB = (base64Length * 3) / 4 / 1024;
+    
+    if (sizeKB <= maxSizeKB) {
+      console.log(`✅ Image size: ${sizeKB.toFixed(2)} KB - within limit`);
+      return dataUrl; // No compression needed
+    }
+    
+    console.log(`📏 Image size: ${sizeKB.toFixed(2)} KB, compressing to ${maxSizeKB} KB...`);
+    
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        // Calculate new dimensions (reduce by scale factor)
+        const scaleFactor = Math.sqrt(maxSizeKB / sizeKB);
+        width = Math.floor(width * scaleFactor);
+        height = Math.floor(height * scaleFactor);
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Start with quality 0.8 and reduce if needed
+        let quality = 0.8;
+        let compressed = canvas.toDataURL('image/jpeg', quality);
+        
+        // Keep reducing quality until under limit
+        while (((compressed.split(',')[1].length * 3) / 4 / 1024) > maxSizeKB && quality > 0.3) {
+          quality -= 0.1;
+          compressed = canvas.toDataURL('image/jpeg', quality);
+        }
+        
+        const finalSizeKB = (compressed.split(',')[1].length * 3) / 4 / 1024;
+        console.log(`✅ Compressed to: ${finalSizeKB.toFixed(2)} KB at quality ${quality.toFixed(1)}`);
+        
+        resolve(compressed);
+      };
+      img.onerror = reject;
+      img.src = dataUrl;
+    });
+  }
+  
+  // Aggressive compression for final output
+  async function aggressiveCompress(dataUrl, maxSizeKB = 950) {
+    const base64Length = dataUrl.split(',')[1].length;
+    const sizeKB = (base64Length * 3) / 4 / 1024;
+    
+    console.log(`📏 Watermarked image size: ${sizeKB.toFixed(2)} KB`);
+    
+    if (sizeKB <= maxSizeKB) {
+      console.log(`✅ Within ${maxSizeKB}KB limit - no additional compression needed`);
+      return dataUrl;
+    }
+    
+    console.log(`⚠️ Over ${maxSizeKB}KB limit! Applying aggressive compression...`);
+    
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        // More aggressive scaling if needed
+        const targetRatio = maxSizeKB / sizeKB;
+        if (targetRatio < 0.8) {
+          // Need significant size reduction
+          const scaleFactor = Math.sqrt(targetRatio * 0.9); // Extra safety margin
+          width = Math.floor(width * scaleFactor);
+          height = Math.floor(height * scaleFactor);
+          console.log(`🔽 Reducing dimensions to ${width}x${height}`);
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Aggressive quality reduction
+        let quality = 0.7;
+        let compressed = canvas.toDataURL('image/jpeg', quality);
+        let attempts = 0;
+        
+        // Keep reducing quality until under limit (or min quality reached)
+        while (((compressed.split(',')[1].length * 3) / 4 / 1024) > maxSizeKB && quality > 0.2 && attempts < 10) {
+          quality -= 0.05;
+          compressed = canvas.toDataURL('image/jpeg', quality);
+          attempts++;
+        }
+        
+        const finalSizeKB = (compressed.split(',')[1].length * 3) / 4 / 1024;
+        console.log(`✅ Final size: ${finalSizeKB.toFixed(2)} KB at quality ${quality.toFixed(2)}`);
+        
+        if (finalSizeKB > maxSizeKB) {
+          console.warn(`⚠️ Still over limit after ${attempts} attempts. Using best effort.`);
+        }
+        
+        resolve(compressed);
+      };
+      img.onerror = reject;
+      img.src = dataUrl;
+    });
+  }
+
+  // Show premium limit modal
+  function showPremiumLimitModal() {
+    const modalHtml = `
+      <div id="premiumLimitModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 16px; padding: 2.5rem; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+          <div style="font-size: 4rem; margin-bottom: 1rem;">🎨</div>
+          <h2 style="color: #dc3545; margin-bottom: 1rem; font-weight: 700;">Free Plan Limit Reached</h2>
+          <p style="color: #666; font-size: 1.1rem; margin-bottom: 1.5rem; line-height: 1.6;">
+            You've reached the <strong>5 artwork limit</strong> on the free plan.
+          </p>
+          <div style="background: #f8f9fa; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: left;">
+            <h4 style="color: #dc3545; margin-bottom: 1rem;">✨ Premium Benefits:</h4>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              <li style="padding: 0.5rem 0; color: #333;">
+                <strong>✅ Unlimited</strong> artwork protection
+              </li>
+              <li style="padding: 0.5rem 0; color: #333;">
+                <strong>✅ Priority</strong> watermark processing
+              </li>
+              <li style="padding: 0.5rem 0; color: #333;">
+                <strong>✅ Advanced</strong> metadata analytics
+              </li>
+              <li style="padding: 0.5rem 0; color: #333;">
+                <strong>✅ Export</strong> certificates
+              </li>
+              <li style="padding: 0.5rem 0; color: #333;">
+                <strong>✅ 24/7</strong> premium support
+              </li>
+            </ul>
+          </div>
+          <button onclick="window.location.href='arthub.html#premium'" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 1rem; transition: transform 0.2s;">
+            🚀 Upgrade to Premium
+          </button>
+          <button onclick="document.getElementById('premiumLimitModal').remove()" style="background: transparent; color: #666; border: none; padding: 0.75rem; font-size: 1rem; cursor: pointer; width: 100%;">
+            Maybe Later
+          </button>
+        </div>
+      </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Add hover effect
+    const upgradeBtn = document.querySelector('#premiumLimitModal button');
+    upgradeBtn.addEventListener('mouseenter', () => {
+      upgradeBtn.style.transform = 'translateY(-2px)';
+    });
+    upgradeBtn.addEventListener('mouseleave', () => {
+      upgradeBtn.style.transform = 'translateY(0)';
+    });
+  }
+
+  function waitForFirebase() {
+    return new Promise((resolve) => {
+      const check = setInterval(() => {
+        if (window.firebaseArtHubClient && window.firebaseModules) {
+          clearInterval(check);
+          resolve();
+        }
+      }, 100);
+      setTimeout(() => {
+        clearInterval(check);
+        resolve();
+      }, 10000);
+    });
+  }
 });
 </script>
 

@@ -3,14 +3,39 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
+    <meta name="description" content="ArtHub - A community platform for artists to share, protect, and showcase their digital artwork. Join our creative community today." />
     <title>ArtHub - Community Feed</title>
+    
+    <!-- Preconnect to external domains for faster loading -->
+    <link rel="preconnect" href="https://www.google.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="dns-prefetch" href="https://www.google.com" />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="css/bootstrap.min.css" as="style" />
+    <link rel="preload" href="css/bootstrap-icons.css" as="style" />
+    
     <link rel="icon" type="image/png" href="smalllogo.png" />
     <link href="css/bootstrap.min.css" rel="stylesheet" />
     <link href="css/bootstrap-icons.css" rel="stylesheet" />
-    <link href="css/tooplate-tween-agency.css" rel="stylesheet" />
+    <link href="css/tooplate-tween-agency.css" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="css/tooplate-tween-agency.css" rel="stylesheet" /></noscript>
+    
+    <!-- Critical inline CSS for faster initial render -->
+    <style>
+      body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+      .navbar{background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.1)}
+      .hub-layout{display:flex;gap:1rem;max-width:1400px;margin:0 auto;padding:80px 1rem 2rem}
+      .feed-column{flex:1;min-width:0}
+      .post-card,.sidebar-card{background:#fff;border-radius:8px;margin-bottom:1rem}
+    </style>
 
     <!-- ReCAPTCHA v3 -->
     <script src="https://www.google.com/recaptcha/api.js?render=6LdvxdgrAAAAAIcCXPLCipQV819ARwiuwys2fiq2" async defer></script>
+    
     <style>
       body {
         font-family: "Poppins", sans-serif;
@@ -526,6 +551,242 @@
         background-color: #343a40 !important;
         border-color: #495057 !important;
       }
+
+      /* Auth modal specific enhancements */
+      .modal-content .alert {
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      body.dark-mode .modal-content .alert-danger {
+        background-color: #3d1f1f !important;
+        border-color: #5a2e2e !important;
+        color: #ff6b6b !important;
+      }
+
+      body.dark-mode .modal-content .alert-success {
+        background-color: #1f3d1f !important;
+        border-color: #2e5a2e !important;
+        color: #6bff6b !important;
+      }
+
+      body.dark-mode .modal-content .btn-link {
+        color: #8fa3ff !important;
+      }
+
+      body.dark-mode .modal-content .btn-link:hover {
+        color: #b8c5ff !important;
+      }
+
+      body.dark-mode .modal-content .form-floating > label {
+        color: #adb5bd !important;
+      }
+
+      body.dark-mode .modal-content .form-floating > .form-control:focus ~ label,
+      body.dark-mode .modal-content .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        color: #8fa3ff !important;
+      }
+
+      body.dark-mode .modal-content .invalid-feedback {
+        color: #ff6b6b !important;
+      }
+
+      body.dark-mode .modal-content .form-check-label {
+        color: #e0e0e0 !important;
+      }
+
+      body.dark-mode .modal-content .form-check-input {
+        background-color: #343a40 !important;
+        border-color: #495057 !important;
+      }
+
+      body.dark-mode .modal-content .form-check-input:checked {
+        background-color: #3498db !important;
+        border-color: #3498db !important;
+      }
+
+      body.dark-mode .modal-content .text-decoration-underline {
+        color: #8fa3ff !important;
+      }
+
+      body.dark-mode .modal-content .text-decoration-underline:hover {
+        color: #b8c5ff !important;
+      }
+
+      /* Auth Modal Enhancements */
+      #authModal .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 0.5rem 0.5rem 0 0;
+        padding: 1.25rem 1.5rem;
+      }
+
+      #authModal .modal-title {
+        color: white !important;
+        font-weight: 700;
+        font-size: 1.5rem;
+      }
+
+      #authModal .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: 0.8;
+      }
+
+      #authModal .btn-close:hover {
+        opacity: 1;
+      }
+
+      body.dark-mode #authModal .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      #authModal .modal-body {
+        padding: 2rem 1.5rem;
+      }
+
+      #authModal .form-floating > label {
+        color: #6c757d;
+      }
+
+      #authModal .form-floating > .form-control:focus ~ label,
+      #authModal .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        color: #667eea;
+      }
+
+      body.dark-mode #authModal .form-floating > .form-control:focus ~ label,
+      body.dark-mode #authModal .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        color: #8fa3ff;
+      }
+
+      #authModal .form-control {
+        border-radius: 12px;
+        padding: 0.85rem 0.75rem;
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+      }
+      
+      #authModal .form-control::placeholder {
+        color: #adb5bd;
+        opacity: 1;
+      }
+      
+      body.dark-mode #authModal .form-control::placeholder {
+        color: #6c757d;
+      }
+
+      #authModal .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+      }
+
+      body.dark-mode #authModal .form-control:focus {
+        border-color: #8fa3ff;
+        box-shadow: 0 0 0 0.2rem rgba(143, 163, 255, 0.15);
+      }
+
+      #toggleAuthMode {
+        color: #667eea;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.3s ease;
+      }
+
+      #toggleAuthMode:hover {
+        color: #764ba2;
+      }
+
+      body.dark-mode #toggleAuthMode {
+        color: #8fa3ff;
+      }
+
+      body.dark-mode #toggleAuthMode:hover {
+        color: #b8c5ff;
+      }
+
+      #forgotPasswordBtn {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      #forgotPasswordBtn:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+
+      body.dark-mode #forgotPasswordBtn {
+        color: #8fa3ff;
+      }
+
+      body.dark-mode #forgotPasswordBtn:hover {
+        color: #b8c5ff;
+      }
+
+      /* Social Login Styling */
+      .social-login-section {
+        margin-top: 1.5rem;
+      }
+
+      .divider-with-text {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 1.5rem 0;
+      }
+
+      .divider-with-text::before,
+      .divider-with-text::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .divider-with-text span {
+        padding: 0 1rem;
+        color: #6c757d;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      body.dark-mode .divider-with-text::before,
+      body.dark-mode .divider-with-text::after {
+        border-bottom-color: #495057;
+      }
+
+      body.dark-mode .divider-with-text span {
+        color: #adb5bd;
+      }
+
+      .btn-google {
+        background: white;
+        color: #333;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 0.65rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .btn-google:hover {
+        background: #f8f9fa;
+        border-color: #ccc;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+
+      body.dark-mode .btn-google {
+        background: #3a3a52;
+        color: #e8e8f0;
+        border-color: #4a4a62;
+      }
+
+      body.dark-mode .btn-google:hover {
+        background: #4a4a62;
+        border-color: #5a5a72;
+      }
       
       /* Enhanced button responsiveness */
       .btn, .icon-btn {
@@ -779,6 +1040,64 @@
         box-shadow: 0 4px 28px rgba(0, 0, 0, 0.4);
       }
       
+      /* Login prompt card styling */
+      .login-prompt-card {
+        animation: fadeInScale 0.5s ease-out;
+      }
+      
+      @keyframes fadeInScale {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      
+      body.dark-mode .login-prompt-card {
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.15), rgba(102, 16, 242, 0.15)) !important;
+        border-color: rgba(13, 110, 253, 0.4) !important;
+      }
+      
+      .login-prompt-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 32px rgba(13, 110, 253, 0.2);
+        transition: all 0.3s ease;
+      }
+      
+      /* Faded last post effect (Quora-style) */
+      .post-card.faded-post {
+        position: relative;
+        opacity: 0.6;
+        pointer-events: none;
+      }
+      
+      .post-card.faded-post::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          transparent 30%, 
+          rgba(255, 255, 255, 0.5) 60%,
+          rgba(255, 255, 255, 0.9) 100%);
+        pointer-events: none;
+        border-radius: 16px;
+      }
+      
+      body.dark-mode .post-card.faded-post::after {
+        background: linear-gradient(to bottom, 
+          transparent 0%, 
+          transparent 30%, 
+          rgba(24, 26, 27, 0.5) 60%,
+          rgba(24, 26, 27, 0.95) 100%);
+      }
+      
       /* Enhanced Loading Progress Bar */
       .loading-progress-container {
         max-width: 300px;
@@ -871,24 +1190,60 @@
         margin-top: 0.75rem;
       }
       .btn-brand {
-        background: #3498db !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: #fff !important;
         border: none;
         border-radius: 30px;
         font-weight: 600;
-        padding: 0.55rem 1.35rem;
+        padding: 0.65rem 1.5rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
       }
+
+      .btn-brand:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        transform: translateY(-2px);
+      }
+
+      .btn-brand:active {
+        transform: translateY(0);
+      }
+
+      body.dark-mode .btn-brand {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+      }
+
+      body.dark-mode .btn-brand:hover {
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
       .btn-brand-outline {
         background: transparent;
-        border: 2px solid #3498db;
-        color: #3498db;
+        border: 2px solid #667eea;
+        color: #667eea;
         border-radius: 30px;
         font-weight: 600;
-        padding: 0.45rem 1.15rem;
+        padding: 0.55rem 1.35rem;
+        transition: all 0.3s ease;
       }
+
+      .btn-brand-outline:hover {
+        background: #667eea;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
       body.dark-mode .btn-brand-outline {
-        color: #5dade2;
-        border-color: #5dade2;
+        color: #8fa3ff;
+        border-color: #8fa3ff;
+      }
+
+      body.dark-mode .btn-brand-outline:hover {
+        background: #8fa3ff;
+        color: #1a1a2e;
       }
       .post-header {
         display: flex;
@@ -913,15 +1268,184 @@
         overflow: hidden;
         background: #000;
         cursor: pointer;
+        max-height: 600px; /* Prevent extremely tall images */
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .post-image {
         width: 100%;
+        max-height: 600px;
         display: block;
-        object-fit: cover;
-        transition: transform 0.5s;
+        object-fit: contain; /* Changed from cover to contain - preserves aspect ratio */
+        transition: transform 0.3s;
+      }
+      
+      body:not(.dark-mode) .post-image-wrapper {
+        background: #f5f5f5;
       }
       .post-image-wrapper:hover .post-image {
         transform: scale(1.04);
+      }
+      
+      /* Multi-image grid layout - Base styles */
+      .multi-image-container {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        margin: 12px 0;
+        box-sizing: border-box;
+      }
+      
+      .post-card .multi-image-container {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+      }
+      
+      .image-grid {
+        display: grid;
+        gap: 4px;
+        width: 100%;
+        max-width: 100%;
+        height: 400px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #000;
+        box-sizing: border-box;
+      }
+      
+      /* Single image layout */
+      .image-grid.single {
+        grid-template-columns: 1fr;
+        height: 500px;
+      }
+      
+      /* Two images layout */
+      .image-grid.two {
+        grid-template-columns: 1fr 1fr;
+        height: 400px;
+      }
+      
+      /* Three images layout */
+      .image-grid.three {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        height: 400px;
+      }
+      
+      .image-grid.three .grid-image:first-child {
+        grid-row: 1 / 3;
+      }
+      
+      /* Four images layout */
+      .image-grid.four {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        height: 400px;
+      }
+      
+      /* Five or more images layout */
+      .image-grid.five-plus {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        height: 400px;
+      }
+      
+      .image-grid.five-plus .grid-image:first-child {
+        grid-column: 1 / 3;
+        grid-row: 1 / 2;
+      }
+      
+      /* Grid image styling */
+      .grid-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Changed from cover to contain - preserves aspect ratio */
+        cursor: pointer;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        display: block;
+        background: #000; /* Black background for letterboxing */
+      }
+      
+      .grid-image:hover {
+        opacity: 0.9;
+      }
+      
+      /* Light mode background for images */
+      body:not(.dark-mode) .grid-image {
+        background: #f0f0f0;
+      }
+      
+      /* Image counter overlay */
+      .image-counter {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        background: rgba(0, 0, 0, 0.75);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        z-index: 2;
+        backdrop-filter: blur(8px);
+      }
+      
+      /* More images indicator */
+      .more-images-overlay {
+        position: relative;
+      }
+      
+      .more-images-indicator {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 1;
+        transition: background 0.3s ease;
+      }
+      
+      .more-images-indicator:hover {
+        background: rgba(0, 0, 0, 0.75);
+      }
+      
+      /* Navigation dots */
+      .image-nav-dots {
+        position: absolute;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 6px;
+        z-index: 2;
+      }
+      
+      .nav-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      
+      .nav-dot.active {
+        background: white;
+        transform: scale(1.2);
+      }
+      
+      .nav-dot:hover {
+        background: rgba(255, 255, 255, 0.8);
       }
       
       /* Mobile image optimizations */
@@ -932,6 +1456,29 @@
         
         .post-image:active {
           transform: scale(0.98);
+        }
+        
+        /* Multi-image mobile optimizations */
+        .multi-image-container {
+          margin: 8px 0;
+        }
+        
+        .image-grid {
+          height: 300px; /* Smaller on mobile */
+        }
+        
+        .image-counter {
+          font-size: 0.7rem;
+          padding: 3px 6px;
+        }
+        
+        .image-nav-dots {
+          gap: 4px;
+        }
+        
+        .nav-dot {
+          width: 6px;
+          height: 6px;
         }
         
         /* Mobile avatar sizes */
@@ -1315,6 +1862,30 @@
           padding: 0.5rem;
         }
         
+        /* Dark mode comment input */
+        body.dark-mode .enhanced-comment-input,
+        body.dark-mode .comment-input {
+          background: rgba(50, 50, 50, 0.9) !important;
+          color: #e0e0e0 !important;
+          border-color: rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        body.dark-mode .enhanced-comment-input::placeholder,
+        body.dark-mode .comment-input::placeholder {
+          color: rgba(255, 255, 255, 0.5) !important;
+        }
+        
+        body.dark-mode .enhanced-comment-input:focus,
+        body.dark-mode .comment-input:focus {
+          background: rgba(60, 60, 60, 0.95) !important;
+          border-color: rgba(93, 173, 226, 0.5) !important;
+          box-shadow: 0 0 0 0.2rem rgba(93, 173, 226, 0.25) !important;
+        }
+        
+        body.dark-mode .quick-comment-input {
+          border-top-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        
         /* Mobile buttons */
         .icon-btn {
           padding: 0.4rem 0.6rem;
@@ -1411,6 +1982,38 @@
         border-top: 1px solid #404040 !important;
       }
       
+      /* Light mode crop modal styling for visibility */
+      #imageCropModal .modal-content,
+      #profileCropModal .modal-content,
+      #cropModal .modal-content {
+        background: #ffffff !important;
+        border: 1px solid #dee2e6 !important;
+        color: #212529 !important;
+      }
+      
+      #imageCropModal .btn-outline-secondary,
+      #profileCropModal .btn-outline-secondary,
+      #cropModal .btn-outline-secondary {
+        color: #6c757d !important;
+        border-color: #6c757d !important;
+        background-color: transparent !important;
+      }
+      
+      #imageCropModal .btn-outline-secondary:hover,
+      #profileCropModal .btn-outline-secondary:hover,
+      #cropModal .btn-outline-secondary:hover {
+        color: #ffffff !important;
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+      }
+      
+      body.dark-mode #imageCropModal .btn-outline-secondary,
+      body.dark-mode #profileCropModal .btn-outline-secondary,
+      body.dark-mode #cropModal .btn-outline-secondary {
+        color: #adb5bd !important;
+        border-color: #6c757d !important;
+      }
+      
       /* Small phone optimizations */
       @media (max-width: 576px) {
         .main-header h1 {
@@ -1484,9 +2087,14 @@
         padding: 0.45rem 0.25rem;
         border-radius: 10px;
         color: #444;
+        cursor: pointer;
+        position: relative;
+        z-index: 10;
+        user-select: none;
       }
       .hub-nav .nav-link i {
         font-size: 1rem;
+        pointer-events: none;
       }
       .hub-nav .nav-link.active,
       .hub-nav .nav-link:hover {
@@ -2116,14 +2724,27 @@
       .toast-container {
         z-index: 20000;
       }
-      .toast-brand {
-        background: #3498db;
-        color: #fff;
+      
+      .toast {
+        min-width: 300px;
+        border-radius: 12px;
+        overflow: hidden;
       }
-      body.dark-mode .toast-brand {
-        background: #23272b;
-        color: #fff;
-        border: 1px solid #444;
+      
+      .toast .toast-body {
+        font-weight: 500;
+        padding: 1rem;
+        color: #ffffff !important;
+      }
+      
+      .toast .btn-close {
+        filter: brightness(0) invert(1) !important;
+        opacity: 1 !important;
+      }
+      
+      /* Ensure all toast text is white */
+      #toastMessage {
+        color: #ffffff !important;
       }
 
       /* Align navbar actions in one line like index */
@@ -3039,6 +3660,18 @@
       .user-item:last-child {
         border-bottom: none;
       }
+      
+      /* Performance optimization - reduce paint complexity */
+      img {
+        will-change: transform;
+        contain: layout;
+      }
+      
+      /* Reduce repaints on scroll */
+      .post-card, .sidebar-card {
+        will-change: transform;
+        contain: layout style paint;
+      }
     </style>
   </head>
   <body>
@@ -3067,9 +3700,14 @@
               <a class="nav-link" href="index.html#section_3">Services</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="artwork-registration.html"
-                >Register Art</a
-              >
+              <a class="nav-link" href="artwork-registration.html">
+                <i class="bi bi-shield-plus"></i> Register Art
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="my-protected-artworks.html">
+                <i class="bi bi-shield-lock-fill"></i> My Artworks
+              </a>
             </li>
           </ul>
           <div class="ms-auto nav-actions">
@@ -3157,13 +3795,6 @@
               >
             </div>
           </div>
-          <button
-            class="btn-brand w-100 mb-2"
-            id="quickCreateBtn"
-            type="button"
-          >
-            <i class="bi bi-pencil-square me-1"></i> Create
-          </button>
           <div class="d-flex justify-content-between mt-2 small stats">
             <span><strong id="statPosts">0</strong> Posts</span>
             <span><strong id="statFollowing">0</strong> Following</span>
@@ -3238,33 +3869,33 @@
         <div class="sidebar-card nav-card">
           <ul class="nav flex-column hub-nav">
             <li class="nav-item">
-              <a class="nav-link active" href="#" data-hub-nav="feed"
+              <a class="nav-link active" href="javascript:void(0)" data-hub-nav="feed"
                 ><i class="bi bi-house-door me-2"></i> Feed</a
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#" data-hub-nav="explore"
+              <a class="nav-link" href="javascript:void(0)" data-hub-nav="explore"
                 ><i class="bi bi-compass me-2"></i> Explore</a
               >
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="#" data-hub-nav="messages"
+              <a class="nav-link" href="javascript:void(0)" data-hub-nav="messages"
                 ><i class="bi bi-envelope me-2"></i> Messages</a
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#" data-hub-nav="saved"
+              <a class="nav-link" href="javascript:void(0)" data-hub-nav="saved"
                 ><i class="bi bi-bookmark me-2"></i> Saved</a
               >
             </li>
             <li class="nav-item admin-only" style="display: none">
-              <a class="nav-link" href="#" data-hub-nav="admin"
+              <a class="nav-link" href="javascript:void(0)" data-hub-nav="admin"
                 ><i class="bi bi-shield-lock me-2"></i> Admin</a
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#" data-hub-nav="settings"
+              <a class="nav-link" href="javascript:void(0)" data-hub-nav="settings"
                 ><i class="bi bi-gear me-2"></i> Settings</a
               >
             </li>
@@ -3289,28 +3920,32 @@
                 class="form-control"
                 placeholder="Share what you are cooking..."
               ></textarea>
-              <!-- Image Preview Area -->
-              <div id="imagePreviewArea" class="mt-3" style="display: none">
-                <div class="position-relative d-inline-block">
-                  <img
-                    id="imagePreview"
-                    src=""
-                    alt="Selected image"
-                    class="img-fluid rounded"
-                    style="max-height: 200px; max-width: 100%"
-                  />
+              <!-- Multiple Images Preview Section -->
+              <div id="imagePreviewSection" class="mt-3" style="display: none">
+                <h6 class="mb-3 text-muted">
+                  <i class="bi bi-images me-2"></i>Selected Images
+                </h6>
+                <div id="imagePreviewContainer" class="row g-2 mb-3">
+                  <!-- Image previews will be inserted here -->
+                </div>
+                <div class="d-flex gap-2 mb-2">
                   <button
                     type="button"
-                    class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle"
-                    id="removeImageBtn"
-                    style="width: 30px; height: 30px; padding: 0"
+                    class="btn btn-outline-primary btn-sm"
+                    onclick="document.getElementById('imageInput').click()"
                   >
-                    <i class="bi bi-x"></i>
+                    <i class="bi bi-plus-circle me-1"></i> Add More Images
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    id="clearAllImages"
+                  >
+                    <i class="bi bi-trash me-1"></i> Clear All
                   </button>
                 </div>
-                <div class="small text-muted mt-2">
-                  <i class="bi bi-info-circle me-1"></i>Click image to replace
-                  or use remove button
+                <div class="small text-muted">
+                  <i class="bi bi-info-circle me-1"></i>Click crop to edit each image, or remove individually. Use "Add More Images" to select additional files.
                 </div>
               </div>
 
@@ -3351,16 +3986,17 @@
                     id="addImageBtn"
                   >
                     <i class="bi bi-image me-1"></i>
-                    <span id="imageButtonText">Add Image</span>
+                    <span id="imageButtonText">Add Images</span>
                   </button>
                   <input
                     type="file"
                     id="imageInput"
                     accept="image/*"
+                    multiple
                     style="display: none"
                   />
                   <small class="text-muted" id="imageHint"
-                    >PNG, JPG up to 5MB</small
+                    >PNG, JPG up to 1MB</small
                   >
                   <!-- Image Upload Progress -->
                   <div id="uploadProgress" class="mt-2" style="display: none">
@@ -3715,25 +4351,23 @@
 
               <!-- Login Fields -->
               <div id="loginFields">
-                <div class="form-floating mb-3">
+                <div class="mb-3">
                   <input
                     type="text"
                     class="form-control"
                     id="loginIdentifier"
-                    placeholder="username or email"
+                    placeholder="Username or Email"
                     required
                   />
-                  <label for="loginIdentifier">Username or Email</label>
                 </div>
-                <div class="form-floating mb-3">
+                <div class="mb-3">
                   <input
                     type="password"
                     class="form-control"
                     id="loginPassword"
-                    placeholder="password"
+                    placeholder="Password"
                     required
                   />
-                  <label for="loginPassword">Password</label>
                 </div>
                 <div class="text-center mb-3">
                   <button
@@ -3748,49 +4382,46 @@
 
               <!-- Register Fields -->
               <div id="registerExtra" style="display: none">
-                <div class="form-floating mb-3">
+                <div class="mb-3">
                   <input
                     type="text"
                     class="form-control"
                     id="regUsername"
-                    placeholder="username"
+                    placeholder="Username"
                     maxlength="50"
                     pattern="[a-zA-Z0-9_\-\.\s]+"
                     title="Username can only contain letters, numbers, spaces, underscores, hyphens, and periods"
                     required
                   />
-                  <label for="regUsername">Username</label>
                   <div class="invalid-feedback" id="usernameError" style="display: none;">
                     Username contains invalid characters. Only letters, numbers, spaces, and basic symbols are allowed.
                   </div>
                 </div>
-                <div class="form-floating mb-3">
+                <div class="mb-3">
                   <input
                     type="email"
                     class="form-control"
                     id="regEmail"
-                    placeholder="email"
+                    placeholder="Email"
                     maxlength="100"
                     pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
                     title="Please enter a valid email address"
                     required
                   />
-                  <label for="regEmail">Email</label>
                   <div class="invalid-feedback" id="emailError" style="display: none;">
                     Please enter a valid email address (e.g., user@example.com)
                   </div>
                 </div>
-                <div class="form-floating mb-3">
+                <div class="mb-3">
                   <input
                     type="password"
                     class="form-control"
                     id="regPassword"
-                    placeholder="password"
+                    placeholder="Password (min 8 characters, include a number)"
                     required
                     minlength="8"
                     pattern="^(?=.*[0-9])(?=.*[a-zA-Z]).{8,}$"
                   />
-                  <label for="regPassword">Password</label>
                   <div class="form-text text-muted">
                     Password must be at least 8 characters and contain at least
                     one number
@@ -3855,11 +4486,33 @@
 
               <button
                 type="submit"
-                class="w-100 btn btn-brand"
+                class="w-100 btn btn-brand mb-3"
                 id="authSubmitBtn"
               >
                 Login
               </button>
+
+              <!-- Social Login Options (only show on login) -->
+              <div id="socialLoginSection" class="social-login-section">
+                <div class="divider-with-text">
+                  <span>OR</span>
+                </div>
+                <button
+                  type="button"
+                  class="w-100 btn btn-google mb-2"
+                  id="googleLoginBtn"
+                  onclick="loginWithGoogleFromModal()"
+                >
+                  <svg width="18" height="18" viewBox="0 0 18 18" style="margin-right: 8px;">
+                    <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"></path>
+                    <path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"></path>
+                    <path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"></path>
+                    <path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"></path>
+                  </svg>
+                  Continue with Google
+                </button>
+              </div>
+
               <div class="text-center mt-3 mini-link">
                 <span
                   id="toggleAuthMode"
@@ -4079,29 +4732,7 @@
               </div>
             </div>
 
-            <!-- Multiple Images Preview Section -->
-            <div id="imagePreviewSection" style="display: none">
-              <h6 class="mb-3">Selected Images</h6>
-              <div id="imagePreviewContainer" class="row g-2 mb-3">
-                <!-- Image previews will be inserted here -->
-              </div>
-              <div class="d-flex gap-2 mb-3">
-                <button
-                  type="button"
-                  class="btn btn-outline-primary btn-sm"
-                  onclick="document.getElementById('profilePicInput').click()"
-                >
-                  <i class="bi bi-plus-circle me-1"></i> Add More Images
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary btn-sm"
-                  id="clearAllImages"
-                >
-                  <i class="bi bi-trash me-1"></i> Clear All
-                </button>
-              </div>
-            </div>
+
           </div>
           <div class="modal-footer">
             <button
@@ -4394,12 +5025,11 @@
       </div>
     </div>
 
-    <script src="js/bootstrap.min.js"></script>
-    <!-- Load Firebase configuration -->
-    <script type="text/javascript" src="firebase-config-local.js"></script>
+    <script src="js/bootstrap.min.js" defer></script>
+    <!-- Load Firebase module with embedded configuration -->
     <script type="module" src="firebase-config.js"></script>
-    <script src="js/arthub-client.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="js/arthub-client.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer async></script>
     <script>
       // Username sanitization function for email compatibility (Global scope)
       function sanitizeUsernameForEmail(username) {
@@ -4711,6 +5341,7 @@
         const submit = document.getElementById("authSubmitBtn");
         const toggle = document.getElementById("toggleAuthMode");
         const errBox = document.getElementById("authError");
+        const socialLoginSection = document.getElementById("socialLoginSection");
         errBox.classList.add("d-none");
 
         // Reset all steps
@@ -4723,6 +5354,7 @@
           rememberMeSection.style.display = "block";
           submit.textContent = "Login";
           toggle.textContent = "Need an account? Register";
+          if (socialLoginSection) socialLoginSection.style.display = "block";
         } else {
           title.textContent = "Register";
           loginFields.style.display = "none";
@@ -4730,6 +5362,7 @@
           rememberMeSection.style.display = "none";
           submit.textContent = "Create Account";
           toggle.textContent = "Have an account? Login";
+          if (socialLoginSection) socialLoginSection.style.display = "none";
 
           // Reset reCAPTCHA if switching to register
           if (typeof grecaptcha !== "undefined") {
@@ -4756,6 +5389,42 @@
             document.getElementById("authModal")
           );
         authModalRef.show();
+      }
+
+      // Google Login from modal
+      async function loginWithGoogleFromModal() {
+        const errBox = document.getElementById("authError");
+        errBox.classList.add("d-none");
+        
+        try {
+          const client = window.firebaseArtHubClient;
+          if (!client || !client.loginWithGoogle) {
+            throw new Error('Google Sign-In not configured. Please try email login.');
+          }
+
+          const result = await client.loginWithGoogle();
+          
+          if (result.success) {
+            auth.token = localStorage.getItem("arthub_token");
+            auth.user = result.user;
+            saveAuth();
+            authUI();
+            updateStats();
+            loadFeed(true);
+            loadSuggestions();
+            toast("Welcome @" + auth.user.username);
+            authModalRef.hide();
+            
+            // Refresh page after successful login
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }
+        } catch (error) {
+          console.error('Google login error:', error);
+          errBox.textContent = error.message || 'Failed to sign in with Google. Please try again.';
+          errBox.classList.remove("d-none");
+        }
       }
 
       document.addEventListener("click", (e) => {
@@ -6380,6 +7049,70 @@
         }
       }
       
+      // Load trending posts functionality
+      async function loadTrendingPosts() {
+        try {
+          // Show loading state
+          const feedEl = document.getElementById('feed');
+          if (feedEl) {
+            feedEl.innerHTML = `
+              <div class="text-center py-5">
+                <div class="spinner-border text-primary mb-3" role="status">
+                  <span class="visually-hidden">Loading trending posts...</span>
+                </div>
+                <div class="text-muted">Finding trending posts...</div>
+              </div>
+            `;
+          }
+          
+          // Switch to feed section
+          showSection('feed');
+          
+          // For now, load regular feed but with trending indicator
+          setTimeout(() => {
+            loadFeed(true);
+            toast('Showing trending content', 'info');
+          }, 1000);
+          
+        } catch (error) {
+          console.error('Error loading trending posts:', error);
+          toast('Failed to load trending posts', 'error');
+          loadFeed(true); // Fallback to regular feed
+        }
+      }
+
+      // Load trending posts functionality
+      async function loadTrendingPosts() {
+        try {
+          // Show loading state
+          const feedEl = document.getElementById('feed');
+          if (feedEl) {
+            feedEl.innerHTML = `
+              <div class="text-center py-5">
+                <div class="spinner-border text-primary mb-3" role="status">
+                  <span class="visually-hidden">Loading trending posts...</span>
+                </div>
+                <div class="text-muted">Finding trending posts...</div>
+              </div>
+            `;
+          }
+          
+          // Switch to feed section
+          showSection('feed');
+          
+          // For now, load regular feed but with trending indicator
+          setTimeout(() => {
+            loadFeed(true);
+            toast('Showing trending content', 'info');
+          }, 1000);
+          
+        } catch (error) {
+          console.error('Error loading trending posts:', error);
+          toast('Failed to load trending posts', 'error');
+          loadFeed(true); // Fallback to regular feed
+        }
+      }
+
       // Load trending tags dynamically
       let currentTrendingTag = null;
       let trendingTagsCache = null;
@@ -6405,11 +7138,18 @@
           }
 
           console.log('🔍 Getting trending tags from client...');
-          console.log('🔍 Client available:', !!window.firebaseArtHubClient);
-          console.log('🔍 Client type:', window.firebaseArtHubClient?.constructor?.name);
+          const client = artHubClient || window.firebaseArtHubClient;
+          console.log('🔍 Client available:', !!client);
+          console.log('🔍 Client type:', client?.constructor?.name);
+          
+          if (!client || typeof client.getTrendingTags !== 'function') {
+            console.error('❌ Firebase client not ready for trending tags');
+            trendingTagsElement.innerHTML = '<p class="text-muted small">Loading trending tags...</p>';
+            return;
+          }
           
           // Use the optimized getTrendingTags method from the client
-          const trendingTags = await window.firebaseArtHubClient.getTrendingTags(15);
+          const trendingTags = await client.getTrendingTags(15);
           console.log('🔍 Raw trending tags result:', trendingTags);
           
           if (trendingTags && trendingTags.length > 0) {
@@ -6467,8 +7207,22 @@
             return;
           }
 
+          // Check if client is available
+          const client = artHubClient || window.firebaseArtHubClient;
+          if (!client || typeof client.getTrendingTags !== 'function') {
+            console.error('❌ Firebase client not ready for popular tags');
+            // Show fallback tags
+            popularTagsElement.innerHTML = `
+              <button class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip" data-tag="art" onclick="toggleSearchTag('art', this)">#art</button>
+              <button class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip" data-tag="digital" onclick="toggleSearchTag('digital', this)">#digital</button>
+              <button class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip" data-tag="painting" onclick="toggleSearchTag('painting', this)">#painting</button>
+              <button class="btn btn-sm btn-outline-primary me-1 mb-1 tag-chip" data-tag="sketch" onclick="toggleSearchTag('sketch', this)">#sketch</button>
+            `;
+            return;
+          }
+
           // Get trending tags data (top 8 for popular section)
-          const trendingTags = await window.firebaseArtHubClient.getTrendingTags(8);
+          const trendingTags = await client.getTrendingTags(8);
           
           if (trendingTags && trendingTags.length > 0) {
             console.log('✅ Found', trendingTags.length, 'popular tags from trending data');
@@ -6813,25 +7567,85 @@
       function toast(msg, type = "default") {
         const el = document.getElementById("toastGeneric");
         const messageEl = document.getElementById("toastMessage");
+        const isDarkMode = document.body.classList.contains('dark-mode');
 
         // Set message
         messageEl.textContent = msg;
 
-        // Apply styling based on type
+        // Reset all classes first
         el.className = "toast align-items-center border-0";
+        
+        // Apply styling based on type with dark mode support
         switch (type) {
           case "success":
-            el.classList.add("toast-success", "text-bg-success");
+            if (isDarkMode) {
+              el.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+              el.style.color = '#ffffff';
+              el.style.border = '1px solid rgba(16, 185, 129, 0.5)';
+            } else {
+              el.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+              el.style.color = '#ffffff';
+              el.style.border = 'none';
+            }
             break;
           case "error":
-            el.classList.add("toast-error", "text-bg-danger");
+            if (isDarkMode) {
+              el.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+              el.style.color = '#ffffff';
+              el.style.border = '1px solid rgba(239, 68, 68, 0.5)';
+            } else {
+              el.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+              el.style.color = '#ffffff';
+              el.style.border = 'none';
+            }
             break;
           case "info":
-            el.classList.add("toast-info", "text-bg-info");
+            if (isDarkMode) {
+              el.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+              el.style.color = '#ffffff';
+              el.style.border = '1px solid rgba(59, 130, 246, 0.5)';
+            } else {
+              el.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+              el.style.color = '#ffffff';
+              el.style.border = 'none';
+            }
+            break;
+          case "warning":
+            if (isDarkMode) {
+              el.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+              el.style.color = '#ffffff';
+              el.style.border = '1px solid rgba(245, 158, 11, 0.5)';
+            } else {
+              el.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+              el.style.color = '#ffffff';
+              el.style.border = 'none';
+            }
             break;
           default:
-            el.classList.add("toast-brand");
+            if (isDarkMode) {
+              el.style.background = 'linear-gradient(135deg, #374151, #1f2937)';
+              el.style.color = '#ffffff';
+              el.style.border = '1px solid rgba(75, 85, 99, 0.5)';
+            } else {
+              el.style.background = 'linear-gradient(135deg, #3498db, #2980b9)';
+              el.style.color = '#ffffff';
+              el.style.border = 'none';
+            }
         }
+        
+        // Ensure message text is always white
+        messageEl.style.color = '#ffffff';
+        
+        // Make close button visible
+        const closeBtn = el.querySelector('.btn-close');
+        if (closeBtn) {
+          closeBtn.style.filter = 'brightness(0) invert(1)';
+          closeBtn.style.opacity = '1';
+        }
+        
+        // Add shadow for better visibility
+        el.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+        el.style.backdropFilter = 'blur(10px)';
 
         // Show toast with appropriate delay
         const delay =
@@ -6842,14 +7656,117 @@
         toastInstance.show();
       }
 
-      // --- Adapt existing publishing to show toast + enforce login for posts & reader context ---
-      function enforceAuthBefore() {
+      // --- Enhanced authentication enforcement with guest restrictions ---
+      function enforceAuthBefore(action = "perform this action") {
         if (!auth.user) {
-          toast("Login required");
+          toast(`Please login to ${action}`, "error");
           openAuth("login");
           return false;
         }
         return true;
+      }
+
+      // Comprehensive guest user restriction system
+      function restrictGuestInteractions() {
+        // Disable all interactive elements for guests
+        if (!auth.user) {
+          // Disable post creation
+          const createElements = [
+            '#postText', '#publishBtn', '#addImageBtn', '#imageInput',
+            '#tagsInput', '#nsfwCheck', '.create-card'
+          ];
+          
+          createElements.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => {
+              if (el) {
+                el.disabled = true;
+                el.style.pointerEvents = 'none';
+                el.style.opacity = '0.6';
+                el.title = 'Please login to create posts';
+              }
+            });
+          });
+
+          // Add overlay to create post area
+          const createCard = document.querySelector('.create-card');
+          if (createCard && !createCard.querySelector('.guest-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.className = 'guest-overlay';
+            overlay.style.cssText = `
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: rgba(0,0,0,0.7);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              z-index: 10;
+              border-radius: 16px;
+              backdrop-filter: blur(5px);
+            `;
+            overlay.innerHTML = `
+              <div style="text-align: center; color: white;">
+                <i class="bi bi-lock-fill" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                <div><strong>Login Required</strong></div>
+                <div class="small mb-2">Please login or sign-up to create posts</div>
+                <button class="btn btn-primary btn-sm" onclick="openAuth('login')">
+                  <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                </button>
+              </div>
+            `;
+            createCard.style.position = 'relative';
+            createCard.appendChild(overlay);
+          }
+
+          // Disable post interactions
+          const interactionButtons = document.querySelectorAll(
+            '.like-btn, .comment-btn, .quick-comment-btn, .save-btn, .share-btn'
+          );
+          interactionButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toast('Please login to interact with posts', 'error');
+              openAuth('login');
+            });
+          });
+        } else {
+          // Re-enable elements for authenticated users
+          const createElements = [
+            '#postText', '#publishBtn', '#addImageBtn', '#imageInput',
+            '#tagsInput', '#nsfwCheck', '.create-card'
+          ];
+          
+          createElements.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => {
+              if (el) {
+                el.disabled = false;
+                el.style.pointerEvents = 'auto';
+                el.style.opacity = '1';
+                el.style.filter = 'none';
+                el.title = '';
+              }
+            });
+          });
+
+          // Remove guest overlay
+          const overlay = document.querySelector('.guest-overlay');
+          if (overlay) {
+            overlay.remove();
+          }
+          
+          // Ensure create card is fully visible
+          const createCard = document.querySelector('.create-card');
+          if (createCard) {
+            createCard.style.opacity = '1';
+            createCard.style.pointerEvents = 'auto';
+            createCard.style.filter = 'none';
+          }
+        }
       }
 
       // --- Section Management ---
@@ -7955,6 +8872,9 @@
       const postText = document.getElementById("postText");
       const imageInput = document.getElementById("imageInput");
       let tempImageData = null;
+      let selectedImages = [];
+      let currentCropIndex = -1;
+      let imageCropModal;
 
       // Security and spam prevention
       let lastPostTime = 0;
@@ -8142,7 +9062,7 @@
         
         const resetButtonStates = () => {
           imageButtonText.textContent = "Add Images";
-          imageHint.textContent = "PNG, JPG up to 5MB";
+          imageHint.textContent = "PNG, JPG up to 1MB";
           currentImageFile = null;
         };
         
@@ -8275,105 +9195,106 @@
         imageInput.click();
       });
 
-      // File input change handler with compression and cropping workflow
+      // File input change handler with compression and cropping workflow for multiple images
       imageInput.addEventListener("change", async (e) => {
-        const file = e.target.files[0];
-        if (!file) {
-          // Reset button states when no file selected or cancelled
+        const files = Array.from(e.target.files);
+        if (!files.length) {
+          // Reset button states when no files selected or cancelled
           imageButtonText.textContent = "Add Images";
-          imageHint.textContent = "PNG, JPG up to 5MB";
+          imageHint.textContent = "PNG, JPG up to 1MB";
           return;
         }
 
-        // Validate file type
-        if (!file.type.startsWith("image/")) {
-          toast("Please select a valid image file.");
+        // Validate all files are images
+        const invalidFiles = files.filter(file => !file.type.startsWith("image/"));
+        if (invalidFiles.length > 0) {
+          toast(`${invalidFiles.length} invalid file(s) skipped. Only images are allowed.`);
           return;
         }
-
-        currentImageFile = file;
-        const fileSizeMB = file.size / 1024 / 1024;
 
         // Show loading state
         imageButtonText.textContent = "Processing...";
-        imageHint.innerHTML =
-          '<span class="spinner-border spinner-border-sm me-2"></span>Analyzing image...';
+        imageHint.innerHTML = 
+          `<span class="spinner-border spinner-border-sm me-2"></span>Processing ${files.length} image(s)...`;
 
         const progress = showUploadProgress();
 
-        const reader = new FileReader();
-        reader.onload = async (ev) => {
-          const originalDataUrl = ev.target.result;
+        try {
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const fileSizeMB = file.size / 1024 / 1024;
+            
+            progress.update((i / files.length) * 80, `Processing image ${i + 1} of ${files.length}...`);
 
-          try {
-            progress.update(30, "Analyzing image...");
+            const reader = new FileReader();
+            const imageDataPromise = new Promise((resolve, reject) => {
+              reader.onload = async (ev) => {
+                try {
+                  const originalDataUrl = ev.target.result;
 
-            if (fileSizeMB > 1) {
-              // Auto-compress large files for Firestore compatibility
-              progress.update(50, "Compressing image for Firestore...");
-              toast(
-                `Image is ${fileSizeMB.toFixed(
-                  1
-                )}MB. Auto-compressing to meet 1MB Firestore limit...`,
-                "info"
-              );
+                  let finalDataUrl = originalDataUrl;
+                  
+                  if (fileSizeMB > 1) {
+                    // Auto-compress large files for Firestore compatibility
+                    const compressed = await compressImage(file, 5, 0.8);
+                    finalDataUrl = compressed.dataUrl;
+                    
+                    toast(
+                      `Image ${i + 1} compressed from ${fileSizeMB.toFixed(1)}MB to ${compressed.compressedSize.toFixed(1)}MB`,
+                      "info"
+                    );
+                  }
 
-              const compressed = await compressImage(file, 5, 0.8);
-              const savings = (
-                ((compressed.originalSize -
-                  compressed.compressedSize * 1024 * 1024) /
-                  compressed.originalSize) *
-                100
-              ).toFixed(1);
+                  // Add to selectedImages array
+                  const imageData = {
+                    dataUrl: finalDataUrl,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type
+                  };
 
-              progress.update(80, "Compression complete!");
-              toast(
-                `Image compressed! Reduced by ${savings}% (${(
-                  compressed.originalSize /
-                  1024 /
-                  1024
-                ).toFixed(1)}MB → ${compressed.compressedSize.toFixed(1)}MB)`,
-                "success"
-              );
+                  selectedImages.push(imageData);
+                  resolve();
+                } catch (error) {
+                  reject(error);
+                }
+              };
+              reader.onerror = reject;
+            });
 
-              progress.update(100, "Ready for editing!");
-              setTimeout(() => progress.hide(), 1000);
-
-              // Open editor with compressed image
-              openImageEditor(compressed.dataUrl, file);
-            } else {
-              progress.update(80, "Processing complete!");
-              // File is under 5MB, open editor directly
-              progress.update(100, "Ready for editing!");
-              setTimeout(() => progress.hide(), 1000);
-              openImageEditor(originalDataUrl, file);
-            }
-          } catch (error) {
-            progress.hide();
-            toast("Failed to process image: " + error.message);
-            // Reset UI on error
-            imageButtonText.textContent = "Add Image";
-            imageHint.textContent = "PNG, JPG below or = 1MB";
+            reader.readAsDataURL(file);
+            await imageDataPromise;
           }
-        };
 
-        reader.readAsDataURL(file);
+          // Update UI after all images processed
+          progress.update(90, "Updating preview...");
+          updateImagePreview();
+          
+          progress.update(100, `${files.length} image(s) added successfully!`);
+          setTimeout(() => progress.hide(), 1500);
+
+          // Update button text
+          imageButtonText.textContent = "Add More Images";
+          imageHint.textContent = `${selectedImages.length} image(s) selected`;
+
+          // Open crop modal for the first newly added image
+          const firstNewImageIndex = selectedImages.length - files.length;
+          openImageCropper(firstNewImageIndex);
+
+          toast(`${files.length} image(s) added successfully! You can crop each image individually.`, "success");
+
+        } catch (error) {
+          progress.hide();
+          toast("Failed to process images: " + error.message);
+          // Reset UI on error
+          imageButtonText.textContent = "Add Images";
+          imageHint.textContent = "PNG, JPG up to 1MB";
+        }
       });
 
-      // Remove image handler
-      removeImageBtn.addEventListener("click", () => {
-        tempImageData = null;
-        imageInput.value = "";
-        imagePreviewArea.style.display = "none";
-        imageButtonText.textContent = "Add Image";
-        imageHint.textContent = "PNG, JPG up to 5MB";
-        toast("Image removed");
-      });
+      // Legacy handler - now handled by multiple image system
 
-      // Click on preview to change image
-      imagePreview.addEventListener("click", () => {
-        imageInput.click();
-      });
+      // Legacy handler - now handled by multiple image system
 
       // Add drag-and-drop functionality to the create post area
       const createCard = document.querySelector(".create-card");
@@ -8448,14 +9369,14 @@
                 // Open editor with compressed image
                 openImageEditor(compressed.dataUrl, file);
               } else {
-                // File is under 5MB, open editor directly
+                // File is under 1MB, open editor directly
                 openImageEditor(originalDataUrl, file);
               }
             } catch (error) {
               toast("Failed to process dropped image: " + error.message);
               // Reset UI on error
-              imageButtonText.textContent = "Add Image";
-              imageHint.textContent = "PNG, JPG up to 5MB";
+              imageButtonText.textContent = "Add Images";
+              imageHint.textContent = "PNG, JPG up to 1MB";
             }
           };
 
@@ -8465,6 +9386,7 @@
         }
       });
 
+      // Enhanced security functions
       function escapeHtml(str) {
         if (!str || typeof str !== "string") return "";
         return str.replace(
@@ -8478,6 +9400,297 @@
               "'": "&#39;",
             }[c])
         );
+      }
+
+      // Input validation and sanitization
+      function validateAndSanitizeInput(input, type = 'text', maxLength = 1000) {
+        if (!input || typeof input !== 'string') return '';
+        
+        // Remove dangerous characters and patterns
+        let sanitized = input
+          .replace(/<script[^>]*>.*?<\/script>/gi, '') // Remove script tags
+          .replace(/<iframe[^>]*>.*?<\/iframe>/gi, '') // Remove iframe tags
+          .replace(/javascript:/gi, '') // Remove javascript: URLs
+          .replace(/on\w+\s*=/gi, '') // Remove event handlers
+          .replace(/\0/g, ''); // Remove null bytes
+        
+        // Type-specific validation
+        switch (type) {
+          case 'username':
+            sanitized = sanitized.replace(/[^a-zA-Z0-9_-]/g, '').substring(0, 30);
+            break;
+          case 'email':
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(sanitized)) return '';
+            break;
+          case 'url':
+            // URL validation
+            try {
+              const url = new URL(sanitized);
+              if (!['http:', 'https:'].includes(url.protocol)) return '';
+            } catch {
+              return '';
+            }
+            break;
+          case 'filename':
+            sanitized = sanitized.replace(/[^a-zA-Z0-9._-]/g, '').substring(0, 255);
+            break;
+        }
+        
+        // Length validation
+        return sanitized.substring(0, maxLength);
+      }
+
+      // Rate limiting system
+      const rateLimiter = {
+        actions: new Map(),
+        
+        isAllowed(action, limit = 10, windowMs = 60000) {
+          const now = Date.now();
+          const key = `${action}_${auth.user?.id || 'anonymous'}`;
+          
+          if (!this.actions.has(key)) {
+            this.actions.set(key, []);
+          }
+          
+          const userActions = this.actions.get(key);
+          
+          // Remove expired actions
+          const validActions = userActions.filter(time => now - time < windowMs);
+          this.actions.set(key, validActions);
+          
+          if (validActions.length >= limit) {
+            return false;
+          }
+          
+          validActions.push(now);
+          return true;
+        },
+        
+        reset(action) {
+          const key = `${action}_${auth.user?.id || 'anonymous'}`;
+          this.actions.delete(key);
+        }
+      };
+
+      // CSRF protection
+      function generateCSRFToken() {
+        return Array.from(crypto.getRandomValues(new Uint8Array(32)))
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('');
+      }
+
+      // Content Security Policy helpers
+      function sanitizeImageData(dataUrl) {
+        if (!dataUrl || typeof dataUrl !== 'string') return null;
+        
+        // Validate data URL format
+        const dataUrlRegex = /^data:image\/(jpeg|png|gif|webp);base64,([A-Za-z0-9+\/=]+)$/;
+        if (!dataUrlRegex.test(dataUrl)) {
+          throw new Error('Invalid image data format');
+        }
+        
+        // Check file size (base64 encoded)
+        const base64Data = dataUrl.split(',')[1];
+        const sizeInBytes = (base64Data.length * 3) / 4;
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if (sizeInBytes > maxSize) {
+          throw new Error('Image file too large');
+        }
+        
+        return dataUrl;
+      }
+
+      // Enhanced click fraud protection
+      function detectSuspiciousActivity() {
+        const clicks = JSON.parse(sessionStorage.getItem('click_tracking') || '[]');
+        const now = Date.now();
+        const recentClicks = clicks.filter(time => now - time < 10000); // 10 seconds
+        
+        if (recentClicks.length > 20) {
+          toast('Suspicious activity detected. Please slow down.', 'error');
+          return true;
+        }
+        
+        recentClicks.push(now);
+        sessionStorage.setItem('click_tracking', JSON.stringify(recentClicks));
+        return false;
+      }
+
+      // Input validation and sanitization
+      function validateAndSanitizeInput(input, type = 'text', maxLength = 1000) {
+        if (!input || typeof input !== 'string') return '';
+        
+        // Remove dangerous characters and patterns
+        let sanitized = input
+          .replace(/<script[^>]*>.*?<\/script>/gi, '') // Remove script tags
+          .replace(/<iframe[^>]*>.*?<\/iframe>/gi, '') // Remove iframe tags
+          .replace(/javascript:/gi, '') // Remove javascript: URLs
+          .replace(/on\w+\s*=/gi, '') // Remove event handlers
+          .replace(/\0/g, ''); // Remove null bytes
+        
+        // Type-specific validation
+        switch (type) {
+          case 'username':
+            sanitized = sanitized.replace(/[^a-zA-Z0-9_-]/g, '').substring(0, 30);
+            break;
+          case 'email':
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(sanitized)) return '';
+            break;
+          case 'url':
+            // URL validation
+            try {
+              const url = new URL(sanitized);
+              if (!['http:', 'https:'].includes(url.protocol)) return '';
+            } catch {
+              return '';
+            }
+            break;
+          case 'filename':
+            sanitized = sanitized.replace(/[^a-zA-Z0-9._-]/g, '').substring(0, 255);
+            break;
+        }
+        
+        // Length validation
+        return sanitized.substring(0, maxLength);
+      }
+
+      // Enhanced click fraud protection
+      function detectSuspiciousActivity() {
+        const clicks = JSON.parse(sessionStorage.getItem('click_tracking') || '[]');
+        const now = Date.now();
+        const recentClicks = clicks.filter(time => now - time < 10000); // 10 seconds
+        
+        if (recentClicks.length > 20) {
+          toast('Suspicious activity detected. Please slow down.', 'error');
+          return true;
+        }
+        
+        recentClicks.push(now);
+        sessionStorage.setItem('click_tracking', JSON.stringify(recentClicks));
+        return false;
+      }
+
+      // Content Security Policy helpers
+      function sanitizeImageData(dataUrl) {
+        if (!dataUrl || typeof dataUrl !== 'string') return null;
+        
+        // Validate data URL format
+        const dataUrlRegex = /^data:image\/(jpeg|png|gif|webp);base64,([A-Za-z0-9+\/=]+)$/;
+        if (!dataUrlRegex.test(dataUrl)) {
+          throw new Error('Invalid image data format');
+        }
+        
+        // Check file size (base64 encoded)
+        const base64Data = dataUrl.split(',')[1];
+        const sizeInBytes = (base64Data.length * 3) / 4;
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if (sizeInBytes > maxSize) {
+          throw new Error('Image file too large');
+        }
+        
+        return dataUrl;
+      }
+
+      // Render post images with Facebook-style multi-image layout
+      function renderPostImages(post) {
+        // Use the image_urls array if available (new multi-image posts)
+        // Otherwise fall back to single image_url (old posts)
+        let images = [];
+        
+        if (post.image_urls && Array.isArray(post.image_urls) && post.image_urls.length > 0) {
+          images = post.image_urls;
+        } else if (post.image_url) {
+          images = [post.image_url];
+        }
+        
+        if (!images.length) return '';
+        
+        const isNSFW = post.is_nsfw && !checkNSFWVerification();
+        const imageCount = images.length;
+        
+        // Determine grid class
+        let gridClass = 'single';
+        if (imageCount === 2) gridClass = 'two';
+        else if (imageCount === 3) gridClass = 'three';
+        else if (imageCount === 4) gridClass = 'four';
+        else if (imageCount >= 5) gridClass = 'five-plus';
+        
+        let imageHTML = `<div class="multi-image-container" data-post-id="${post.id}" data-caption="${encodeURIComponent(post.body || '')}">`;
+        
+        // Add image counter if more than one image
+        if (imageCount > 1) {
+          imageHTML += `<div class="image-counter">${imageCount} photos</div>`;
+        }
+        
+        imageHTML += `<div class="image-grid ${gridClass}">`;
+        
+        // Render images based on count
+        const maxDisplay = imageCount >= 5 ? 4 : imageCount;
+        
+        for (let i = 0; i < maxDisplay; i++) {
+          const isLastImage = i === maxDisplay - 1 && imageCount > 4;
+          const imageClasses = `grid-image ${isNSFW ? 'nsfw-blur' : ''}`;
+          
+          if (isLastImage) {
+            // Show "more images" overlay on last image if there are 5+ images
+            const remainingCount = imageCount - 4;
+            imageHTML += `
+              <div class="more-images-indicator" onclick="openImageGallery('${post.id}', ${i})">
+                <img src="${images[i]}" class="${imageClasses}" alt="Artwork ${i + 1}">
+                <div class="more-images-overlay">
+                  <div>+${remainingCount}</div>
+                </div>
+              </div>
+            `;
+          } else {
+            imageHTML += `
+              <img src="${images[i]}" 
+                   class="${imageClasses}" 
+                   alt="Artwork ${i + 1}"
+                   onclick="openImageGallery('${post.id}', ${i})"
+                   loading="lazy"
+                   onerror="this.style.display='none'">
+            `;
+          }
+        }
+        
+        imageHTML += '</div>'; // Close image-grid
+        
+        // Add navigation dots for multiple images
+        if (imageCount > 1) {
+          imageHTML += '<div class="image-nav-dots">';
+          for (let i = 0; i < imageCount; i++) {
+            const activeClass = i === 0 ? 'active' : '';
+            imageHTML += `<div class="nav-dot ${activeClass}" data-index="${i}" onclick="showImageAtIndex('${post.id}', ${i})"></div>`;
+          }
+          imageHTML += '</div>';
+        }
+        
+        // Add NSFW overlay if needed
+        if (isNSFW) {
+          imageHTML += `
+            <div class="nsfw-overlay">
+              <div class="text-center">
+                <i class="bi bi-exclamation-triangle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                <div><strong>NSFW Content</strong></div>
+                <div class="small mb-3">This content may not be suitable for work</div>
+                <button class="btn btn-outline-light btn-sm" onclick="verifyAge(this)">
+                  I am 18+ years old
+                </button>
+              </div>
+            </div>
+          `;
+        }
+        
+        imageHTML += '</div>'; // Close multi-image-container
+        
+        return imageHTML;
       }
       
       function getDefaultAvatar() {
@@ -8596,28 +9809,7 @@
             }
           </div>
           ${
-            p.image_url
-              ? `<div class="post-image-wrapper" data-caption="${encodeURIComponent(
-                  p.body || ""
-                )}">
-                  <img src="${p.image_url}" 
-                       class="post-image ${p.is_nsfw && !checkNSFWVerification() ? 'nsfw-blur' : ''}" 
-                       alt="Artwork" 
-                       style="cursor: zoom-in;">
-                  ${p.is_nsfw && !checkNSFWVerification() ? `
-                    <div class="nsfw-overlay">
-                      <div class="text-center">
-                        <i class="bi bi-exclamation-triangle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
-                        <div><strong>NSFW Content</strong></div>
-                        <div class="small mb-3">This content may not be suitable for work</div>
-                        <button class="btn btn-outline-light btn-sm" onclick="verifyAge(this)">
-                          I am 18+ years old
-                        </button>
-                      </div>
-                    </div>
-                  ` : ''}
-                </div>`
-              : ""
+            renderPostImages(p)
           }
           ${
             Array.isArray(p.tags) && p.tags.length > 0
@@ -8869,12 +10061,9 @@
             </div>
           </div>
         ` : ''}`;
-        const wrap = li.querySelector(".post-image-wrapper");
-        if (wrap) {
-          wrap.addEventListener("click", () =>
-            openImageZoom(p.image_url, p.body)
-          );
-        }
+        // Image clicks are handled by inline onclick attributes in renderPostImages
+        // No need for additional event listeners to avoid double-triggering
+        
         const toggle = li.querySelector(".toggle-context");
         if (toggle && p.context && (p.context.approval_rate || 0) >= 90) {
           const panel = li.querySelector(".context-panel");
@@ -8896,6 +10085,280 @@
         }
 
         return li;
+      }
+
+      // Monitor authentication state changes
+      function initializeSecurityAndGuestRestrictions() {
+        // Apply guest restrictions on page load
+        restrictGuestInteractions();
+        
+        // Monitor for auth state changes
+        let lastAuthState = null;
+        const checkAuthInterval = setInterval(() => {
+          const currentAuthState = !!auth.user;
+          
+          if (lastAuthState !== currentAuthState) {
+            lastAuthState = currentAuthState;
+            restrictGuestInteractions();
+          }
+        }, 1000);
+        
+        // Add window resize handler for mobile toast positioning
+        window.addEventListener('resize', () => {
+          const toastEl = document.getElementById('toastGeneric');
+          if (toastEl && window.innerWidth <= 768) {
+            toastEl.style.cssText += `
+              right: 10px !important;
+              left: 10px !important;
+              max-width: calc(100vw - 20px) !important;
+              font-size: 14px !important;
+            `;
+          }
+        });
+        
+        // Enhanced click event delegation with security checks
+        document.addEventListener('click', (e) => {
+          // Block interactions for guests on sensitive elements
+          if (!auth.user) {
+            const restrictedSelectors = [
+              '.like-btn', '.comment-btn', '.quick-comment-btn', 
+              '.save-btn', '.share-btn', '.post-comment-btn',
+              '#publishBtn', '#addImageBtn'
+            ];
+            
+            if (restrictedSelectors.some(selector => e.target.matches(selector) || e.target.closest(selector))) {
+              e.preventDefault();
+              e.stopPropagation();
+              toast('Please login to interact with posts', 'error');
+              openAuth('login');
+              return;
+            }
+          }
+          
+          // Detect rapid clicking (potential bot activity)
+          if (detectSuspiciousActivity() && !auth.user) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
+        }, true); // Use capture phase for better control
+      }
+
+      // Initialize security measures when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeSecurityAndGuestRestrictions);
+      } else {
+        initializeSecurityAndGuestRestrictions();
+      }
+      
+      // Guest scroll detection for post limit
+      let guestScrollWarningShown = false;
+      window.addEventListener('scroll', () => {
+        if (!auth.user && !guestScrollWarningShown) {
+          const loginPromptCard = document.querySelector('.login-prompt-card');
+          if (loginPromptCard) {
+            const rect = loginPromptCard.getBoundingClientRect();
+            const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+            
+            if (isVisible && !guestScrollWarningShown) {
+              guestScrollWarningShown = true;
+              
+              // Add pulse animation to the card
+              loginPromptCard.style.animation = 'pulse 0.5s ease-in-out 2';
+              
+              // Show a toast notification
+              setTimeout(() => {
+                toast('Sign in to view more posts and interact with the community!', 'info');
+              }, 500);
+            }
+          }
+        }
+      });
+      
+      // Add pulse animation for the login prompt
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 4px 24px rgba(13, 110, 253, 0.2);
+          }
+          50% {
+            transform: scale(1.02);
+            box-shadow: 0 8px 32px rgba(13, 110, 253, 0.4);
+          }
+        }
+      `;
+      document.head.appendChild(style);
+
+      // Image gallery functionality for multi-image posts
+      function openImageGallery(postId, startIndex = 0) {
+        // Find the post data
+        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+        if (!postElement) return;
+        
+        // Get images from the post - handle both multi-image and single image posts
+        const multiImageContainer = postElement.querySelector('.multi-image-container');
+        let postImages = [];
+        
+        if (multiImageContainer) {
+          postImages = Array.from(multiImageContainer.querySelectorAll('.grid-image')).map(img => img.src);
+        } else {
+          // Fallback for single image posts
+          const singleImage = postElement.querySelector('.post-image');
+          if (singleImage) {
+            postImages = [singleImage.src];
+          }
+        }
+        
+        if (!postImages.length) return;
+        
+        const modal = document.createElement('div');
+        modal.className = 'image-gallery-modal';
+        modal.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0,0,0,0.95);
+          z-index: 10000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        `;
+        
+        let currentIndex = startIndex;
+        
+        const galleryHTML = `
+          <div class="gallery-container" style="position: relative; max-width: 90vw; max-height: 90vh; text-align: center;">
+            <img id="galleryImage" src="${postImages[currentIndex]}" 
+                 style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 8px;">
+            
+            <div class="gallery-controls" style="position: absolute; top: 50%; left: 0; right: 0; display: flex; justify-content: space-between; pointer-events: none;">
+              <button id="prevBtn" style="
+                background: rgba(0,0,0,0.7); 
+                border: none; 
+                color: white; 
+                font-size: 24px; 
+                width: 50px; 
+                height: 50px; 
+                border-radius: 50%; 
+                cursor: pointer;
+                margin-left: 20px;
+                pointer-events: auto;
+                display: ${postImages.length > 1 ? 'flex' : 'none'};
+                align-items: center;
+                justify-content: center;
+              ">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              
+              <button id="nextBtn" style="
+                background: rgba(0,0,0,0.7); 
+                border: none; 
+                color: white; 
+                font-size: 24px; 
+                width: 50px; 
+                height: 50px; 
+                border-radius: 50%; 
+                cursor: pointer;
+                margin-right: 20px;
+                pointer-events: auto;
+                display: ${postImages.length > 1 ? 'flex' : 'none'};
+                align-items: center;
+                justify-content: center;
+              ">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+            
+            <div class="gallery-info" style="
+              position: absolute;
+              bottom: -40px;
+              left: 50%;
+              transform: translateX(-50%);
+              color: white;
+              font-size: 14px;
+              display: ${postImages.length > 1 ? 'block' : 'none'};
+            ">
+              ${currentIndex + 1} of ${postImages.length}
+            </div>
+          </div>
+          
+          <button id="closeGallery" style="
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <i class="bi bi-x"></i>
+          </button>
+        `;
+        
+        modal.innerHTML = galleryHTML;
+        document.body.appendChild(modal);
+        
+        // Navigation functions
+        const updateImage = () => {
+          const img = modal.querySelector('#galleryImage');
+          const info = modal.querySelector('.gallery-info');
+          img.src = postImages[currentIndex];
+          if (info) info.textContent = `${currentIndex + 1} of ${postImages.length}`;
+        };
+        
+        // Event listeners
+        modal.querySelector('#prevBtn')?.addEventListener('click', () => {
+          currentIndex = (currentIndex - 1 + postImages.length) % postImages.length;
+          updateImage();
+        });
+        
+        modal.querySelector('#nextBtn')?.addEventListener('click', () => {
+          currentIndex = (currentIndex + 1) % postImages.length;
+          updateImage();
+        });
+        
+        modal.querySelector('#closeGallery').addEventListener('click', () => {
+          document.body.removeChild(modal);
+        });
+        
+        // Keyboard navigation
+        const handleKeyboard = (e) => {
+          if (e.key === 'Escape') {
+            document.body.removeChild(modal);
+            document.removeEventListener('keydown', handleKeyboard);
+          } else if (e.key === 'ArrowLeft' && postImages.length > 1) {
+            currentIndex = (currentIndex - 1 + postImages.length) % postImages.length;
+            updateImage();
+          } else if (e.key === 'ArrowRight' && postImages.length > 1) {
+            currentIndex = (currentIndex + 1) % postImages.length;
+            updateImage();
+          }
+        };
+        document.addEventListener('keydown', handleKeyboard);
+        
+        // Close on background click
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            document.body.removeChild(modal);
+            document.removeEventListener('keydown', handleKeyboard);
+          }
+        });
+      }
+      
+      // Show image at specific index (for navigation dots)
+      function showImageAtIndex(postId, index) {
+        openImageGallery(postId, index);
       }
 
       // Simple image zoom functionality - centered and clean
@@ -9157,9 +10620,20 @@
               return;
             }
             
-            posts.forEach((post, index) => {
+            // Guest user post limit
+            const isGuest = !auth.user;
+            const guestPostLimit = 3;
+            const postsToShow = isGuest ? Math.min(posts.length, guestPostLimit) : posts.length;
+            
+            posts.slice(0, postsToShow).forEach((post, index) => {
               try {
                 const postElement = postCard(post);
+                
+                // Add faded effect to the last post for guests (Quora-style)
+                if (isGuest && index === postsToShow - 1 && posts.length > guestPostLimit) {
+                  postElement.classList.add('faded-post');
+                }
+                
                 feedEl.appendChild(postElement);
               } catch (error) {
                 console.error(`Error rendering post ${post.id}:`, error);
@@ -9170,6 +10644,56 @@
                 feedEl.appendChild(errorCard);
               }
             });
+            
+            // Add login prompt for guests after limited posts
+            if (isGuest && posts.length > guestPostLimit) {
+              const loginPromptCard = document.createElement('div');
+              loginPromptCard.className = 'post-card login-prompt-card';
+              loginPromptCard.style.cssText = `
+                position: relative;
+                background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(102, 16, 242, 0.1));
+                border: 2px solid rgba(13, 110, 253, 0.3);
+                padding: 3rem 2rem;
+                text-align: center;
+                margin-bottom: 1rem;
+                backdrop-filter: blur(10px);
+              `;
+              
+              loginPromptCard.innerHTML = `
+                <div style="max-width: 500px; margin: 0 auto;">
+                  <i class="bi bi-lock-fill" style="font-size: 3rem; color: #0d6efd; margin-bottom: 1rem; display: block;"></i>
+                  <h4 style="font-weight: 600; margin-bottom: 0.5rem;">Want to see more?</h4>
+                  <p style="color: #6c757d; margin-bottom: 1.5rem;">
+                    You've reached the preview limit. Sign in to view all posts and join the community!
+                  </p>
+                  <div class="d-flex gap-2 justify-content-center flex-wrap">
+                    <button class="btn btn-primary btn-lg" onclick="openAuth('login')" style="min-width: 140px;">
+                      <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                    </button>
+                    <button class="btn btn-outline-primary btn-lg" onclick="openAuth('signup')" style="min-width: 140px;">
+                      <i class="bi bi-person-plus me-2"></i>Sign Up
+                    </button>
+                  </div>
+                  <p class="mt-3 small text-muted">
+                    <i class="bi bi-shield-check me-1"></i>
+                    Join thousands of artists sharing their work
+                  </p>
+                </div>
+              `;
+              
+              feedEl.appendChild(loginPromptCard);
+              
+              // Add a subtle blur overlay to indicate more content
+              const moreContentHint = document.createElement('div');
+              moreContentHint.style.cssText = `
+                position: relative;
+                height: 200px;
+                background: linear-gradient(to bottom, transparent, rgba(var(--bs-body-bg-rgb), 0.9));
+                margin-top: -1rem;
+                pointer-events: none;
+              `;
+              feedEl.appendChild(moreContentHint);
+            }
           });
           updateStats();
         } catch (err) {
@@ -9181,10 +10705,32 @@
       }
 
       publishBtn.addEventListener("click", async () => {
-        if (!enforceAuthBefore()) return;
-        const text = postText.value.trim();
-        if (!text && !tempImageData) {
-          toast("Please write something or add an image to publish");
+        // Comprehensive security and authentication checks
+        if (!enforceAuthBefore("create posts")) return;
+        
+        // Detect suspicious activity
+        if (detectSuspiciousActivity()) return;
+        
+        // Rate limiting check
+        if (!rateLimiter.isAllowed('create_post', 5, 300000)) { // 5 posts per 5 minutes
+          toast('You are posting too frequently. Please wait before creating another post.', 'error');
+          return;
+        }
+        
+        const text = validateAndSanitizeInput(postText.value.trim(), 'text', 2000);
+        if (!text && selectedImages.length === 0) {
+          toast("Please enter some text or add an image");
+          return;
+        }
+        
+        // Content validation
+        if (text.length < 1 && selectedImages.length === 0) {
+          toast("Post content cannot be empty", "error");
+          return;
+        }
+        
+        if (text.length > 2000) {
+          toast("Post content is too long (max 2000 characters)", "error");
           return;
         }
 
@@ -9234,9 +10780,18 @@
             tags.push('nsfw');
           }
 
+          // Collect all selected images (support multiple images like Facebook)
+          const imageDataArray = selectedImages.map(img => 
+            img.croppedDataUrl || img.dataUrl
+          ).filter(Boolean); // Remove any null/undefined values
+          
+          // Send array if multiple images, single image if only one, or null if none
+          const imageData = imageDataArray.length > 1 ? imageDataArray : 
+                           imageDataArray.length === 1 ? imageDataArray[0] : null;
+          
           await window.firebaseArtHubClient.createPost(
             text,
-            tempImageData,
+            imageData,
             null, // context
             tags,
             isNSFW
@@ -9249,13 +10804,13 @@
           postText.value = "";
           document.getElementById("tagsInput").value = "";
           document.getElementById("nsfwCheck").checked = false;
-          tempImageData = null;
+          selectedImages = [];
           imageInput.value = "";
 
-          // Reset image preview area
-          imagePreviewArea.style.display = "none";
-          imageButtonText.textContent = "Add Image";
-          imageHint.textContent = "PNG, JPG up to 5MB";
+          // Reset image preview areas
+          document.getElementById("imagePreviewSection").style.display = "none";
+          imageButtonText.textContent = "Add Images";
+          imageHint.textContent = "PNG, JPG up to 1MB";
 
           toast("Post published successfully!");
           updateStats();
@@ -10556,6 +12111,8 @@
 
       // Hook after DOM ready
       document.addEventListener("DOMContentLoaded", async () => {
+        console.log("🚀 DOM Content Loaded - Starting initialization...");
+        
         // Clear any demo mode data to ensure Firebase is used
         localStorage.removeItem("firebase_demo_mode");
         localStorage.removeItem("firebase_demo_config");
@@ -10568,23 +12125,59 @@
           localStorage.removeItem(key);
         });
 
-        // Wait for Firebase client to be ready
-        let retries = 0;
-        while (!initializeClient() && retries < 50) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
-          retries++;
+        // Check if Firebase client is already available
+        if (window.firebaseArtHubClient && typeof window.firebaseArtHubClient.getSavedPosts === "function") {
+          console.log("✅ Firebase client already initialized");
+          artHubClient = window.firebaseArtHubClient;
+          loadAuth();
+          authUI();
+          updateStats();
+          loadFeed();
+          loadSuggestions();
+          return;
+        }
+
+        // Wait for Firebase Ready event with timeout
+        console.log("⏳ Waiting for Firebase initialization...");
+        const firebaseReadyPromise = new Promise((resolve) => {
+          window.addEventListener('firebaseReady', (event) => {
+            console.log("📢 Firebase Ready event received");
+            resolve(event.detail.client);
+          }, { once: true });
+        });
+
+        const timeoutPromise = new Promise((resolve) => {
+          setTimeout(() => {
+            console.log("⏱️ Firebase initialization timeout");
+            resolve(null);
+          }, 10000); // 10 second timeout
+        });
+
+        // Race between Firebase ready and timeout
+        const result = await Promise.race([firebaseReadyPromise, timeoutPromise]);
+
+        // Final check - try direct access
+        if (!result && window.firebaseArtHubClient) {
+          console.log("✅ Found Firebase client via direct window access");
+          artHubClient = window.firebaseArtHubClient;
+        } else if (result) {
+          console.log("✅ Firebase client initialized via event");
+          artHubClient = result;
+        } else {
+          console.error("❌ Firebase client failed to initialize after 10 seconds");
+          console.error("❌ window.firebaseArtHubClient:", window.firebaseArtHubClient);
+          console.error("❌ Check browser console for Firebase errors");
+          toast("Application failed to initialize. Please check your connection and refresh the page.");
+          return;
         }
 
         if (!artHubClient) {
-          console.error(
-            "Firebase client failed to initialize after",
-            retries,
-            "attempts"
-          );
+          console.error("❌ artHubClient is null after initialization");
           toast("Application failed to initialize. Please refresh the page.");
           return;
         }
 
+        console.log("✅ Firebase client ready, loading auth...");
         loadAuth();
         authUI();
         updateStats();
@@ -10616,6 +12209,37 @@
           document.getElementById("commentsModal")
         );
 
+        // Direct sidebar navigation handler with delay to ensure DOM is ready
+        setTimeout(() => {
+          const navLinks = document.querySelectorAll('[data-hub-nav]');
+          console.log('🔍 Found navigation links:', navLinks.length);
+          navLinks.forEach((navLink, index) => {
+            console.log(`  ${index + 1}. ${navLink.getAttribute('data-hub-nav')} - ${navLink.tagName} - ${navLink.className}`);
+            navLink.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              const section = this.getAttribute('data-hub-nav');
+              console.log('✅ Direct nav click:', section);
+              
+              // Check if user needs to be logged in for this section
+              const restrictedSections = ["messages", "saved", "settings"];
+              if (restrictedSections.includes(section) && !auth.user) {
+                toast("Please login or register to access " + section.charAt(0).toUpperCase() + section.slice(1));
+                openAuth("login");
+                return;
+              }
+
+              // Update active nav state
+              document.querySelectorAll("[data-hub-nav]").forEach((nav) => nav.classList.remove("active"));
+              this.classList.add("active");
+
+              // Show corresponding section
+              console.log('📍 Calling showSection for:', section);
+              showSection(section);
+            });
+          });
+        }, 500);
+
         // Settings modal show/hide handlers
         document
           .getElementById("settingsModal")
@@ -10636,7 +12260,9 @@
           const navTarget = e.target.closest("[data-hub-nav]");
           if (navTarget) {
             e.preventDefault();
+            e.stopPropagation();
             const section = navTarget.getAttribute("data-hub-nav");
+            console.log("Sidebar navigation clicked:", section);
 
             // Check if user needs to be logged in for this section
             const restrictedSections = ["messages", "saved", "settings"];
@@ -10738,9 +12364,7 @@
         });
 
         // Image upload and cropping system
-        let selectedImages = [];
-        let currentCropIndex = -1;
-        let cropModal, imageCropModal;
+        let cropModal;
 
         // Initialize modals
         imageCropModal = new bootstrap.Modal(
@@ -11118,8 +12742,20 @@
               imageData.croppedDataUrl = imageData.dataUrl; // Simplified - would be actual cropped data
 
               updateImagePreview();
-              imageCropModal.hide();
-              toast("Image cropped successfully!");
+              
+              // Check if there are more images to crop
+              const nextImageIndex = currentCropIndex + 1;
+              if (nextImageIndex < selectedImages.length) {
+                // Show crop modal for next image
+                toast(`Image ${currentCropIndex + 1} cropped! Opening crop for image ${nextImageIndex + 1}...`, "success");
+                setTimeout(() => {
+                  openImageCropper(nextImageIndex);
+                }, 500);
+              } else {
+                // All images cropped
+                imageCropModal.hide();
+                toast(`All ${selectedImages.length} image(s) cropped successfully!`, "success");
+              }
             }
           });
 
@@ -11152,6 +12788,7 @@
         // Make functions globally available
         window.openImageCropper = openImageCropper;
         window.removeImage = removeImage;
+        window.updateImagePreview = updateImagePreview;
 
         // Save settings
         document
@@ -11387,10 +13024,9 @@
         }, 30000);
 
         document
-          .getElementById("quickCreateBtn")
+          .getElementById("trendingPostsBtn")
           ?.addEventListener("click", () => {
-            window.scrollTo({ top: 0, behavior: "smart" });
-            postText.focus();
+            loadTrendingPosts();
           });
         document.getElementById("fabNew")?.addEventListener("click", () => {
           window.scrollTo({ top: 0, behavior: "smooth" });

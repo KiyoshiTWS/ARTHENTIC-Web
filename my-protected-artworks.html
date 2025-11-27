@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Protected Artworks - ARTHENTIC</title>
+  <link rel="icon" type="image/png" href="smalllogo.png" />
+  <link href="css/bootstrap.min.css" rel="stylesheet" />
+  <link href="css/bootstrap-icons.css" rel="stylesheet" />
+  <link href="css/tooplate-tween-agency.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f5f6f8;
+      color: #23272b;
+      min-height: 100vh;
+    }
+    
+    body.dark-mode {
+      background: #181a1b !important;
+      color: #e0e0e0 !important;
+    }
+    
+    .navbar {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      padding: 0.75rem 2rem;
+    }
+    
+    body.dark-mode .navbar {
+      background: #23272b !important;
+    }
+    
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #dc3545 !important;
+      display: flex;
+      align-items: center;
+    }
+    
+    body.dark-mode .navbar-brand {
+      color: #fff !important;
+    }
+    
+    .navbar-brand img {
+      height: 44px;
+      margin-right: 10px;
+    }
+    
+    .container-main {
+      max-width: 1200px;
+      margin: 6rem auto 3rem auto;
+      padding: 0 2rem;
+    }
+    
+    .page-title {
+      color: #dc3545;
+      font-weight: 700;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    
+    body.dark-mode .page-title {
+      color: #ff6b7a;
+    }
+    
+    .page-subtitle {
+      text-align: center;
+      color: #6c757d;
+      margin-bottom: 3rem;
+      font-size: 1.1rem;
+    }
+    
+    body.dark-mode .page-subtitle {
+      color: #b0b0b0;
+    }
+    
+    .artwork-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .artwork-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    
+    .artwork-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    }
+    
+    body.dark-mode .artwork-card {
+      background: #23272b;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+    }
+    
+    body.dark-mode .artwork-card:hover {
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+    
+    .artwork-image {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      background: #f0f0f0;
+    }
+    
+    body.dark-mode .artwork-image {
+      background: #1a1d1f;
+    }
+    
+    .artwork-details {
+      padding: 1.5rem;
+    }
+    
+    .artwork-name {
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #23272b;
+      margin-bottom: 0.5rem;
+    }
+    
+    body.dark-mode .artwork-name {
+      color: #fff;
+    }
+    
+    .artwork-id {
+      font-size: 0.85rem;
+      color: #6c757d;
+      font-family: 'Courier New', monospace;
+      background: #f8f9fa;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 0.75rem;
+    }
+    
+    body.dark-mode .artwork-id {
+      background: #1a1d1f;
+      color: #b0b0b0;
+    }
+    
+    .artwork-meta {
+      font-size: 0.9rem;
+      color: #6c757d;
+      margin-bottom: 0.5rem;
+    }
+    
+    body.dark-mode .artwork-meta {
+      color: #b0b0b0;
+    }
+    
+    .artwork-meta i {
+      margin-right: 0.5rem;
+      color: #dc3545;
+    }
+    
+    body.dark-mode .artwork-meta i {
+      color: #ff6b7a;
+    }
+    
+    .protection-badge {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    
+    .artwork-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .btn-action {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-view {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .btn-view:hover {
+      background: #b71c2a;
+    }
+    
+    .btn-download {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-download:hover {
+      background: #545b62;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+    }
+    
+    body.dark-mode .empty-state {
+      background: #23272b;
+    }
+    
+    .empty-state i {
+      font-size: 5rem;
+      color: #dc3545;
+      margin-bottom: 1.5rem;
+    }
+    
+    body.dark-mode .empty-state i {
+      color: #ff6b7a;
+    }
+    
+    .empty-state h3 {
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    
+    .loading i {
+      font-size: 3rem;
+      color: #dc3545;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Modal styles */
+    .modal-backdrop {
+      background: rgba(0, 0, 0, 0.85);
+    }
+    
+    .modal-content {
+      border-radius: 16px;
+      border: none;
+    }
+    
+    body.dark-mode .modal-content {
+      background: #23272b;
+      color: #e0e0e0;
+    }
+    
+    body.dark-mode .modal-header {
+      border-bottom-color: #444;
+    }
+    
+    body.dark-mode .modal-footer {
+      border-top-color: #444;
+    }
+    
+    .metadata-table {
+      width: 100%;
+      margin-top: 1rem;
+    }
+    
+    .metadata-table td {
+      padding: 0.5rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    body.dark-mode .metadata-table td {
+      border-bottom-color: #444;
+    }
+    
+    .metadata-table td:first-child {
+      font-weight: 600;
+      width: 40%;
+    }
+    
+    @media (max-width: 768px) {
+      .artwork-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .container-main {
+        margin-top: 5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar fixed-top navbar-expand-lg">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <img id="siteLogo" src="logo.png" alt="ARTHENTIC Logo" />
+      </a>
+      <div class="d-flex gap-2">
+        <a href="arthub.html" class="btn btn-outline-danger" style="border-radius: 50px;">
+          <i class="bi bi-house-fill"></i> Home
+        </a>
+        <a href="artwork-registration.html" class="btn btn-danger" style="border-radius: 50px;">
+          <i class="bi bi-plus-circle"></i> Upload New
+        </a>
+        <button id="darkModeToggle" class="btn btn-outline-dark" style="border-radius: 50px">
+          <i class="bi bi-moon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-main">
+    <h1 class="page-title">
+      <i class="bi bi-shield-lock-fill"></i> My Protected Artworks
+    </h1>
+    <p class="page-subtitle">
+      All your registered artworks with embedded watermarks and metadata protection
+    </p>
+
+    <div id="loadingState" class="loading">
+      <i class="bi bi-arrow-repeat"></i>
+      <p>Loading your protected artworks...</p>
+    </div>
+
+    <div id="artworkGrid" class="artwork-grid" style="display: none;"></div>
+
+    <div id="emptyState" class="empty-state" style="display: none;">
+      <i class="bi bi-image"></i>
+      <h3>No Protected Artworks Yet</h3>
+      <p>Start protecting your creative work by uploading your first artwork.</p>
+      <a href="artwork-registration.html" class="btn btn-danger btn-lg mt-3" style="border-radius: 50px;">
+        <i class="bi bi-plus-circle me-2"></i> Upload Artwork
+      </a>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal fade" id="artworkModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Artwork Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <img id="modalImage" class="img-fluid rounded mb-3" style="max-height: 400px; width: 100%; object-fit: contain; background: #f0f0f0;" />
+          
+          <div id="modalDetails"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger" id="downloadBtn">
+            <i class="bi bi-download me-2"></i> Download Protected Image
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/bootstrap.min.js"></script>
+  <script type="module" src="firebase-config.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      // Check authentication
+      const currentUser = localStorage.getItem('arthub_user');
+      if (!currentUser) {
+        // Store intended destination and redirect to auth page
+        sessionStorage.setItem('redirect_after_login', 'my-protected-artworks.html');
+        window.location.href = 'auth-required.html';
+        return;
+      }
+
+      const user = JSON.parse(currentUser);
+
+      // Dark mode
+      const darkModeBtn = document.getElementById('darkModeToggle');
+      const siteLogo = document.getElementById('siteLogo');
+      const icon = darkModeBtn.querySelector('i');
+
+      function enableDarkMode() {
+        document.body.classList.add('dark-mode');
+        icon.classList.remove('bi-moon');
+        icon.classList.add('bi-brightness-high');
+        siteLogo.src = 'whitelogo.png';
+        darkModeBtn.classList.remove('btn-outline-dark');
+        darkModeBtn.classList.add('btn-danger');
+        localStorage.setItem('darkMode', 'enabled');
+      }
+
+      function disableDarkMode() {
+        document.body.classList.remove('dark-mode');
+        icon.classList.remove('bi-brightness-high');
+        icon.classList.add('bi-moon');
+        siteLogo.src = 'logo.png';
+        darkModeBtn.classList.remove('btn-danger');
+        darkModeBtn.classList.add('btn-outline-dark');
+        localStorage.setItem('darkMode', 'disabled');
+      }
+
+      if (localStorage.getItem('darkMode') === 'enabled') {
+        enableDarkMode();
+      }
+
+      darkModeBtn.addEventListener('click', () => {
+        if (document.body.classList.contains('dark-mode')) {
+          disableDarkMode();
+        } else {
+          enableDarkMode();
+        }
+      });
+
+      // Load artworks
+      await loadProtectedArtworks(user.id);
+    });
+
+    async function loadProtectedArtworks(userId) {
+      try {
+        await waitForFirebase();
+        
+        const client = window.firebaseArtHubClient;
+        const { collection, query, where, getDocs, orderBy } = window.firebaseModules;
+
+        const artworksRef = collection(client.db, 'protected_artworks');
+        const q = query(
+          artworksRef, 
+          where('user_id', '==', userId),
+          orderBy('created_at', 'desc')
+        );
+        
+        const snapshot = await getDocs(q);
+        
+        document.getElementById('loadingState').style.display = 'none';
+        
+        if (snapshot.empty) {
+          document.getElementById('emptyState').style.display = 'block';
+          return;
+        }
+
+        const grid = document.getElementById('artworkGrid');
+        grid.style.display = 'grid';
+        grid.innerHTML = '';
+
+        snapshot.forEach(doc => {
+          const artwork = doc.data();
+          artwork.id = doc.id;
+          
+          const card = createArtworkCard(artwork);
+          grid.appendChild(card);
+        });
+
+      } catch (error) {
+        console.error('Error loading artworks:', error);
+        document.getElementById('loadingState').innerHTML = `
+          <i class="bi bi-exclamation-triangle text-danger"></i>
+          <p class="text-danger">Failed to load artworks: ${error.message}</p>
+        `;
+      }
+    }
+
+    function createArtworkCard(artwork) {
+      const card = document.createElement('div');
+      card.className = 'artwork-card';
+      
+      const date = artwork.registration_date ? new Date(artwork.registration_date).toLocaleDateString() : 'Unknown';
+      const dimensions = artwork.metadata?.dimensions ? 
+        `${artwork.metadata.dimensions.width}×${artwork.metadata.dimensions.height}` : 'N/A';
+      
+      card.innerHTML = `
+        <img src="${artwork.protected_image}" alt="${artwork.artwork_name}" class="artwork-image" />
+        <div class="artwork-details">
+          <div class="artwork-name">${artwork.artwork_name}</div>
+          <div class="artwork-id">
+            <i class="bi bi-fingerprint"></i> ${artwork.artwork_id}
+          </div>
+          <div class="artwork-meta">
+            <i class="bi bi-calendar"></i> Registered: ${date}
+          </div>
+          <div class="artwork-meta">
+            <i class="bi bi-aspect-ratio"></i> ${dimensions}
+          </div>
+          <div class="protection-badge">
+            <i class="bi bi-shield-check"></i>
+            Protected with Watermark & Metadata
+          </div>
+          <div class="artwork-actions">
+            <button class="btn-action btn-view" onclick="viewArtwork('${artwork.id}')">
+              <i class="bi bi-eye"></i> View Details
+            </button>
+            <button class="btn-action btn-download" onclick="downloadArtwork('${artwork.artwork_id}', '${artwork.artwork_name}', '${artwork.protected_image}')">
+              <i class="bi bi-download"></i> Download
+            </button>
+          </div>
+        </div>
+      `;
+      
+      return card;
+    }
+
+    async function viewArtwork(artworkId) {
+      try {
+        await waitForFirebase();
+        
+        const client = window.firebaseArtHubClient;
+        const { doc, getDoc } = window.firebaseModules;
+        
+        const artworkRef = doc(client.db, 'protected_artworks', artworkId);
+        const artworkDoc = await getDoc(artworkRef);
+        
+        if (!artworkDoc.exists()) {
+          alert('Artwork not found');
+          return;
+        }
+        
+        const artwork = artworkDoc.data();
+        
+        document.getElementById('modalTitle').textContent = artwork.artwork_name;
+        document.getElementById('modalImage').src = artwork.protected_image;
+        
+        const date = artwork.registration_date ? new Date(artwork.registration_date).toLocaleDateString() : 'Unknown';
+        const dimensions = artwork.metadata?.dimensions ? 
+          `${artwork.metadata.dimensions.width} × ${artwork.metadata.dimensions.height} pixels` : 'N/A';
+        
+        document.getElementById('modalDetails').innerHTML = `
+          <h6 class="fw-bold mb-3">Artwork Information</h6>
+          <table class="metadata-table">
+            <tr>
+              <td><i class="bi bi-fingerprint me-2"></i> Artwork ID:</td>
+              <td><code>${artwork.artwork_id}</code></td>
+            </tr>
+            <tr>
+              <td><i class="bi bi-person me-2"></i> Artist:</td>
+              <td>${artwork.username}</td>
+            </tr>
+            <tr>
+              <td><i class="bi bi-calendar me-2"></i> Registration Date:</td>
+              <td>${date}</td>
+            </tr>
+            <tr>
+              <td><i class="bi bi-aspect-ratio me-2"></i> Dimensions:</td>
+              <td>${dimensions}</td>
+            </tr>
+            <tr>
+              <td><i class="bi bi-file-earmark me-2"></i> Original Filename:</td>
+              <td>${artwork.original_filename || 'N/A'}</td>
+            </tr>
+            <tr>
+              <td><i class="bi bi-hdd me-2"></i> File Size:</td>
+              <td>${formatFileSize(artwork.metadata?.file_size)}</td>
+            </tr>
+            <tr>
+              <td><i class="bi bi-shield-check me-2"></i> Protection:</td>
+              <td><span class="badge bg-success">Watermarked & Metadata Embedded</span></td>
+            </tr>
+          </table>
+          ${artwork.description ? `
+            <h6 class="fw-bold mt-4 mb-2">Description</h6>
+            <p>${artwork.description}</p>
+          ` : ''}
+        `;
+        
+        document.getElementById('downloadBtn').onclick = () => {
+          downloadArtwork(artwork.artwork_id, artwork.artwork_name, artwork.protected_image);
+        };
+        
+        const modal = new bootstrap.Modal(document.getElementById('artworkModal'));
+        modal.show();
+        
+      } catch (error) {
+        console.error('Error viewing artwork:', error);
+        alert('Failed to load artwork details');
+      }
+    }
+
+    function downloadArtwork(artworkId, artworkName, imageData) {
+      const link = document.createElement('a');
+      link.download = `${artworkName.replace(/[^a-z0-9]/gi, '_')}_${artworkId.substr(0, 10)}_protected.png`;
+      link.href = imageData;
+      link.click();
+    }
+
+    function formatFileSize(bytes) {
+      if (!bytes) return 'N/A';
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+
+    function waitForFirebase() {
+      return new Promise((resolve) => {
+        const check = setInterval(() => {
+          if (window.firebaseArtHubClient && window.firebaseModules) {
+            clearInterval(check);
+            resolve();
+          }
+        }, 100);
+        setTimeout(() => {
+          clearInterval(check);
+          resolve();
+        }, 10000);
+      });
+    }
+  </script>
+</body>
+</html>
